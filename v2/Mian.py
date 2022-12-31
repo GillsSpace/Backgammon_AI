@@ -11,6 +11,7 @@ class Game_Window(arcade.Window):
         arcade.set_background_color(arcade.color.DARK_SCARLET)
         self.state = "Splash"
         self.step = 0
+        self.step_2_sub_state = "main"
 
         self.button_slot_1_excited = False
         self.button_slot_2_excited = False
@@ -78,7 +79,8 @@ class Game_Window(arcade.Window):
                 
                 #When Initial Roll Button Pressed:
                 startingPlayer = random.randint(0,1)
-                self.currentTurn = Logic.Turn(startingPlayer,self.Main_Board,First=True)
+                self.currentTurn = Logic.Turn(startingPlayer,First=True)
+                self.currentTurn.step1(self.Main_Board)
                 self.state = "Turn-P1" if startingPlayer == 1 else "Turn-P2"
 
         elif self.state == "Turn-P1":
@@ -98,6 +100,7 @@ class Game_Window(arcade.Window):
             #If "ROLL" Button Pressed:
             if 1025 < x < 1175 and 313 < y < 388:
                 self.currentTurn = Logic.Turn(1,self.Main_Board)
+                self.currentTurn.step1(self.Main_Board)
                 self.state = "Turn-P1"
 
             #If "DOUBLE" Button Pressed:
@@ -110,6 +113,7 @@ class Game_Window(arcade.Window):
             #If "ROLL" Button Pressed:
             if 1025 < x < 1175 and 313 < y < 388:
                 self.currentTurn = Logic.Turn(0,self.Main_Board)
+                self.currentTurn.step1(self.Main_Board)
                 self.state = "Turn-P2"
 
             #If "DOUBLE" Button Pressed:
@@ -124,3 +128,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#When Roll Button Pressed:
+    #Creat new Turn
+        #step1: calc possible moves
+    #set state to Turn
+
+#Durring Turn
+    #

@@ -79,7 +79,7 @@ class Board:
                     if len(pointList) > 0 and pointList[0] == 0:
                         if canMoveTo(point-roll+1,0) == True:
                             moveList.append((point+1,[point-roll+1]))
-                if self.takeOutLight == True:
+                if self.takeOutStatus[1] == True:
                     if len(self.locationList[roll-1]) > 0 and self.locationList[roll-1][0] == 0: 
                         moveList.append((roll,["safe"]))
                     if biggestRoll == True and self.findLastOccupiedPoint(0) < roll:
@@ -108,6 +108,7 @@ class Turn:
             self.availableRolls = self.roll
 
     def step1(self,board):
+        print("step1----") #DEBUG
         self.currentPossibleMoves = []
         if self.doublesTurn == True:
             self.currentPossibleMoves = board.calcPossibleMoves(self.roll[0],self.player,True)
@@ -115,12 +116,15 @@ class Turn:
             biggerRoll = self.roll[0] if self.roll[0] > self.roll[1] else self.roll[1]
             for roll in self.availableRolls:
                 self.currentPossibleMoves.append(board.calcPossibleMoves(roll,self.player,(roll == biggerRoll)))
+            self.currentPossibleMoves = self.currentPossibleMoves[0] + self.currentPossibleMoves[1]
             if len(self.availableRolls) > 1:
+                print(self.currentPossibleMoves)#DEBUG
                 workingMovesList = self.currentPossibleMoves
                 self.currentPossibleMoves = []
                 startPoints = []
                 for move in workingMovesList:
                     startPoints.append(move[0]) 
+                print(startPoints)#Debug
                 for num in startPoints:
                     numFin = []
                     for move in workingMovesList:
@@ -130,7 +134,7 @@ class Turn:
                     if finalList in self.currentPossibleMoves:
                         pass
                     else:
-                        self.currentPossibleMoves(finalList)
+                        self.currentPossibleMoves.append(finalList)
 
 
 
