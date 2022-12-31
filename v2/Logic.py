@@ -69,6 +69,21 @@ class Board:
                     if biggestRoll == True and self.findLastOccupiedPoint(1) > 25-roll:
                         moveList.append((self.findLastOccupiedPoint(1),"safe"))
 
+        if player == 0:
+            if 0 in self.hitPieceList:
+                if canMoveTo(25-roll,0) == True:
+                    moveList(("hit",25-roll))
+            else:
+                for point in range(24):
+                    pointList = self.locationList[point]
+                    if len(pointList) > 0 and pointList[0] == 0:
+                        if canMoveTo(point-roll+1,0) == True:
+                            moveList.append((point+1,point-roll+1))
+                if self.takeOutLight == True:
+                    if len(self.locationList[roll-1]) > 0 and self.locationList[roll-1][0] == 0: 
+                        moveList.append((roll,"safe"))
+                    if biggestRoll == True and self.findLastOccupiedPoint(0) < roll:
+                        moveList.append((self.findLastOccupiedPoint(0),"safe"))
 
 
 class Turn:
