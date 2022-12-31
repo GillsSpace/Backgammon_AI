@@ -10,6 +10,7 @@ class Game_Window(arcade.Window):
         super().__init__(1200,800,"Backgammon")
         arcade.set_background_color(arcade.color.DARK_SCARLET)
         self.state = "Splash"
+        self.step = 0
 
         self.button_slot_1_excited = False
         self.button_slot_2_excited = False
