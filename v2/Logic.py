@@ -56,7 +56,6 @@ class Board:
         else:
             e = end - 1
             s = start - 1
-            print(f"player = {player} // opponent = {opponent}") #DEBUG
             self.locationList[s].remove(player)
             if len(self.locationList[e]) > 0 and self.locationList[e][0] == opponent:
                 self.locationList[e].remove(opponent)
@@ -136,7 +135,6 @@ class Turn:
             self.availableRolls = self.roll
 
     def step1(self,board):
-        print("step1----") #DEBUG
         self.currentPossibleMoves = []
         if self.doublesTurn == True:
             self.currentPossibleMoves = board.calcPossibleMoves(self.roll[0],self.player,True)
@@ -146,13 +144,11 @@ class Turn:
                 self.currentPossibleMoves.append(board.calcPossibleMoves(roll,self.player,(roll == biggerRoll)))
             self.currentPossibleMoves = self.currentPossibleMoves[0] + self.currentPossibleMoves[1]
             if len(self.availableRolls) > 1:
-                print(self.currentPossibleMoves)#DEBUG
                 workingMovesList = self.currentPossibleMoves
                 self.currentPossibleMoves = []
                 startPoints = []
                 for move in workingMovesList:
                     startPoints.append(move[0]) 
-                print(startPoints)#Debug
                 for num in startPoints:
                     numFin = []
                     for move in workingMovesList:

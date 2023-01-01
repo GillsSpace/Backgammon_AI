@@ -140,8 +140,6 @@ def createMoveStartSprites(possibleMoves,Board):
     sprites = arcade.SpriteList()
 
     for move in possibleMoves:
-        print(possibleMoves) #DEBUG
-        print(move) #DEBUG
         startPoint = move[0]
         o = 1 if startPoint > 12 else -1
         pointLength = len(board_location_list[startPoint-1]) - 1

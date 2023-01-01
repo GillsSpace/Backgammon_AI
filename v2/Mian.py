@@ -82,9 +82,25 @@ class Game_Window(arcade.Window):
                 startingPlayer = random.randint(0,1)
                 self.currentTurn = Logic.Turn(startingPlayer,First=True)
                 self.currentTurn.step1(self.Main_Board)
+                self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P1" if startingPlayer == 1 else "Turn-P2"
 
         elif self.state == "Turn-P1":
+
+            if self.step == "main":
+                #When an possible move sprite is clicked:
+                clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
+                if clicked_sprite != []:
+                    self.currentTurn.sprite_active = clicked_sprite[0]
+                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board)
+                    self.step = "branch"
+
+            elif self.step == "branch":
+                #When a possible sub-move sprite is clicked:
+                clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
+                if clicked_sprite != []:
+                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
+                    self.subState = "main"
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
@@ -100,11 +116,11 @@ class Game_Window(arcade.Window):
                     self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board)
                     self.step = "branch"
 
-
             elif self.step == "branch":
+                #When a possible sub-move sprite is clicked:
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                 if clicked_sprite != []:
-                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active[0],clicked_sprite[0].pos,1)
+                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
                     self.subState = "main"
 
 
@@ -118,6 +134,7 @@ class Game_Window(arcade.Window):
             if 1025 < x < 1175 and 313 < y < 388:
                 self.currentTurn = Logic.Turn(1,self.Main_Board)
                 self.currentTurn.step1(self.Main_Board)
+                self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P1"
 
             #If "DOUBLE" Button Pressed:
@@ -131,6 +148,7 @@ class Game_Window(arcade.Window):
             if 1025 < x < 1175 and 313 < y < 388:
                 self.currentTurn = Logic.Turn(0,self.Main_Board)
                 self.currentTurn.step1(self.Main_Board)
+                self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P2"
 
             #If "DOUBLE" Button Pressed:
@@ -146,10 +164,11 @@ def main():
 if __name__ == "__main__":
     main()
 
-#When Roll Button Pressed:
-    #Creat new Turn
-        #step1: calc possible moves
-    #set state to Turn
 
-#Durring Turn
-    #
+#When Turn Is Created:
+    #Step 1: calc first set of possible moves
+    #Step 2: create first set of moveStartSprites
+
+#Durring Turn:
+    #@click set current active sprite and create sub sprites and set step to branch
+    #and next click update 
