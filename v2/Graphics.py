@@ -134,7 +134,42 @@ def drawPieces(LocationList,Sideboard_Pieces_List,Out_Pieces_List,pip):
             arcade.draw_circle_filled(601,401-startDist+35+(60*pc),30,color)
             arcade.draw_circle_outline(601,401-startDist+35+(60*pc),30,arcade.color.BLACK,2)
 
+#Sprite Management
+def createMoveStartSprites(possibleMoves,Board):
+    board_location_list = Board.locationList
+    sprites = arcade.SpriteList()
 
+    for move in possibleMoves:
+        print(possibleMoves) #DEBUG
+        print(move) #DEBUG
+        startPoint = move[0]
+        o = 1 if startPoint > 12 else -1
+        pointLength = len(board_location_list[startPoint-1]) - 1
+        tempSprite = arcade.Sprite("Images/Move.png",.07)
+        tempSprite.center_x = Master_Location_Dict[startPoint][0]
+        tempSprite.center_y = Master_Location_Dict[startPoint][1] + (60*pointLength*o)
+        tempSprite.move = move
+        
+        sprites.append(tempSprite)
+    
+    return sprites
+def createMoveEndSprites(activeSprite,Board):
+    board_location_list = Board.locationList
+    sprites = arcade.SpriteList()
+
+    for move in activeSprite.move[1]:
+        o = 1 if move > 12 else -1
+        pointLength = len(board_location_list[move-1]) - 1
+        if pointLength == -1:
+            pointLength = 0
+        tempSprite = arcade.Sprite("Images/Submove.png",.07)
+        tempSprite.center_x = Master_Location_Dict[move][0]
+        tempSprite.center_y = Master_Location_Dict[move][1] + (60*pointLength*o)
+        tempSprite.pos = move
+
+        sprites.append(tempSprite)
+
+    return sprites
 ### GAME STATES ###
 
 #Splash Screen
@@ -167,25 +202,6 @@ def draw_turn_start(player,is_excited_roll,is_excited_double,Board):
     arcade.draw_rectangle_filled(601,401,12,762,color)
 
 #Turns
-def createMoveStartSprites(possibleMoves,Board):
-    board_location_list = Board.locationList
-    sprites = arcade.SpriteList()
-
-    for move in possibleMoves:
-        print(possibleMoves) #DEBUG
-        print(move) #DEBUG
-        startPoint = move[0]
-        o = 1 if startPoint > 12 else -1
-        pointLength = len(board_location_list[startPoint-1]) - 1
-        tempSprite = arcade.Sprite("Images/Move.png",.07)
-        tempSprite.center_x = Master_Location_Dict[startPoint][0]
-        tempSprite.center_y = Master_Location_Dict[startPoint][1] + (60*pointLength*o)
-        tempSprite.move = move
-        
-        sprites.append(tempSprite)
-    
-    return sprites
-
 def draw_turn(player,is_excited,Board,Turn):
     drawBoard()
     drawSideboard()
@@ -194,9 +210,11 @@ def draw_turn(player,is_excited,Board,Turn):
     draw_button("END",1100,400,150,75,is_excited)
     color = Piece1 if player == 1 else Piece2
     arcade.draw_rectangle_filled(601,401,12,762,color)
-    move_start_sprites = createMoveStartSprites(Turn.currentPossibleMoves,Board)
-    move_start_sprites.draw()
-
+def draw_turn_main(sprites):
+    sprites.draw()
+def draw_turn_branch(main_sprite,sprites):
+    main_sprite.draw()
+    sprites.draw()
 
 
 

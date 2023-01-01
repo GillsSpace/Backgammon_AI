@@ -1,4 +1,5 @@
 import random
+from Graphics import createMoveStartSprites
 
 #Helper Functions
 def RollDice():
@@ -38,6 +39,29 @@ class Board:
     def updateTakeOutStatus(self):
         self.takeOutStatus[0] = True if self.findLastOccupiedPoint(1) > 18 else False
         self.takeOutStatus[1] = True if self.findLastOccupiedPoint(0) < 7 else False
+    def updateWithMove(self,start,end,p):
+        player = p
+        opponent = 1 if player == 0 else 0
+        if start == "hit":
+            e = end - 1
+            self.hitPieceList.remove(player)
+            if len(self.locationList[e]) > 0 and self.locationList[e][0] == opponent:
+                self.locationList[e].remove(opponent)
+                self.hitPieceList.append(opponent)
+            self.locationList[e].append(player)
+        elif end == "safe":
+            s = start-1
+            self.locationList[s].remove(player)
+            self.sideboardList[opponent] += 1 
+        else:
+            e = end - 1
+            s = start - 1
+            print(f"player = {player} // opponent = {opponent}") #DEBUG
+            self.locationList[s].remove(player)
+            if len(self.locationList[e]) > 0 and self.locationList[e][0] == opponent:
+                self.locationList[e].remove(opponent)
+                self.hitPieceList.append(opponent)
+            self.locationList[e].append(player)
     def calcPossibleMoves(self,roll,player,biggestRoll):
         self.updateTakeOutStatus()
         moveList = []
@@ -96,6 +120,10 @@ class Turn:
         self.step = 0
         self.currentPossibleMoves = []
 
+        self.sprites_move_start = []
+        self.sprites_move_end = []
+        self.sprite_active = []
+
         #prevents Doubles on first Roll
         if First == True and self.doublesTurn == True: 
             self.roll = [random.randint(1,3),random.randint(4,6)]
@@ -135,6 +163,9 @@ class Turn:
                         pass
                     else:
                         self.currentPossibleMoves.append(finalList)
+
+    def FormSpriteLists(self,board):
+        self.sprites_move_start = createMoveStartSprites(self.currentPossibleMoves,board)
 
 
 

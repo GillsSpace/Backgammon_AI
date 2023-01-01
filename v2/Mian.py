@@ -10,8 +10,7 @@ class Game_Window(arcade.Window):
         super().__init__(1200,800,"Backgammon")
         arcade.set_background_color(arcade.color.DARK_SCARLET)
         self.state = "Splash"
-        self.step = 0
-        self.step_2_sub_state = "main"
+        self.step = "main"
 
         self.button_slot_1_excited = False
         self.button_slot_2_excited = False
@@ -34,9 +33,11 @@ class Game_Window(arcade.Window):
 
         if self.state == "Turn-P1":
             Graphics.draw_turn(1,self.button_slot_1_excited,self.Main_Board,self.currentTurn)
+            Graphics.draw_turn_main(self.currentTurn.sprites_move_start) if self.step == "main" else Graphics.draw_turn_branch(self.currentTurn.sprite_active,self.currentTurn.sprites_move_end)
 
         if self.state == "Turn-P2":
             Graphics.draw_turn(0,self.button_slot_1_excited,self.Main_Board,self.currentTurn)
+            Graphics.draw_turn_main(self.currentTurn.sprites_move_start) if self.step == "main" else Graphics.draw_turn_branch(self.currentTurn.sprite_active,self.currentTurn.sprites_move_end)
 
         if self.state == "Turn-Start-P1":
             Graphics.draw_turn_start(1,self.button_slot_1_excited,self.button_slot_2_excited,self.Main_Board)
@@ -90,6 +91,22 @@ class Game_Window(arcade.Window):
                 self.state = "Turn-Start-P2"
 
         elif self.state == "Turn-P2":
+
+            if self.step == "main":
+                #When an possible move sprite is clicked:
+                clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
+                if clicked_sprite != []:
+                    self.currentTurn.sprite_active = clicked_sprite[0]
+                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board)
+                    self.step = "branch"
+
+
+            elif self.step == "branch":
+                clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
+                if clicked_sprite != []:
+                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active[0],clicked_sprite[0].pos,1)
+                    self.subState = "main"
+
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
