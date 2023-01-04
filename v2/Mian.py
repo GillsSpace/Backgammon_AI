@@ -81,7 +81,7 @@ class Game_Window(arcade.Window):
                 #When Initial Roll Button Pressed:
                 startingPlayer = random.randint(0,1)
                 self.currentTurn = Logic.Turn(startingPlayer,First=True)
-                self.currentTurn.step1(self.Main_Board)
+                self.currentTurn.updatePossibleMoves(self.Main_Board)
                 self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P1" if startingPlayer == 1 else "Turn-P2"
 
@@ -96,11 +96,13 @@ class Game_Window(arcade.Window):
                     self.step = "branch"
 
             elif self.step == "branch":
+                self.step = "main"
                 #When a possible sub-move sprite is clicked:
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                 if clicked_sprite != []:
                     self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
-                    self.subState = "main"
+                    self.currentTurn.updatePossibleMoves(self.Main_Board)
+                    self.currentTurn.FormSpriteLists(self.Main_Board)
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
@@ -117,12 +119,13 @@ class Game_Window(arcade.Window):
                     self.step = "branch"
 
             elif self.step == "branch":
+                self.step = "main"
                 #When a possible sub-move sprite is clicked:
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                 if clicked_sprite != []:
-                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
-                    self.subState = "main"
-
+                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,0)
+                    self.currentTurn.updatePossibleMoves(self.Main_Board)
+                    self.currentTurn.FormSpriteLists(self.Main_Board)
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
@@ -133,7 +136,7 @@ class Game_Window(arcade.Window):
             #If "ROLL" Button Pressed:
             if 1025 < x < 1175 and 313 < y < 388:
                 self.currentTurn = Logic.Turn(1,self.Main_Board)
-                self.currentTurn.step1(self.Main_Board)
+                self.currentTurn.updatePossibleMoves(self.Main_Board)
                 self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P1"
 
@@ -147,7 +150,7 @@ class Game_Window(arcade.Window):
             #If "ROLL" Button Pressed:
             if 1025 < x < 1175 and 313 < y < 388:
                 self.currentTurn = Logic.Turn(0,self.Main_Board)
-                self.currentTurn.step1(self.Main_Board)
+                self.currentTurn.updatePossibleMoves(self.Main_Board)
                 self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P2"
 

@@ -134,7 +134,7 @@ class Turn:
         else:
             self.availableRolls = self.roll
 
-    def step1(self,board):
+    def updatePossibleMoves(self,board):
         self.currentPossibleMoves = []
         if self.doublesTurn == True:
             self.currentPossibleMoves = board.calcPossibleMoves(self.roll[0],self.player,True)

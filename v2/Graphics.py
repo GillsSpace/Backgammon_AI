@@ -202,17 +202,18 @@ def draw_turn_start(player,is_excited_roll,is_excited_double,Board):
 #Turns
 def draw_turn(player,is_excited,Board,Turn):
     drawBoard()
+    color = Piece1 if player == 1 else Piece2
+    arcade.draw_rectangle_filled(601,401,12,762,color)
     drawSideboard()
     drawPieces(Board.locationList,Board.sideboardList,Board.hitPieceList,Board.calcPip())
     drawDice(Turn.roll[0],Turn.roll[1])
     draw_button("END",1100,400,150,75,is_excited)
-    color = Piece1 if player == 1 else Piece2
-    arcade.draw_rectangle_filled(601,401,12,762,color)
 def draw_turn_main(sprites):
     sprites.draw()
 def draw_turn_branch(main_sprite,sprites):
     main_sprite.draw()
     sprites.draw()
+
 
 
 
