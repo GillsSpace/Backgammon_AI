@@ -92,7 +92,7 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
                 if clicked_sprite != []:
                     self.currentTurn.sprite_active = clicked_sprite[0]
-                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board)
+                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board,self.currentTurn.player)
                     self.step = "branch"
 
             elif self.step == "branch":
@@ -115,7 +115,7 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
                 if clicked_sprite != []:
                     self.currentTurn.sprite_active = clicked_sprite[0]
-                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board)
+                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board,self.currentTurn.player)
                     self.step = "branch"
 
             elif self.step == "branch":

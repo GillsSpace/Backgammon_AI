@@ -161,7 +161,7 @@ class Turn:
                         self.currentPossibleMoves.append(finalList)
 
     def FormSpriteLists(self,board):
-        self.sprites_move_start = createMoveStartSprites(self.currentPossibleMoves,board)
+        self.sprites_move_start = createMoveStartSprites(self.currentPossibleMoves,board,self.player)
 
 
 

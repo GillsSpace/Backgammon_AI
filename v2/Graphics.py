@@ -135,39 +135,62 @@ def drawPieces(LocationList,Sideboard_Pieces_List,Out_Pieces_List,pip):
             arcade.draw_circle_outline(601,401-startDist+35+(60*pc),30,arcade.color.BLACK,2)
 
 #Sprite Management
-def createMoveStartSprites(possibleMoves,Board):
+def createMoveStartSprites(possibleMoves,Board,player):
     board_location_list = Board.locationList
+    board_hit_list = Board.hitPieceList
     sprites = arcade.SpriteList()
 
     for move in possibleMoves:
         startPoint = move[0]
-        o = 1 if startPoint > 12 else -1
-        pointLength = len(board_location_list[startPoint-1]) - 1
-        tempSprite = arcade.Sprite("Images/Move.png",.07)
-        tempSprite.center_x = Master_Location_Dict[startPoint][0]
-        tempSprite.center_y = Master_Location_Dict[startPoint][1] + (60*pointLength*o)
-        tempSprite.move = move
+
+        if startPoint == "hit":
+            totalDist = 70 * len(board_hit_list)
+            startDist = totalDist/2
+            for pc in range(len(board_hit_list)):
+                doDraw = True if board_hit_list[pc] == player else False
+                if doDraw == True:
+                    tempSprite = arcade.Sprite("Images/Move.png",.07)
+                    tempSprite.center_x = 601
+                    tempSprite.center_y = 401-startDist+35+(60*pc)
+                    tempSprite.move = move
+        
+        else:
+            o = 1 if startPoint > 12 else -1
+            pointLength = len(board_location_list[startPoint-1]) - 1
+            tempSprite = arcade.Sprite("Images/Move.png",.07)
+            tempSprite.center_x = Master_Location_Dict[startPoint][0]
+            tempSprite.center_y = Master_Location_Dict[startPoint][1] + (60*pointLength*o)
+            tempSprite.move = move
         
         sprites.append(tempSprite)
     
     return sprites
-def createMoveEndSprites(activeSprite,Board):
+def createMoveEndSprites(activeSprite,Board,player):
     board_location_list = Board.locationList
     sprites = arcade.SpriteList()
 
     for move in activeSprite.move[1]:
-        o = 1 if move > 12 else -1
-        pointLength = len(board_location_list[move-1]) - 1
-        if pointLength == -1:
-            pointLength = 0
-        tempSprite = arcade.Sprite("Images/Submove.png",.07)
-        tempSprite.center_x = Master_Location_Dict[move][0]
-        tempSprite.center_y = Master_Location_Dict[move][1] + (60*pointLength*o)
-        tempSprite.pos = move
+
+        if move == "safe":
+            tempSprite = arcade.Sprite("Images/Submove.png",.07)
+            tempSprite.center_x = 150
+            tempSprite.center_y = 400
+            tempSprite.pos = move
+
+        else:
+            o = 1 if move > 12 else -1
+            pointLength = len(board_location_list[move-1]) - 1
+            if pointLength == -1:
+                pointLength = 0
+            tempSprite = arcade.Sprite("Images/Submove.png",.07)
+            tempSprite.center_x = Master_Location_Dict[move][0]
+            tempSprite.center_y = Master_Location_Dict[move][1] + (60*pointLength*o)
+            tempSprite.pos = move
 
         sprites.append(tempSprite)
 
     return sprites
+
 ### GAME STATES ###
 
 #Splash Screen
@@ -192,12 +215,12 @@ def draw_game_start(is_excited,Board):
 #Turn-Start
 def draw_turn_start(player,is_excited_roll,is_excited_double,Board):
     drawBoard()
+    color = Piece1 if player == 1 else Piece2
+    arcade.draw_rectangle_filled(601,401,12,762,color)
     drawSideboard()
     drawPieces(Board.locationList,Board.sideboardList,Board.hitPieceList,Board.calcPip())
     draw_button("ROLL",1100,351,150,75,is_excited_roll)
     draw_button("DOUBLE",1100,451,150,75,is_excited_double,20)
-    color = Piece1 if player == 1 else Piece2
-    arcade.draw_rectangle_filled(601,401,12,762,color)
 
 #Turns
 def draw_turn(player,is_excited,Board,Turn):
