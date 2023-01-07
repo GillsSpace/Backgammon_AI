@@ -101,8 +101,15 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                 if clicked_sprite != []:
                     self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
-                    self.currentTurn.updatePossibleMoves(self.Main_Board)
-                    self.currentTurn.FormSpriteLists(self.Main_Board)
+                    roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,1)
+                    print(roll)#DEBUG
+                    self.currentTurn.availableRolls.remove(roll)
+                    if len(self.currentTurn.availableRolls) > 0:
+                        print("Updating Possible moves, Forming new sprites...") #DEBUG
+                        self.currentTurn.updatePossibleMoves(self.Main_Board)
+                        self.currentTurn.FormSpriteLists(self.Main_Board)
+                    else:
+                        self.currentTurn.sprites_move_start = arcade.SpriteList()
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
@@ -124,8 +131,15 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                 if clicked_sprite != []:
                     self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,0)
-                    self.currentTurn.updatePossibleMoves(self.Main_Board)
-                    self.currentTurn.FormSpriteLists(self.Main_Board)
+                    roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,0)
+                    print(roll)#DEBUG
+                    self.currentTurn.availableRolls.remove(roll)
+                    if len(self.currentTurn.availableRolls) > 0:
+                        print("Updating Possible moves, Forming new sprites...") #DEBUG
+                        self.currentTurn.updatePossibleMoves(self.Main_Board)
+                        self.currentTurn.FormSpriteLists(self.Main_Board)
+                    else:
+                        self.currentTurn.sprites_move_start = arcade.SpriteList()
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:

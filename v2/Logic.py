@@ -1,5 +1,6 @@
 import random
 from Graphics import createMoveStartSprites
+import copy
 
 #Helper Functions
 def RollDice():
@@ -115,9 +116,10 @@ class Turn:
         self.roll = RollDice()
         self.player = player
         self.doublesTurn = True if self.roll[0] == self.roll[1] else False
-        self.availableRolls = []
         self.step = 0
         self.currentPossibleMoves = []
+
+        self.availableRolls = []
 
         self.sprites_move_start = []
         self.sprites_move_end = []
@@ -132,18 +134,20 @@ class Turn:
         if self.doublesTurn == True:
             self.availableRolls = [self.roll[0],self.roll[0],self.roll[0],self.roll[0]]
         else:
-            self.availableRolls = self.roll
+            self.availableRolls = copy.deepcopy(self.roll)
 
     def updatePossibleMoves(self,board):
         self.currentPossibleMoves = []
         if self.doublesTurn == True:
             self.currentPossibleMoves = board.calcPossibleMoves(self.roll[0],self.player,True)
         else:
+            print(f"roll = {self.roll}") #DEBUG
+            print(f"available rolls = {self.availableRolls}") #DEBUG
             biggerRoll = self.roll[0] if self.roll[0] > self.roll[1] else self.roll[1]
             for roll in self.availableRolls:
                 self.currentPossibleMoves.append(board.calcPossibleMoves(roll,self.player,(roll == biggerRoll)))
-            self.currentPossibleMoves = self.currentPossibleMoves[0] + self.currentPossibleMoves[1]
             if len(self.availableRolls) > 1:
+                self.currentPossibleMoves = self.currentPossibleMoves[0] + self.currentPossibleMoves[1]
                 workingMovesList = self.currentPossibleMoves
                 self.currentPossibleMoves = []
                 startPoints = []
@@ -159,11 +163,21 @@ class Turn:
                         pass
                     else:
                         self.currentPossibleMoves.append(finalList)
+            else:
+                self.currentPossibleMoves = self.currentPossibleMoves[0]
 
     def FormSpriteLists(self,board):
         self.sprites_move_start = createMoveStartSprites(self.currentPossibleMoves,board,self.player)
 
-
+    def fromMoveToRoll(self,start,end,rolls,player):
+        if start == "hit":
+            roll = end if player == 1 else (25 - end)
+        elif end == "safe":
+            roll = start if start in rolls else rolls[0]
+        else:
+            diff = end - start
+            roll = diff if diff > 0 else (diff * -1)
+        return roll
 
 #Calc Possible moves in board -- called within turn.
 

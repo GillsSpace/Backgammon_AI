@@ -1,5 +1,6 @@
 #Imports
 import arcade
+import copy
 
 #Themes:
 def theme1():
@@ -60,8 +61,25 @@ def drawSideboard():
     arcade.draw_rectangle_outline(150,601,64,304,board_border,8)
     arcade.draw_rectangle_filled(150,201,60,300,board_color)
     arcade.draw_rectangle_filled(150,601,60,300,board_color)
-def drawDice(num1,num2):
-    def diceSub(baseX,baseY,num):
+def drawDice(num1,num2,availableRolls):
+    tempList = copy.deepcopy(availableRolls)
+
+    U1 = U2 = U3 = U4 = True
+
+    if num1 in tempList:
+        U1 = False
+        tempList.remove(num1)
+    if num2 in tempList:
+        U2 = False
+        tempList.remove(num2)
+    if num1 in tempList:
+        U3 = False
+        tempList.remove(num1)
+    if num2 in tempList:
+        U4 = False
+        tempList.remove(num2)
+
+    def diceSub(baseX,baseY,num,color):
         p1 = [baseX+13,baseY+13]
         p2 = [baseX+13,baseY+25]
         p3 = [baseX+13,baseY+38]
@@ -69,7 +87,7 @@ def drawDice(num1,num2):
         p5 = [baseX+38,baseY+13]
         p6 = [baseX+38,baseY+25]
         p7 = [baseX+38,baseY+38]
-        arcade.draw_rectangle_filled(baseX+25,baseY+25,50,50,board_color)
+        arcade.draw_rectangle_filled(baseX+25,baseY+25,50,50,color)
         arcade.draw_rectangle_outline(baseX+25,baseY+25,50,50,black,2)
         if num == 1:
             arcade.draw_points([p4],black,7)
@@ -83,11 +101,11 @@ def drawDice(num1,num2):
             arcade.draw_points([p1,p3,p4,p5,p7],black,7)
         if num == 6:
             arcade.draw_points([p1,p2,p3,p5,p6,p7],black,7)
-    diceSub(1040,455,num1)
-    diceSub(1110,455,num2)
+    diceSub(1040,455,num1, board_color if U1 == False else arcade.color.CHARCOAL)
+    diceSub(1110,455,num2, board_color if U2 == False else arcade.color.CHARCOAL)
     if num1 == num2:
-        diceSub(1040,515,num1)
-        diceSub(1110,515,num2)
+        diceSub(1040,515,num1, board_color if U3 == False else arcade.color.CHARCOAL)
+        diceSub(1110,515,num2, board_color if U4 == False else arcade.color.CHARCOAL)
 def drawPIP(pip):
     arcade.draw_rectangle_filled(150,25,60,30,board_border)
     arcade.draw_rectangle_filled(150,775,60,30,board_border)
@@ -140,6 +158,7 @@ def createMoveStartSprites(possibleMoves,Board,player):
     board_hit_list = Board.hitPieceList
     sprites = arcade.SpriteList()
 
+    print(f"Possible Moves @ createMoveStartSprites = {possibleMoves}") #DEBUG
     for move in possibleMoves:
         startPoint = move[0]
 
@@ -229,7 +248,7 @@ def draw_turn(player,is_excited,Board,Turn):
     arcade.draw_rectangle_filled(601,401,12,762,color)
     drawSideboard()
     drawPieces(Board.locationList,Board.sideboardList,Board.hitPieceList,Board.calcPip())
-    drawDice(Turn.roll[0],Turn.roll[1])
+    drawDice(Turn.roll[0],Turn.roll[1],Turn.availableRolls)
     draw_button("END",1100,400,150,75,is_excited)
 def draw_turn_main(sprites):
     sprites.draw()
