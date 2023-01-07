@@ -1,6 +1,6 @@
 import arcade
-import Graphics
-import Logic
+import Graphics_v2 as Graphics
+import Logic_v2 as Logic
 import random
 
 #Convention: Player1 = 1, dark ,first list item // Player2 = 0, light, second list item
