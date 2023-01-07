@@ -141,8 +141,6 @@ class Turn:
         if self.doublesTurn == True:
             self.currentPossibleMoves = board.calcPossibleMoves(self.roll[0],self.player,True)
         else:
-            print(f"roll = {self.roll}") #DEBUG
-            print(f"available rolls = {self.availableRolls}") #DEBUG
             biggerRoll = self.roll[0] if self.roll[0] > self.roll[1] else self.roll[1]
             for roll in self.availableRolls:
                 self.currentPossibleMoves.append(board.calcPossibleMoves(roll,self.player,(roll == biggerRoll)))

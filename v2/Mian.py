@@ -102,10 +102,8 @@ class Game_Window(arcade.Window):
                 if clicked_sprite != []:
                     self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
                     roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,1)
-                    print(roll)#DEBUG
                     self.currentTurn.availableRolls.remove(roll)
                     if len(self.currentTurn.availableRolls) > 0:
-                        print("Updating Possible moves, Forming new sprites...") #DEBUG
                         self.currentTurn.updatePossibleMoves(self.Main_Board)
                         self.currentTurn.FormSpriteLists(self.Main_Board)
                     else:
@@ -132,10 +130,8 @@ class Game_Window(arcade.Window):
                 if clicked_sprite != []:
                     self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,0)
                     roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,0)
-                    print(roll)#DEBUG
                     self.currentTurn.availableRolls.remove(roll)
                     if len(self.currentTurn.availableRolls) > 0:
-                        print("Updating Possible moves, Forming new sprites...") #DEBUG
                         self.currentTurn.updatePossibleMoves(self.Main_Board)
                         self.currentTurn.FormSpriteLists(self.Main_Board)
                     else:

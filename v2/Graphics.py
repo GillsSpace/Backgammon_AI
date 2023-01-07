@@ -158,7 +158,6 @@ def createMoveStartSprites(possibleMoves,Board,player):
     board_hit_list = Board.hitPieceList
     sprites = arcade.SpriteList()
 
-    print(f"Possible Moves @ createMoveStartSprites = {possibleMoves}") #DEBUG
     for move in possibleMoves:
         startPoint = move[0]
 
@@ -168,7 +167,7 @@ def createMoveStartSprites(possibleMoves,Board,player):
             for pc in range(len(board_hit_list)):
                 doDraw = True if board_hit_list[pc] == player else False
                 if doDraw == True:
-                    tempSprite = arcade.Sprite("Images/Move.png",.07)
+                    tempSprite = arcade.Sprite("C:\Users\wills\OneDrive\Desktop\WFE\Code\(W) Backgammon\Images\Move.png",.07)
                     tempSprite.center_x = 601
                     tempSprite.center_y = 401-startDist+35+(60*pc)
                     tempSprite.move = move
@@ -176,7 +175,7 @@ def createMoveStartSprites(possibleMoves,Board,player):
         else:
             o = 1 if startPoint > 12 else -1
             pointLength = len(board_location_list[startPoint-1]) - 1
-            tempSprite = arcade.Sprite("Images/Move.png",.07)
+            tempSprite = arcade.Sprite("C:\Users\wills\OneDrive\Desktop\WFE\Code\(W) Backgammon\Images\Move.png",.07)
             tempSprite.center_x = Master_Location_Dict[startPoint][0]
             tempSprite.center_y = Master_Location_Dict[startPoint][1] + (60*pointLength*o)
             tempSprite.move = move
@@ -191,7 +190,7 @@ def createMoveEndSprites(activeSprite,Board,player):
     for move in activeSprite.move[1]:
 
         if move == "safe":
-            tempSprite = arcade.Sprite("Images/Submove.png",.07)
+            tempSprite = arcade.Sprite("C:\Users\wills\OneDrive\Desktop\WFE\Code\(W) Backgammon\Images\Submove.png",.07)
             tempSprite.center_x = 150
             tempSprite.center_y = 400
             tempSprite.pos = move
@@ -201,7 +200,7 @@ def createMoveEndSprites(activeSprite,Board,player):
             pointLength = len(board_location_list[move-1]) - 1
             if pointLength == -1:
                 pointLength = 0
-            tempSprite = arcade.Sprite("Images/Submove.png",.07)
+            tempSprite = arcade.Sprite("C:\Users\wills\OneDrive\Desktop\WFE\Code\(W) Backgammon\Images\Submove.png",.07)
             tempSprite.center_x = Master_Location_Dict[move][0]
             tempSprite.center_y = Master_Location_Dict[move][1] + (60*pointLength*o)
             tempSprite.pos = move
