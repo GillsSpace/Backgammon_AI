@@ -15,7 +15,7 @@ class Game_Window(arcade.Window):
         self.button_slot_1_excited = False
         self.button_slot_2_excited = False
 
-        self.game_over = False
+        self.game_winner = None
         self.Main_Board = None
         self.currentTurn = None
 
@@ -45,12 +45,15 @@ class Game_Window(arcade.Window):
         if self.state == "Turn-Start-P2":
             Graphics.draw_turn_start(0,self.button_slot_1_excited,self.button_slot_2_excited,self.Main_Board)
 
+        if self.state == "GAME-END":
+            Graphics.draw_Game_Over(self.game_winner,self.button_slot_1_excited)
+
     def setup(self):
         pass
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
 
-        if self.state == "Splash":
+        if self.state in {"Splash","GAME_END"}:
             self.button_slot_1_excited = True if 525 < x < 675 and 262 < y < 338 else False
 
         if self.state in {"Pre-Start","Game-Start","Turn-P1","Turn-p2"}:
@@ -101,6 +104,10 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                 if clicked_sprite != []:
                     self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
+                    if self.Main_Board.calcPip()[0] == 0:
+                        self.state = "GAME-END"
+                        self.game_winner = 1
+                        return
                     roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,1)
                     self.currentTurn.availableRolls.remove(roll)
                     if len(self.currentTurn.availableRolls) > 0:
@@ -129,6 +136,10 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                 if clicked_sprite != []:
                     self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,0)
+                    if self.Main_Board.calcPip()[1] == 0:
+                        self.state = "GAME-END"
+                        self.game_winner = 0
+                        return
                     roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,0)
                     self.currentTurn.availableRolls.remove(roll)
                     if len(self.currentTurn.availableRolls) > 0:
@@ -167,6 +178,10 @@ class Game_Window(arcade.Window):
             #If "DOUBLE" Button Pressed:
             if 1025 < x < 1175 and 413 < y < 488:
                 pass
+
+        elif self.state == "GAME-END":
+            if 525 < x < 675 and 262 < y < 338:
+                self.state = "Pre-Start"
 
 
 def main():

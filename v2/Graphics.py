@@ -167,7 +167,7 @@ def createMoveStartSprites(possibleMoves,Board,player):
             for pc in range(len(board_hit_list)):
                 doDraw = True if board_hit_list[pc] == player else False
                 if doDraw == True:
-                    tempSprite = arcade.Sprite("C:\Users\wills\OneDrive\Desktop\WFE\Code\(W) Backgammon\Images\Move.png",.07)
+                    tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Move.png",0.07)
                     tempSprite.center_x = 601
                     tempSprite.center_y = 401-startDist+35+(60*pc)
                     tempSprite.move = move
@@ -175,7 +175,7 @@ def createMoveStartSprites(possibleMoves,Board,player):
         else:
             o = 1 if startPoint > 12 else -1
             pointLength = len(board_location_list[startPoint-1]) - 1
-            tempSprite = arcade.Sprite("C:\Users\wills\OneDrive\Desktop\WFE\Code\(W) Backgammon\Images\Move.png",.07)
+            tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Move.png",0.07)
             tempSprite.center_x = Master_Location_Dict[startPoint][0]
             tempSprite.center_y = Master_Location_Dict[startPoint][1] + (60*pointLength*o)
             tempSprite.move = move
@@ -190,7 +190,7 @@ def createMoveEndSprites(activeSprite,Board,player):
     for move in activeSprite.move[1]:
 
         if move == "safe":
-            tempSprite = arcade.Sprite("C:\Users\wills\OneDrive\Desktop\WFE\Code\(W) Backgammon\Images\Submove.png",.07)
+            tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Submove.png",.07)
             tempSprite.center_x = 150
             tempSprite.center_y = 400
             tempSprite.pos = move
@@ -200,7 +200,7 @@ def createMoveEndSprites(activeSprite,Board,player):
             pointLength = len(board_location_list[move-1]) - 1
             if pointLength == -1:
                 pointLength = 0
-            tempSprite = arcade.Sprite("C:\Users\wills\OneDrive\Desktop\WFE\Code\(W) Backgammon\Images\Submove.png",.07)
+            tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Submove.png",.07)
             tempSprite.center_x = Master_Location_Dict[move][0]
             tempSprite.center_y = Master_Location_Dict[move][1] + (60*pointLength*o)
             tempSprite.pos = move
@@ -255,6 +255,12 @@ def draw_turn_branch(main_sprite,sprites):
     main_sprite.draw()
     sprites.draw()
 
+def draw_Game_Over(player,is_excited):
+    color = Piece1 if player == 1 else Piece2
+    arcade.draw_rectangle_filled(600,400,1200,800,color)
+    arcade.draw_text("GAME OVER",300,500,arcade.color.BLACK,60,600,"center")
+    arcade.draw_text("By Wills Erda",300,440,arcade.color.AERO_BLUE,40,600,"center")
+    draw_button("New",600,300,200,excited=is_excited)
 
 
 
