@@ -1,14 +1,21 @@
+#Imports:
 import arcade
 import Graphics_v3 as Graphics
 import Logic_v3 as Logic
+import AI_v3 as AI
 import random
+import time
 
-#Convention: Player1 = 1, dark ,first list item // Player2 = 0, light, second list item
+#Convention: Player1 = 1, dark ,first list item // Player2 = 0, light, second list item, first AI player
 
+#Game Loop:
 class Game_Window(arcade.Window):
     def __init__(self) -> None:
         super().__init__(1200,800,"Backgammon")
         arcade.set_background_color(arcade.color.DARK_SCARLET)
+
+        self.game_type = "2P"
+
         self.state = "Splash"
         self.step = "main"
 
@@ -90,31 +97,36 @@ class Game_Window(arcade.Window):
 
         elif self.state == "Turn-P1":
 
-            if self.step == "main":
-                #When an possible move sprite is clicked:
-                clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
-                if clicked_sprite != []:
-                    self.currentTurn.sprite_active = clicked_sprite[0]
-                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board,self.currentTurn.player)
-                    self.step = "branch"
+            if self.game_type in {"2P","1P"}:
 
-            elif self.step == "branch":
-                self.step = "main"
-                #When a possible sub-move sprite is clicked:
-                clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
-                if clicked_sprite != []:
-                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
-                    if self.Main_Board.calcPip()[0] == 0:
-                        self.state = "GAME-END"
-                        self.game_winner = 1
-                        return
-                    roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,1)
-                    self.currentTurn.availableRolls.remove(roll)
-                    if len(self.currentTurn.availableRolls) > 0:
-                        self.currentTurn.updatePossibleMoves(self.Main_Board)
-                        self.currentTurn.FormSpriteLists(self.Main_Board)
-                    else:
-                        self.currentTurn.sprites_move_start = arcade.SpriteList()
+                if self.step == "main":
+                    #When an possible move sprite is clicked:
+                    clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
+                    if clicked_sprite != []:
+                        self.currentTurn.sprite_active = clicked_sprite[0]
+                        self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board,self.currentTurn.player)
+                        self.step = "branch"
+
+                elif self.step == "branch":
+                    self.step = "main"
+                    #When a possible sub-move sprite is clicked:
+                    clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
+                    if clicked_sprite != []:
+                        self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
+                        if self.Main_Board.calcPip()[0] == 0:
+                            self.state = "GAME-END"
+                            self.game_winner = 1
+                            return
+                        roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,1)
+                        self.currentTurn.availableRolls.remove(roll)
+                        if len(self.currentTurn.availableRolls) > 0:
+                            self.currentTurn.updatePossibleMoves(self.Main_Board)
+                            self.currentTurn.FormSpriteLists(self.Main_Board)
+                        else:
+                            self.currentTurn.sprites_move_start = arcade.SpriteList()
+
+            else:
+                AI.main()
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
@@ -122,31 +134,37 @@ class Game_Window(arcade.Window):
 
         elif self.state == "Turn-P2":
 
-            if self.step == "main":
-                #When an possible move sprite is clicked:
-                clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
-                if clicked_sprite != []:
-                    self.currentTurn.sprite_active = clicked_sprite[0]
-                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board,self.currentTurn.player)
-                    self.step = "branch"
+            if self.game == "2P":
 
-            elif self.step == "branch":
-                self.step = "main"
-                #When a possible sub-move sprite is clicked:
-                clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
-                if clicked_sprite != []:
-                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,0)
-                    if self.Main_Board.calcPip()[1] == 0:
-                        self.state = "GAME-END"
-                        self.game_winner = 0
-                        return
-                    roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,0)
-                    self.currentTurn.availableRolls.remove(roll)
-                    if len(self.currentTurn.availableRolls) > 0:
-                        self.currentTurn.updatePossibleMoves(self.Main_Board)
-                        self.currentTurn.FormSpriteLists(self.Main_Board)
-                    else:
-                        self.currentTurn.sprites_move_start = arcade.SpriteList()
+                if self.step == "main":
+                    #When an possible move sprite is clicked:
+                    clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
+                    if clicked_sprite != []:
+                        self.currentTurn.sprite_active = clicked_sprite[0]
+                        self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board,self.currentTurn.player)
+                        self.step = "branch"
+
+                elif self.step == "branch":
+                    self.step = "main"
+                    #When a possible sub-move sprite is clicked:
+                    clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
+                    if clicked_sprite != []:
+                        self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,0)
+                        if self.Main_Board.calcPip()[1] == 0:
+                            self.state = "GAME-END"
+                            self.game_winner = 0
+                            return
+                        roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,0)
+                        self.currentTurn.availableRolls.remove(roll)
+                        if len(self.currentTurn.availableRolls) > 0:
+                            self.currentTurn.updatePossibleMoves(self.Main_Board)
+                            self.currentTurn.FormSpriteLists(self.Main_Board)
+                        else:
+                            self.currentTurn.sprites_move_start = arcade.SpriteList()
+
+            else:
+                AI.main()
+
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
@@ -191,12 +209,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-#When Turn Is Created:
-    #Step 1: calc first set of possible moves
-    #Step 2: create first set of moveStartSprites
-
-#Durring Turn:
-    #@click set current active sprite and create sub sprites and set step to branch
-    #and next click update 
