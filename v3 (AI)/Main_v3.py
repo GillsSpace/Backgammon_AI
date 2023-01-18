@@ -14,7 +14,7 @@ class Game_Window(arcade.Window):
         super().__init__(1200,800,"Backgammon")
         arcade.set_background_color(arcade.color.DARK_SCARLET)
 
-        self.game_type = "2P"
+        self.game_type = "1P"
 
         self.state = "Splash"
         self.step = "main"
@@ -40,11 +40,13 @@ class Game_Window(arcade.Window):
 
         if self.state == "Turn-P1":
             Graphics.draw_turn(1,self.button_slot_1_excited,self.Main_Board,self.currentTurn)
-            Graphics.draw_turn_main(self.currentTurn.sprites_move_start) if self.step == "main" else Graphics.draw_turn_branch(self.currentTurn.sprite_active,self.currentTurn.sprites_move_end)
+            if self.game_type in {"2P","1P"}:
+                Graphics.draw_turn_main(self.currentTurn.sprites_move_start) if self.step == "main" else Graphics.draw_turn_branch(self.currentTurn.sprite_active,self.currentTurn.sprites_move_end)
 
         if self.state == "Turn-P2":
             Graphics.draw_turn(0,self.button_slot_1_excited,self.Main_Board,self.currentTurn)
-            Graphics.draw_turn_main(self.currentTurn.sprites_move_start) if self.step == "main" else Graphics.draw_turn_branch(self.currentTurn.sprite_active,self.currentTurn.sprites_move_end)
+            if self.game_type == "2P":
+                Graphics.draw_turn_main(self.currentTurn.sprites_move_start) if self.step == "main" else Graphics.draw_turn_branch(self.currentTurn.sprite_active,self.currentTurn.sprites_move_end)
 
         if self.state == "Turn-Start-P1":
             Graphics.draw_turn_start(1,self.button_slot_1_excited,self.button_slot_2_excited,self.Main_Board)
@@ -92,7 +94,8 @@ class Game_Window(arcade.Window):
                 startingPlayer = random.randint(0,1)
                 self.currentTurn = Logic.Turn(startingPlayer,First=True)
                 self.currentTurn.updatePossibleMoves(self.Main_Board)
-                self.currentTurn.FormSpriteLists(self.Main_Board)
+                if self.game_type == "2P" or (self.game_type == "1P" and startingPlayer == 1):
+                    self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P1" if startingPlayer == 1 else "Turn-P2"
 
         elif self.state == "Turn-P1":
@@ -126,7 +129,8 @@ class Game_Window(arcade.Window):
                             self.currentTurn.sprites_move_start = arcade.SpriteList()
 
             else:
-                AI.main()
+                pass
+
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
@@ -134,7 +138,7 @@ class Game_Window(arcade.Window):
 
         elif self.state == "Turn-P2":
 
-            if self.game == "2P":
+            if self.game_type == "2P":
 
                 if self.step == "main":
                     #When an possible move sprite is clicked:
@@ -163,7 +167,7 @@ class Game_Window(arcade.Window):
                             self.currentTurn.sprites_move_start = arcade.SpriteList()
 
             else:
-                AI.main()
+                pass
 
 
             #When the "End" button is pressed:
@@ -176,7 +180,8 @@ class Game_Window(arcade.Window):
             if 1025 < x < 1175 and 313 < y < 388:
                 self.currentTurn = Logic.Turn(1,self.Main_Board)
                 self.currentTurn.updatePossibleMoves(self.Main_Board)
-                self.currentTurn.FormSpriteLists(self.Main_Board)
+                if self.game_type in {"2P","1P"}:
+                    self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P1"
 
             #If "DOUBLE" Button Pressed:
@@ -190,8 +195,21 @@ class Game_Window(arcade.Window):
             if 1025 < x < 1175 and 313 < y < 388:
                 self.currentTurn = Logic.Turn(0,self.Main_Board)
                 self.currentTurn.updatePossibleMoves(self.Main_Board)
-                self.currentTurn.FormSpriteLists(self.Main_Board)
+                if self.game_type == "2P":
+                    self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P2"
+
+                if self.game_type in {"1P","0P"}:
+                    turnMoves = AI.main(self.currentTurn,self.Main_Board)
+                    print(f"Final Move List = {turnMoves}") #DEBUG
+                    if self.currentTurn.doublesTurn == True:
+                        for i in range(4):
+                            time.sleep(0.5)
+                            self.Main_Board.updateWithMove(turnMoves[i][0],turnMoves[i][1],0)
+                    else:
+                        for i in range(2):
+                            time.sleep(0.5)
+                            self.Main_Board.updateWithMove(turnMoves[i][0],turnMoves[i][1],0)
 
             #If "DOUBLE" Button Pressed:
             if 1025 < x < 1175 and 413 < y < 488:
