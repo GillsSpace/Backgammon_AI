@@ -28,8 +28,8 @@ theme1()
 Master_Location_Dict = {1:(247,755),2:(307,755),3:(367,755),4:(427,755),5:(487,755),6:(547,755),7:(655,755),8:(715,755),9:(775,755),10:(835,755),11:(895,755),12:(955,755),13:(955,47),14:(895,47),15:(835,47),16:(775,47),17:(715,47),18:(655,47),19:(547,47),20:(487,47),21:(427,47),22:(367,47),23:(307,47),24:(247,47)}
 
 #Helper Functions
-def draw_button(text, centerx, centery, width=150, height=75, excited=False, fontSize=30):
-    color = board_color if excited == False else Excited_Button
+def draw_button(text, centerx, centery, width=150, height=75, excited=False, fontSize=30, defaultColor=board_color):
+    color = defaultColor if excited == False else Excited_Button
     arcade.draw_rectangle_filled(centerx,centery,width,height,color)
     arcade.draw_rectangle_outline(centerx,centery,width,height,board_border,12)
     arcade.draw_text(text,(centerx - (.5*width)),(centery - 15),arcade.color.BLACK,fontSize,width,"center","arial",bold=True)
@@ -212,10 +212,13 @@ def createMoveEndSprites(activeSprite,Board,player):
 ### GAME STATES ###
 
 #Splash Screen
-def draw_splash(is_excited):
+def draw_splash(is_excited_1,is_excited_2,is_excited_3,is_excited_4,type):
     arcade.draw_text("BACKGAMMON",300,500,arcade.color.BLACK,60,600,"center")
     arcade.draw_text("By Wills Erda",300,440,arcade.color.AERO_BLUE,40,600,"center")
-    draw_button("START",600,300,200,excited=is_excited)
+    draw_button("START",600,300,400,excited=is_excited_1)
+    draw_button("SIM",600,150,200,excited=is_excited_2,defaultColor=(arcade.color.CHARCOAL if type == "0P" else board_color))
+    draw_button("1 PLAYER",350,150,250,excited=is_excited_3,defaultColor=(arcade.color.CHARCOAL if type == "1P" else board_color))
+    draw_button("2 PLAYER",850,150,250,excited=is_excited_4,defaultColor=(arcade.color.CHARCOAL if type == "2P" else board_color))
 
 #Pre-Start
 def draw_pre_start(is_excited):

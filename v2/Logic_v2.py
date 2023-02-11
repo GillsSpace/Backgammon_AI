@@ -27,6 +27,11 @@ class Board:
                     darkPIP = darkPIP + (len(list)*(25-listNum))
                 if list[0] == 0:
                     lightPIP = lightPIP + (len(list)*listNum)
+        for piece in self.hitPieceList:
+            if piece == 1:
+                darkPIP = darkPIP + 24
+            if piece == 0:
+                lightPIP = lightPIP + 24
         return [darkPIP,lightPIP]
     def findLastOccupiedPoint(self,color):
         if color == 0:

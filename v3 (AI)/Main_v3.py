@@ -14,13 +14,15 @@ class Game_Window(arcade.Window):
         super().__init__(1200,800,"Backgammon")
         arcade.set_background_color(arcade.color.DARK_SCARLET)
 
-        self.game_type = "1P"
+        self.game_type = "0P"
 
         self.state = "Splash"
         self.step = "main"
 
         self.button_slot_1_excited = False
         self.button_slot_2_excited = False
+        self.button_slot_3_excited = False
+        self.button_slot_4_excited = False
 
         self.game_winner = None
         self.Main_Board = None
@@ -30,7 +32,7 @@ class Game_Window(arcade.Window):
         arcade.start_render()
 
         if self.state == "Splash":
-            Graphics.draw_splash(self.button_slot_1_excited)
+            Graphics.draw_splash(self.button_slot_1_excited,self.button_slot_2_excited,self.button_slot_3_excited,self.button_slot_4_excited,self.game_type)
             
         if self.state == "Pre-Start":
             Graphics.draw_pre_start(self.button_slot_1_excited)
@@ -62,7 +64,13 @@ class Game_Window(arcade.Window):
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
 
-        if self.state in {"Splash","GAME_END"}:
+        if self.state in {"Splash"}:
+            self.button_slot_1_excited = True if 375 < x < 825 and 262 < y < 338 else False
+            self.button_slot_2_excited = True if 475 < x < 725 and 112 < y < 188 else False
+            self.button_slot_3_excited = True if 225 < x < 475 and 112 < y < 188 else False
+            self.button_slot_4_excited = True if 725 < x < 975 and 112 < y < 188 else False
+
+        if self.state in {"GAME_END"}:
             self.button_slot_1_excited = True if 525 < x < 675 and 262 < y < 338 else False
 
         if self.state in {"Pre-Start","Game-Start","Turn-P1","Turn-p2"}:
@@ -75,8 +83,14 @@ class Game_Window(arcade.Window):
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
 
         if self.state == "Splash":
-            if 525 < x < 675 and 262 < y < 338:
+            if 375 < x < 825 and 262 < y < 338:
                 self.state = "Pre-Start"
+            if 475 < x < 725 and 112 < y < 188:
+                self.game_type = "0P"
+            if 225 < x < 475 and 112 < y < 188:
+                self.game_type = "1P"
+            if 725 < x < 975 and 112 < y < 188:
+                self.game_type = "2P"
 
         elif self.state == "Pre-Start":
             if 1025 < x < 1175 and 362 < y < 438:
