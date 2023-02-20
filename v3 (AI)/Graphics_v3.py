@@ -27,6 +27,10 @@ theme1()
 #Data
 Master_Location_Dict = {1:(247,755),2:(307,755),3:(367,755),4:(427,755),5:(487,755),6:(547,755),7:(655,755),8:(715,755),9:(775,755),10:(835,755),11:(895,755),12:(955,755),13:(955,47),14:(895,47),15:(835,47),16:(775,47),17:(715,47),18:(655,47),19:(547,47),20:(487,47),21:(427,47),22:(367,47),23:(307,47),24:(247,47)}
 
+
+#Sounds
+basicMove = arcade.Sound()
+
 #Helper Functions
 def draw_button(text, centerx, centery, width=150, height=75, excited=False, fontSize=30, defaultColor=board_color):
     color = defaultColor if excited == False else Excited_Button

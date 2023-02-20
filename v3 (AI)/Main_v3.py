@@ -145,7 +145,6 @@ class Game_Window(arcade.Window):
             else:
                 pass
 
-
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
                 self.state = "Turn-Start-P2"
@@ -182,7 +181,6 @@ class Game_Window(arcade.Window):
 
             else:
                 pass
-
 
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
@@ -232,7 +230,6 @@ class Game_Window(arcade.Window):
         elif self.state == "GAME-END":
             if 525 < x < 675 and 262 < y < 338:
                 self.state = "Pre-Start"
-
 
 def main():
     game = Game_Window()

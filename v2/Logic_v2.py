@@ -181,18 +181,3 @@ class Turn:
             diff = end - start
             roll = diff if diff > 0 else (diff * -1)
         return roll
-
-#Calc Possible moves in board -- called within turn.
-
-#Turn has multiple steps:
-    #step1 - calc possible moves 
-    #step2 - display possible moves interactively and allow selections
-    #Step3 - make necessary updates with move
-    #step4 - check if turn is over else repeat 
-    
-    #If regular x2 // if double x4
-
-
-#have a "usable roll list" that shows which roll is still usable
-#do the calc roll for the items in this list (unless doubles)
-#when move is made, remove that roll
