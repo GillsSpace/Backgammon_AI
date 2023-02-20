@@ -85,12 +85,16 @@ class Game_Window(arcade.Window):
         if self.state == "Splash":
             if 375 < x < 825 and 262 < y < 338:
                 self.state = "Pre-Start"
+                arcade.play_sound(Graphics.playSound,0.4)
             if 475 < x < 725 and 112 < y < 188:
                 self.game_type = "0P"
+                arcade.play_sound(Graphics.clickSound,3)
             if 225 < x < 475 and 112 < y < 188:
                 self.game_type = "1P"
+                arcade.play_sound(Graphics.clickSound,3)
             if 725 < x < 975 and 112 < y < 188:
                 self.game_type = "2P"
+                arcade.play_sound(Graphics.clickSound,3)
 
         elif self.state == "Pre-Start":
             if 1025 < x < 1175 and 362 < y < 438:
@@ -100,6 +104,7 @@ class Game_Window(arcade.Window):
                 self.Main_Board.setStartPositions()
 
                 self.state = "Game-Start"
+                arcade.play_sound(Graphics.playSound,0.4)
 
         elif self.state == "Game-Start":
             if 1025 < x < 1175 and 362 < y < 438:
@@ -111,6 +116,7 @@ class Game_Window(arcade.Window):
                 if self.game_type == "2P" or (self.game_type == "1P" and startingPlayer == 1):
                     self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P1" if startingPlayer == 1 else "Turn-P2"
+                arcade.play_sound(Graphics.diceSound,3)
 
         elif self.state == "Turn-P1":
 
@@ -129,6 +135,7 @@ class Game_Window(arcade.Window):
                     #When a possible sub-move sprite is clicked:
                     clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                     if clicked_sprite != []:
+                        arcade.play_sound(Graphics.basicMoveSound,5)
                         self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
                         if self.Main_Board.calcPip()[0] == 0:
                             self.state = "GAME-END"
@@ -148,6 +155,7 @@ class Game_Window(arcade.Window):
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
                 self.state = "Turn-Start-P2"
+                arcade.play_sound(Graphics.clickSound,3)
 
         elif self.state == "Turn-P2":
 
@@ -166,6 +174,7 @@ class Game_Window(arcade.Window):
                     #When a possible sub-move sprite is clicked:
                     clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                     if clicked_sprite != []:
+                        arcade.play_sound(Graphics.basicMoveSound,5)
                         self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,0)
                         if self.Main_Board.calcPip()[1] == 0:
                             self.state = "GAME-END"
@@ -185,6 +194,7 @@ class Game_Window(arcade.Window):
             #When the "End" button is pressed:
             if 1025 < x < 1175 and 362 < y < 438:
                 self.state = "Turn-Start-P1"
+                arcade.play_sound(Graphics.clickSound,3)
 
         elif self.state == "Turn-Start-P1":
 
@@ -195,6 +205,7 @@ class Game_Window(arcade.Window):
                 if self.game_type in {"2P","1P"}:
                     self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P1"
+                arcade.play_sound(Graphics.diceSound,3)
 
             #If "DOUBLE" Button Pressed:
             if 1025 < x < 1175 and 413 < y < 488:
@@ -210,6 +221,7 @@ class Game_Window(arcade.Window):
                 if self.game_type == "2P":
                     self.currentTurn.FormSpriteLists(self.Main_Board)
                 self.state = "Turn-P2"
+                arcade.play_sound(Graphics.diceSound,3)
 
                 if self.game_type in {"1P","0P"}:
                     turnMoves = AI.main(self.currentTurn,self.Main_Board)
@@ -218,10 +230,12 @@ class Game_Window(arcade.Window):
                         for i in range(4):
                             time.sleep(0.5)
                             self.Main_Board.updateWithMove(turnMoves[i][0],turnMoves[i][1],0)
+                            arcade.play_sound(Graphics.basicMoveSound,5)
                     else:
                         for i in range(2):
                             time.sleep(0.5)
                             self.Main_Board.updateWithMove(turnMoves[i][0],turnMoves[i][1],0)
+                            arcade.play_sound(Graphics.basicMoveSound,5)
 
             #If "DOUBLE" Button Pressed:
             if 1025 < x < 1175 and 413 < y < 488:
@@ -230,6 +244,7 @@ class Game_Window(arcade.Window):
         elif self.state == "GAME-END":
             if 525 < x < 675 and 262 < y < 338:
                 self.state = "Pre-Start"
+                arcade.play_sound(Graphics.clickSound,3)
 
 def main():
     game = Game_Window()

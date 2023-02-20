@@ -29,7 +29,10 @@ Master_Location_Dict = {1:(247,755),2:(307,755),3:(367,755),4:(427,755),5:(487,7
 
 
 #Sounds
-basicMove = arcade.Sound()
+basicMoveSound = arcade.Sound("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Sounds/sound.mp3")
+playSound = arcade.Sound("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Sounds/sound2.mp3")
+clickSound = arcade.Sound("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Sounds/sound3.mp3")
+diceSound = arcade.Sound("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Sounds/soundDice.mp3")
 
 #Helper Functions
 def draw_button(text, centerx, centery, width=150, height=75, excited=False, fontSize=30, defaultColor=board_color):
