@@ -1,0 +1,45 @@
+Conventions:
+    Players: P1 = 1, light pieces, first in list // P2 = 2,dark pieces, second in list, first AI player
+    Moves: A move - (start-point,endpoint)
+           Move List - [(a Move), (A Move), ...]
+           Formatted Move List - [(start-point,(endpoint1, endpoint2)),(start-point,(endpoint1, endpoint2)),...]
+
+Layout:
+Splash
+
+Files:
+
+Main:
+
+Graphics:
+
+Logic:
+    Class: Board
+        self.locationListPoints: List of 24 sub lists holding 1s and 2s
+        self.locationListBar: List containing some number of ones and twos for each piece on the bar
+        self.locationListOff: [#of pieces off for Player1, #of pieces oof for Player2]
+        self.takeOutStatus: [T/F,T/F] keeps track of wether a player can bearing bearing off. 
+        self.pip: [pip of player 1, pip of player 2]
+
+        self.setStartPositions() - resets all initial values to default
+
+        self.calcPip() - calculates the pip of each player
+        self.checkTakeOutStatus() - checks and updates self.takeOutStatus
+        
+        self.turnFunctions() - can be called to update the board variables for the start of a turnFunctions
+
+        self.calcPossibleMoves() - calculates all possible moves for a given roll
+            Inputs: Roll, player
+            Outputs: list of moves(moveList)
+
+    Class: Turn(player,FirstTurn)
+        self.roll - (num1,num2)
+        self.doubles 
+
+
+
+AI:
+    AI Functions
+        Inputs: Current_Board, Current_Turn
+        Outputs: ((Move1),(Move2),(Move3),(Move4)) or ((Move1),(Move2))
+
