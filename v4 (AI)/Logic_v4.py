@@ -1,10 +1,11 @@
 import random
 import copy
+from Graphics_v4 import createMoveStartSprites
 
 def rollDice():
     num1 = random.randint(1,6)
     num2 = random.randint(1,6)
-    return (num1,num2)
+    return [num1,num2]
 
 class Board:
     def __init__(self) -> None:
@@ -121,8 +122,8 @@ class Board:
 
 
 class Turn:
-    def __init__(self,player,playerType,settings,First=False,roll=rollDice()) -> None:
-        self.roll = roll
+    def __init__(self,player,playerType,settings,First=False,roll=None) -> None:
+        self.roll = roll if roll != None else rollDice()
         self.doubles_turn = True if self.roll[0] == self.roll[1] else False
         self.unused_dice = []
         self.player = player
@@ -135,24 +136,60 @@ class Turn:
         self.sprite_active = []
 
         #prevents Doubles on first Roll
-        if First == True and self.doublesTurn == True: 
-            while self.roll[0] == self.roll[1]:
-                self.roll = rollDice
-            self.doublesTurn = False
+        if First == True and self.doubles_turn == True: 
+            while (self.roll[0] == self.roll[1]) == True:
+                self.roll = rollDice()
+            self.doubles_turn = False
 
-        #Sets up availableRolls
-        if self.doublesTurn == True:
-            self.availableRolls = [self.roll[0]] * 4
+        #Sets up unused_dice
+        if self.doubles_turn == True:
+            self.unused_dice = [self.roll[0]] * 4
         else:
-            self.availableRolls = copy.deepcopy(self.roll)
+            self.unused_dice = copy.deepcopy(self.roll)
+        
+        print(f"New Turn Created // Roll = {self.roll} , Unused Dice = {self.unused_dice}") #DEBUG
 
-
+    def updatePossibleMoves(self,Board):
+        print("Running UpdatePossibleMoves") #Debug
+        self.current_possible_moves = []
+        if self.player_type == "Human":
+            if self.doubles_turn == True and len(self.unused_dice) > 0:
+                self.current_possible_moves = Board.calcMovesForDie(self.roll[0],self.player, True)
+            else:
+                biggerDie = self.roll[0] if self.roll[0] > self.roll[1] else self.roll[1]
+                for roll in self.unused_dice:
+                    self.current_possible_moves.append(Board.calcMovesForDie(roll,self.player,(roll == biggerDie)))
+                if len(self.unused_dice) > 1:
+                    self.current_possible_moves = self.current_possible_moves[0] + self.current_possible_moves[1]
+                    workingMovesList = self.current_possible_moves
+                    self.current_possible_moves = []
+                    startPoints = []
+                    for move in workingMovesList:
+                        startPoints.append(move[0]) 
+                    for startPoint in startPoints:
+                        numFin = []
+                        for move in workingMovesList:
+                            if startPoint == move[0]:
+                                numFin.append(move[1][0])
+                        finalList = ((startPoint),(numFin))
+                        if finalList in self.current_possible_moves:
+                            pass
+                        else:
+                            self.current_possible_moves.append(finalList)
+                else:
+                    self.current_possible_moves = self.current_possible_moves[0]
+        if self.player_type == "AI":
+            if self.doubles_turn == True:
+                pass
+    def formSpriteList(self,board):
+        self.sprites_move_start = createMoveStartSprites(self.current_possible_moves,board,self.player)
+        print(f"New Move Start Sprites Created with move list: {self.current_possible_moves}") #DEBUG
 
 #Calculating Moves Logic
 
 #For AI Turn Output => List of possible move combinations ex: [ ((1,3),(2,6)) , ((2,5),(5,9)) , ect.. ]
 #   Format = [ ((move1),(move2)) , (moveCombination2) , ect ]
-#For Human Turn Output => List of Possible first Moves ex: [ (1,(3,6)) , (2(4,7)) , ect... ] 
+#For Human Turn Output => List of Possible first Moves ex: [ (1,[3,6]) , (2,[4,7]) , ect... ] 
 #   Format = [ (startPoint,(endpoint1, endpoint2))]
 #   Recalculated for second (possibly third and forth move)
 
