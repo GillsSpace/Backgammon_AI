@@ -1,0 +1,153 @@
+import arcade
+import Graphics_v4 as Graphics
+import Logic_v4 as Logic
+import random
+import time
+
+#Set Version:
+Crit_Version = 4.1
+
+#Convention: Player1 = 1, dark ,first list item // Player2 = 0, light, second list item, first AI player
+
+#Main Game Control Class
+class Game_Window(arcade.Window):
+    def __init__(self):
+        super().__init__(1200,800,"Backgammon")
+        arcade.set_background_color(arcade.color.DARK_SCARLET)
+
+        self.buttons_excited = [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False]
+        
+        self.game_type = "0P"
+        self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Random"}    
+
+        self.state = "Splash"
+        
+        self.step = "main"
+
+        self.game_winner = None
+        self.Main_Board = None
+        self.currentTurn = None
+
+    def setup(self):
+        pass
+
+    def on_draw(self):
+        arcade.start_render()
+
+        if self.state == "Splash":
+            Graphics.drawSplashPage(self.buttons_excited,self.game_type,Crit_Version)
+
+        if self.state == "Settings":
+            Graphics.drawSettingsPage(self.buttons_excited,self.game_settings)
+
+    def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
+
+        if self.state == "Splash":
+            self.buttons_excited[0] = True if 375 < x < 825 and 262 < y < 338 else False
+            self.buttons_excited[1] = True if 475 < x < 725 and 112 < y < 188 else False
+            self.buttons_excited[2] = True if 225 < x < 475 and 112 < y < 188 else False
+            self.buttons_excited[3] = True if 725 < x < 975 and 112 < y < 188 else False
+            self.buttons_excited[4] = True if 1085 < x < 1165 and 685 < y < 765 else False
+
+        if self.state == "Settings":
+            self.buttons_excited[0] = True if 25 < x < 175 and 700 < y <775 else False
+            self.buttons_excited[1] = True if 650 < x < 750 and 675 < y < 705 else False
+            self.buttons_excited[2] = True if 775 < x < 875 and 675 < y < 705 else False
+            self.buttons_excited[3] = True if 650 < x < 680 and 625 < y < 655 else False
+            self.buttons_excited[4] = True if 690 < x < 720 and 625 < y < 655 else False
+            self.buttons_excited[5] = True if 730 < x < 760 and 625 < y < 655 else False
+            self.buttons_excited[6] = True if 770 < x < 800 and 625 < y < 655 else False
+            self.buttons_excited[7] = True if 810 < x < 840 and 625 < y < 655 else False
+            self.buttons_excited[8] = True if 850 < x < 880 and 625 < y < 655 else False
+            self.buttons_excited[9] = True if 650 < x < 750 and 475 < y < 505 else False
+            self.buttons_excited[10] = True if 775 < x < 875 and 475 < y < 505 else False
+            self.buttons_excited[11] = True if 650 < x < 750 and 425 < y < 455 else False
+            self.buttons_excited[12] = True if 775 < x < 875 and 425 < y < 455 else False
+            self.buttons_excited[13] = True if 650 < x < 750 and 375 < y < 405 else False
+            self.buttons_excited[14] = True if 775 < x < 875 and 375 < y < 405 else False
+            self.buttons_excited[15] = True if 900 < x < 1000 and 375 < y < 405 else False
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+        
+        if self.state == "Splash":
+            if 475 < x < 725 and 112 < y < 188:
+                #Implement Starting the Game - depends on game type
+                arcade.play_sound(Graphics.button_click)
+                pass
+            if 475 < x < 725 and 112 < y < 188:
+                self.game_type = "0P"
+                arcade.play_sound(Graphics.button_click)
+            if 225 < x < 475 and 112 < y < 188:
+                self.game_type = "1P"
+                arcade.play_sound(Graphics.button_click)
+            if 725 < x < 975 and 112 < y < 188:
+                self.game_type = "2P"
+                arcade.play_sound(Graphics.button_click)
+            if 1085 < x < 1165 and 685 < y < 765:
+                self.state = "Settings"
+                arcade.play_sound(Graphics.button_click)
+
+        if self.state == "Settings":
+            if 25 < x < 175 and 700 < y <775:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 650 < x < 750 and 675 < y < 705:
+                self.game_settings["1P Inputs"] = "Generated"
+                arcade.play_sound(Graphics.button_click)
+            if 775 < x < 875 and 675 < y < 705:
+                self.game_settings["1P Inputs"] = "Inputted"
+                arcade.play_sound(Graphics.button_click)
+            if 650 < x < 680 and 625 < y < 655:
+                self.game_settings["Sim Delay"] = 1
+                arcade.play_sound(Graphics.button_click)
+            if 690 < x < 720 and 625 < y < 655:
+                self.game_settings["Sim Delay"] = 3
+                arcade.play_sound(Graphics.button_click)
+            if 730 < x < 760 and 625 < y < 655:
+                self.game_settings["Sim Delay"] = 5
+                arcade.play_sound(Graphics.button_click)
+            if 770 < x < 800 and 625 < y < 655: 
+                self.game_settings["Sim Delay"] = 7
+                arcade.play_sound(Graphics.button_click)
+            if 810 < x < 840 and 625 < y < 655:
+                self.game_settings["Sim Delay"] = 10
+                arcade.play_sound(Graphics.button_click)
+            if 850 < x < 880 and 625 < y < 655:
+                self.game_settings["Sim Delay"] = 15
+                arcade.play_sound(Graphics.button_click)
+            if 650 < x < 750 and 475 < y < 505:
+                self.game_settings["AI Lines"] = True
+                arcade.play_sound(Graphics.button_click)
+            if 775 < x < 875 and 475 < y < 505:
+                self.game_settings["AI Lines"] = False
+                arcade.play_sound(Graphics.button_click)
+            if 650 < x < 750 and 425 < y < 455:
+                self.game_settings["Display AI Info"] = True
+                arcade.play_sound(Graphics.button_click)
+            if 775 < x < 875 and 425 < y < 455:
+                self.game_settings["Display AI Info"] = False
+                arcade.play_sound(Graphics.button_click)
+            if 650 < x < 750 and 375 < y < 405:
+                self.game_settings["AI Player"] = "Random"
+                arcade.play_sound(Graphics.button_click)
+            if 775 < x < 875 and 375 < y < 405:
+                self.game_settings["AI Player"] = "Tree"
+                arcade.play_sound(Graphics.button_click)
+            if 900 < x < 1000 and 375 < y < 405:
+                self.game_settings["AI Player"] = "DRL"
+                arcade.play_sound(Graphics.button_click)
+
+
+#Initial Run Setup:
+def main():
+    game = Game_Window()
+    game.setup()
+    arcade.run()
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
