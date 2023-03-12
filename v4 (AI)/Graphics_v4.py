@@ -14,7 +14,8 @@ Master_Location_Dict = {1:(247,755),2:(307,755),3:(367,755),4:(427,755),5:(487,7
 button_default = arcade.color.ALMOND
 button_excited = arcade.color.AERO_BLUE
 button_used = arcade.color.CHARCOAL
-checkerColor1 = arcade.color.AERO_BLUE
+checkerColor1 = arcade.color.SIENNA
+checkerColor2 = arcade.color.SKY_BLUE
 darkTextColor = arcade.color.BLACK
 lightTextColor = arcade.color.AERO_BLUE
 lightTextColor2 = arcade.color.ALMOND
@@ -125,7 +126,7 @@ def drawPieces(LocationList,Sideboard_Pieces_List,Out_Pieces_List,pip):
         listNum = listNum + 1
         list = LocationList[listNum - 1]
         if len(list) != 0: #Set Necessary Variables For Drawn Points
-            color = Piece1 if list[0] == 1 else Piece2
+            color = checkerColor1 if list[0] == 1 else checkerColor2
             location = listNum
             orientation = 1 if location > 12 else -1
             centerx = Master_Location_Dict[location][0]
@@ -143,16 +144,16 @@ def drawPieces(LocationList,Sideboard_Pieces_List,Out_Pieces_List,pip):
                 arcade.draw_ellipse_filled(centerx,centery+offset+adjustment,60,height,color)
                 arcade.draw_ellipse_outline(centerx,centery+offset+adjustment,60,height,arcade.color.BLACK,2)
     for pc in range(Sideboard_Pieces_List[0]):
-        arcade.draw_rectangle_filled(150,341-(20*(pc)),60,20,Piece1)
+        arcade.draw_rectangle_filled(150,341-(20*(pc)),60,20,checkerColor1)
         arcade.draw_line(120,331-(20*pc),180,331-(20*pc),arcade.color.BLACK,2)
     for pc in range(Sideboard_Pieces_List[1]):
-        arcade.draw_rectangle_filled(150,461+(20*(pc)),60,20,Piece2)
+        arcade.draw_rectangle_filled(150,461+(20*(pc)),60,20,checkerColor2)
         arcade.draw_line(120,471+(20*pc),180,471+(20*pc),arcade.color.BLACK,2)
     if len(Out_Pieces_List) != 0:
         totalDist = 70 * len(Out_Pieces_List)
         startDist = totalDist/2
         for pc in range(len(Out_Pieces_List)):
-            color = Piece1 if Out_Pieces_List[pc] == 1 else Piece2
+            color = checkerColor1 if Out_Pieces_List[pc] == 1 else checkerColor2
             arcade.draw_circle_filled(601,401-startDist+35+(60*pc),30,color)
             arcade.draw_circle_outline(601,401-startDist+35+(60*pc),30,arcade.color.BLACK,2)
 
@@ -222,8 +223,16 @@ def draw_2P_PreStart(buttons_excited):
     #Button2: 20 < x < 80 and 720 < y < 780
     #Button3: 20 < x < 80 and 650 < y < 710
     
-def draw_2P_GameStart():
-    pass
+def draw_2P_GameStart(buttons_excited,Board):
+    drawBoard()
+    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawButton("Roll",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
+    #Button1: 1025 < x < 1175 and 362 < y < 438
+    #Button2: 20 < x < 80 and 720 < y < 780
+    #Button3: 20 < x < 80 and 650 < y < 710
+
 
 def draw_2P_PreTurnP1():
     pass

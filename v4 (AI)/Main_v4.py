@@ -15,7 +15,7 @@ class Game_Window(arcade.Window):
         super().__init__(1200,800,"Backgammon")
         arcade.set_background_color(arcade.color.DARK_SCARLET)
 
-        self.buttons_excited = [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False]
+        self.buttons_excited = [False] * 16
         
         self.game_type = "0P"
         self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Random"}    
@@ -27,7 +27,7 @@ class Game_Window(arcade.Window):
 
         self.game_winner = None
         self.Main_Board = None
-        self.currentTurn = None
+        self.Current_Turn = None
 
     def setup(self):
         pass
@@ -41,6 +41,8 @@ class Game_Window(arcade.Window):
             Graphics.draw_Settings(self.buttons_excited,self.game_settings)
         if self.state == "2P_PreStart":
             Graphics.draw_2P_PreStart(self.buttons_excited)
+        if self.state == "2P_GameStart":
+            Graphics.draw_2P_GameStart(self.buttons_excited,self.Main_Board)
 
 
 
@@ -71,8 +73,8 @@ class Game_Window(arcade.Window):
             self.buttons_excited[14] = True if 775 < x < 875 and 375 < y < 405 else False
             self.buttons_excited[15] = True if 900 < x < 1000 and 375 < y < 405 else False
 
-        if self.state == "2P_PreStart":
-            self.buttons_excited[0] = True if 375 < x < 825 and 262 < y < 338 else False
+        if self.state in {"2P_PreStart","2P_GameStart"}:
+            self.buttons_excited[0] = True if 1025 < x < 1175 and 362 < y < 438 else False
             self.buttons_excited[1] = True if 20 < x < 80 and 720 < y < 780 else False
             self.buttons_excited[2] = True if 20 < x < 80 and 650 < y < 710 else False
 
@@ -149,8 +151,12 @@ class Game_Window(arcade.Window):
                 arcade.play_sound(Graphics.button_click)
 
         elif self.state == "2P_PreStart":
-            if 375 < x < 825 and 262 < y < 338:
-                #INCOMPLETE - need next state
+            if 1025 < x < 1175 and 362 < y < 438:
+
+                self.state = "2P_GameStart"
+                self.Main_Board = Logic.Board()
+                self.Main_Board.setStartPositions()
+
                 arcade.play_sound(Graphics.button_click)
             if 20 < x < 80 and 720 < y < 780:
                 self.state = "Splash"
@@ -158,6 +164,20 @@ class Game_Window(arcade.Window):
             if 20 < x < 80 and 650 < y < 710:
                 self.state = "Settings"
                 self.last_state = "2P_PreStart"
+                arcade.play_sound(Graphics.button_click)
+
+        elif self.state == "2P_GameStart":
+            if 1025 < x < 1175 and 362 < y < 438:
+
+                #INCOMPLETE - need next state
+
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "2P_GameStart"
                 arcade.play_sound(Graphics.button_click)
 
 
