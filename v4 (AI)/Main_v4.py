@@ -21,6 +21,7 @@ class Game_Window(arcade.Window):
         self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Random"}    
 
         self.state = "Splash"
+        self.last_state = "Splash"
         
         self.step = "main"
 
@@ -35,10 +36,13 @@ class Game_Window(arcade.Window):
         arcade.start_render()
 
         if self.state == "Splash":
-            Graphics.drawSplashPage(self.buttons_excited,self.game_type,Crit_Version)
-
+            Graphics.draw_Splash(self.buttons_excited,self.game_type,Crit_Version)
         if self.state == "Settings":
-            Graphics.drawSettingsPage(self.buttons_excited,self.game_settings)
+            Graphics.draw_Settings(self.buttons_excited,self.game_settings)
+        if self.state == "2P_PreStart":
+            Graphics.draw_2P_PreStart(self.buttons_excited)
+
+
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
 
@@ -67,13 +71,19 @@ class Game_Window(arcade.Window):
             self.buttons_excited[14] = True if 775 < x < 875 and 375 < y < 405 else False
             self.buttons_excited[15] = True if 900 < x < 1000 and 375 < y < 405 else False
 
+        if self.state == "2P_PreStart":
+            self.buttons_excited[0] = True if 375 < x < 825 and 262 < y < 338 else False
+            self.buttons_excited[1] = True if 20 < x < 80 and 720 < y < 780 else False
+            self.buttons_excited[2] = True if 20 < x < 80 and 650 < y < 710 else False
+
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
         
         if self.state == "Splash":
-            if 475 < x < 725 and 112 < y < 188:
-                #Implement Starting the Game - depends on game type
+            if 375 < x < 825 and 262 < y < 338:
+                if self.game_type == "2P":
+                    self.state = "2P_PreStart"
+                #INCOMPLETE - need other 2 game types
                 arcade.play_sound(Graphics.button_click)
-                pass
             if 475 < x < 725 and 112 < y < 188:
                 self.game_type = "0P"
                 arcade.play_sound(Graphics.button_click)
@@ -85,11 +95,12 @@ class Game_Window(arcade.Window):
                 arcade.play_sound(Graphics.button_click)
             if 1085 < x < 1165 and 685 < y < 765:
                 self.state = "Settings"
+                self.last_state = "Splash"
                 arcade.play_sound(Graphics.button_click)
 
-        if self.state == "Settings":
+        elif self.state == "Settings":
             if 25 < x < 175 and 700 < y <775:
-                self.state = "Splash"
+                self.state = self.last_state
                 arcade.play_sound(Graphics.button_click)
             if 650 < x < 750 and 675 < y < 705:
                 self.game_settings["1P Inputs"] = "Generated"
@@ -136,6 +147,19 @@ class Game_Window(arcade.Window):
             if 900 < x < 1000 and 375 < y < 405:
                 self.game_settings["AI Player"] = "DRL"
                 arcade.play_sound(Graphics.button_click)
+
+        elif self.state == "2P_PreStart":
+            if 375 < x < 825 and 262 < y < 338:
+                #INCOMPLETE - need next state
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "2P_PreStart"
+                arcade.play_sound(Graphics.button_click)
+
 
 
 #Initial Run Setup:
