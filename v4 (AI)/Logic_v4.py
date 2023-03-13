@@ -15,10 +15,11 @@ class Board:
         self.bearOffStatus = [False,False]
         self.pip = (0,0)
     def setStartPositions(self):
-        self.PositionListPoints = [[1,1],[],[],[],[],[2,2,2,2,2],[],[2,2,2],[],[],[],[1,1,1,1,1],[2,2,2,2,2],[],[],[],[1,1,1],[],[1,1,1,1,1],[],[],[],[],[2,2]]
+        #self.PositionListPoints = [[1,1],[],[],[],[],[2,2,2,2,2],[],[2,2,2],[],[],[],[1,1,1,1,1],[2,2,2,2,2],[],[],[],[1,1,1],[],[1,1,1,1,1],[],[],[],[],[2,2]]
+        self.PositionListPoints = [[],[],[],[],[],[2,2,2,2,2],[],[],[],[],[],[],[],[],[],[],[],[],[1,1,1,1,1],[],[],[],[],[]]
         self.PositionListOff = [0,0]
         self.PositionListBar = []
-        self.takeOutStatus = [False,False]
+        self.bearOffStatus = [False,False]
         self.pip = (167, 167)
     def updatePip(self):
         darkPip = 0
@@ -96,7 +97,7 @@ class Board:
                     if len(pointList) > 0 and pointList[0] == 1:
                         if canMoveTo(point+roll+1,1) == True:
                             moveList.append((point+1,[point+roll+1]))
-                if self.takeOutStatus[0] == True:
+                if self.bearOffStatus[0] == True:
                     if len(self.PositionListPoints[24-roll]) > 0 and self.PositionListPoints[24-roll][0] == 1:
                         moveList.append((25-roll,["off"]))
                     if isBiggestDie == True and self.findLastOccupiedPoint(1) > 25-roll:
