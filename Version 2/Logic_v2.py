@@ -1,6 +1,6 @@
 import random
 import copy
-from Graphics_v4 import createMoveStartSprites
+from Graphics_v2 import createMoveStartSprites
 
 def rollDice():
     num1 = random.randint(1,6)
@@ -129,6 +129,7 @@ class Turn:
         self.unused_dice = []
         self.player = player
         self.player_type = playerType
+        self.settings = settings
 
         self.current_possible_moves = []
 
@@ -152,35 +153,31 @@ class Turn:
     def updatePossibleMoves(self,Board):
         print("Running UpdatePossibleMoves") #Debug
         self.current_possible_moves = []
-        if self.player_type == "Human":
-            if self.doubles_turn == True and len(self.unused_dice) > 0:
-                self.current_possible_moves = Board.calcMovesForDie(self.roll[0],self.player, True, True)
-            else:
-                biggerDie = self.roll[0] if self.roll[0] > self.roll[1] else self.roll[1]
-                for roll in self.unused_dice:
-                    self.current_possible_moves.append(Board.calcMovesForDie(roll,self.player,(roll == biggerDie),(len(self.unused_dice) == 1)))
-                if len(self.unused_dice) > 1:
-                    self.current_possible_moves = self.current_possible_moves[0] + self.current_possible_moves[1]
-                    workingMovesList = self.current_possible_moves
-                    self.current_possible_moves = []
-                    startPoints = []
+        if self.doubles_turn == True and len(self.unused_dice) > 0:
+            self.current_possible_moves = Board.calcMovesForDie(self.roll[0],self.player, True, True)
+        else:
+            biggerDie = self.roll[0] if self.roll[0] > self.roll[1] else self.roll[1]
+            for roll in self.unused_dice:
+                self.current_possible_moves.append(Board.calcMovesForDie(roll,self.player,(roll == biggerDie),(len(self.unused_dice) == 1)))
+            if len(self.unused_dice) > 1:
+                self.current_possible_moves = self.current_possible_moves[0] + self.current_possible_moves[1]
+                workingMovesList = self.current_possible_moves
+                self.current_possible_moves = []
+                startPoints = []
+                for move in workingMovesList:
+                    startPoints.append(move[0]) 
+                for startPoint in startPoints:
+                    numFin = []
                     for move in workingMovesList:
-                        startPoints.append(move[0]) 
-                    for startPoint in startPoints:
-                        numFin = []
-                        for move in workingMovesList:
-                            if startPoint == move[0]:
-                                numFin.append(move[1][0])
-                        finalList = ((startPoint),(numFin))
-                        if finalList in self.current_possible_moves:
-                            pass
-                        else:
-                            self.current_possible_moves.append(finalList)
-                else:
-                    self.current_possible_moves = self.current_possible_moves[0]
-        if self.player_type == "AI":
-            if self.doubles_turn == True:
-                pass
+                        if startPoint == move[0]:
+                            numFin.append(move[1][0])
+                    finalList = ((startPoint),(numFin))
+                    if finalList in self.current_possible_moves:
+                        pass
+                    else:
+                        self.current_possible_moves.append(finalList)
+            else:
+                self.current_possible_moves = self.current_possible_moves[0]
     def formSpriteList(self,board):
         self.sprites_move_start = createMoveStartSprites(self.current_possible_moves,board,self.player)
         print(f"New Move Start Sprites Created with move list: {self.current_possible_moves}") #DEBUG
@@ -193,7 +190,8 @@ class Turn:
             diff = end - start
             roll = diff if diff > 0 else (diff * -1)
         return roll
-
+    def updateTurnSettings(self,settings):
+        self.settings = settings
 
 
 #Calculating Moves Logic

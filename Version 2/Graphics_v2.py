@@ -278,6 +278,7 @@ def draw_Settings(buttons_excited,game_settings):
     # Button 15: 775 < x < 875 and 375 < y < 405
     # Button 16: 900 < x < 1000 and 375 < y < 405
 
+
 def draw_2P_PreStart(buttons_excited):
     drawBoard()
     drawButton("PLAY",1100,400,150,75,buttons_excited[0])
@@ -341,6 +342,31 @@ def draw_2P_Turn_Main(sprites):
 def draw_2P_Turn_Branch(main_sprite,sprites):
     main_sprite.draw()
     sprites.draw()
+
+def draw_1P_PreStart(buttons_excited):
+    drawBoard()
+    drawButton("PLAY",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
+    #Button1: 1025 < x < 1175 and 362 < y < 438
+    #Button2: 20 < x < 80 and 720 < y < 780
+    #Button3: 20 < x < 80 and 650 < y < 710
+
+def draw_1P_GameStart():
+    pass
+
+def draw_1P_GameStart_Inputs():
+    pass
+
+def draw_1P_TurnHuman():
+    pass
+
+def draw_1P_TurnAI():
+    pass
+
+def draw_1P_RollInputs():
+    pass
+
 
 def draw_GameOver(player,buttons_excited):
     color = checkerColor1 if player == 1 else checkerColor2

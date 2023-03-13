@@ -1,8 +1,8 @@
 #Imports:
 import arcade
-import Graphics_v3 as Graphics
-import Logic_v3 as Logic
-import AI_v3 as AI
+import Graphics_v1_5 as Graphics
+import Logic_v1_5 as Logic
+import AI_v1_5 as AI
 import random
 import time
 

@@ -1,6 +1,6 @@
 #Imports
 import random
-from Logic_v3 import Turn,Board
+from Logic_v1_5 import Turn,Board
 import copy
 
 #Random move picker
