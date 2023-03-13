@@ -15,8 +15,7 @@ class Board:
         self.bearOffStatus = [False,False]
         self.pip = (0,0)
     def setStartPositions(self):
-        #self.PositionListPoints = [[1,1],[],[],[],[],[2,2,2,2,2],[],[2,2,2],[],[],[],[1,1,1,1,1],[2,2,2,2,2],[],[],[],[1,1,1],[],[1,1,1,1,1],[],[],[],[],[2,2]]
-        self.PositionListPoints = [[],[],[],[],[],[2,2,2,2,2],[],[],[],[],[],[],[],[],[],[],[],[],[1,1,1,1,1],[],[],[],[],[]]
+        self.PositionListPoints = [[1,1],[],[],[],[],[2,2,2,2,2],[],[2,2,2],[],[],[],[1,1,1,1,1],[2,2,2,2,2],[],[],[],[1,1,1],[],[1,1,1,1,1],[],[],[],[],[2,2]]
         self.PositionListOff = [0,0]
         self.PositionListBar = []
         self.bearOffStatus = [False,False]
@@ -37,6 +36,7 @@ class Board:
                 darkPip = darkPip + 25
             if piece == 2:
                 lightPip = lightPip + 25
+        self.pip = (darkPip,lightPip)
     def findLastOccupiedPoint(self,player):
         if player == 1:
             for index in range(0,24,1):
@@ -72,7 +72,7 @@ class Board:
                 self.PositionListBar.append(opponent)
             self.PositionListPoints[endPointIndex].append(player)
         self.updatePip()
-    def calcMovesForDie(self,roll,player,isBiggestDie):
+    def calcMovesForDie(self,roll,player,isBiggestDie,secondMove):
         self.updateBearOffStatus()
         moveList = []
         def canMoveTo(point,player):
@@ -100,7 +100,7 @@ class Board:
                 if self.bearOffStatus[0] == True:
                     if len(self.PositionListPoints[24-roll]) > 0 and self.PositionListPoints[24-roll][0] == 1:
                         moveList.append((25-roll,["off"]))
-                    if isBiggestDie == True and self.findLastOccupiedPoint(1) > 25-roll:
+                    if (isBiggestDie == True or secondMove == True) and self.findLastOccupiedPoint(1) > 25-roll:
                         moveList.append((self.findLastOccupiedPoint(1),["off"]))
 
         if player == 2:
@@ -113,10 +113,10 @@ class Board:
                     if len(pointList) > 0 and pointList[0] == 2:
                         if canMoveTo(point-roll+1,2) == True:
                             moveList.append((point+1,[point-roll+1]))
-                if self.takeOutStatus[1] == True:
+                if self.bearOffStatus[1] == True:
                     if len(self.PositionListPoints[roll-1]) > 0 and self.PositionListPoints[roll-1][0] == 2: 
                         moveList.append((roll,["off"]))
-                    if isBiggestDie == True and self.findLastOccupiedPoint(2) < roll:
+                    if (isBiggestDie == True or secondMove == True) and self.findLastOccupiedPoint(2) < roll:
                         moveList.append((self.findLastOccupiedPoint(2),["off"]))
 
         return moveList
@@ -154,11 +154,11 @@ class Turn:
         self.current_possible_moves = []
         if self.player_type == "Human":
             if self.doubles_turn == True and len(self.unused_dice) > 0:
-                self.current_possible_moves = Board.calcMovesForDie(self.roll[0],self.player, True)
+                self.current_possible_moves = Board.calcMovesForDie(self.roll[0],self.player, True, True)
             else:
                 biggerDie = self.roll[0] if self.roll[0] > self.roll[1] else self.roll[1]
                 for roll in self.unused_dice:
-                    self.current_possible_moves.append(Board.calcMovesForDie(roll,self.player,(roll == biggerDie)))
+                    self.current_possible_moves.append(Board.calcMovesForDie(roll,self.player,(roll == biggerDie),(len(self.unused_dice) == 1)))
                 if len(self.unused_dice) > 1:
                     self.current_possible_moves = self.current_possible_moves[0] + self.current_possible_moves[1]
                     workingMovesList = self.current_possible_moves
@@ -188,7 +188,7 @@ class Turn:
         if start == "bar":
             roll = end if player == 1 else (25 - end)
         elif end == "off":
-            roll = start if start in rolls else rolls[0]
+            roll = start if start in rolls else (25 - start)
         else:
             diff = end - start
             roll = diff if diff > 0 else (diff * -1)
