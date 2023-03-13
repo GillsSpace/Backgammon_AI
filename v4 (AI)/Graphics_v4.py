@@ -5,6 +5,7 @@ import copy
 #Load images & sounds:
 gear_icon = arcade.load_texture("Images\gear_icon.png")
 exit_icon = arcade.load_texture("Images\exit_icon.png")
+quit_icon = arcade.load_texture("Images\quit_icon.png")
 button_click = arcade.Sound("Sounds/sound3.mp3")
 checker_move = arcade.Sound("Sounds/sound.mp3")
 dice_roll = arcade.Sound("Sounds/soundDice.mp3")
@@ -162,17 +163,17 @@ def drawPieces(LocationList,Sideboard_Pieces_List,Out_Pieces_List,pip):
 #Sprite Management:
 def createMoveStartSprites(possibleMoves,Board,player):
     board_location_list = Board.PositionListPoints
-    board_hit_list = Board.PositionListBar
+    board_bar_list = Board.PositionListBar
     sprites = arcade.SpriteList()
 
     for move in possibleMoves:
         startPoint = move[0]
 
-        if startPoint == "hit":
-            totalDist = 70 * len(board_hit_list)
+        if startPoint == "bar":
+            totalDist = 70 * len(board_bar_list)
             startDist = totalDist/2
-            for pc in range(len(board_hit_list)):
-                doDraw = True if board_hit_list[pc] == player else False
+            for pc in range(len(board_bar_list)):
+                doDraw = True if board_bar_list[pc] == player else False
                 if doDraw == True:
                     tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Move.png",0.07)
                     tempSprite.center_x = 601
@@ -190,14 +191,14 @@ def createMoveStartSprites(possibleMoves,Board,player):
         sprites.append(tempSprite)
 
     return sprites
-def createMoveEndSprites(activeSprite,Board,player):
+def createMoveEndSprites(activeSprite,Board):
     board_location_list = Board.PositionListPoints
     sprites = arcade.SpriteList()
 
     for move in activeSprite.move[1]:
 
-        if move == "safe":
-            tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Submove.png",.07)
+        if move == "off":
+            tempSprite = arcade.Sprite("Images/Submove.png",.07)
             tempSprite.center_x = 150
             tempSprite.center_y = 400
             tempSprite.pos = move
@@ -207,7 +208,7 @@ def createMoveEndSprites(activeSprite,Board,player):
             pointLength = len(board_location_list[move-1]) - 1
             if pointLength == -1:
                 pointLength = 0
-            tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Submove.png",.07)
+            tempSprite = arcade.Sprite("Images/Submove.png",.07)
             tempSprite.center_x = Master_Location_Dict[move][0]
             tempSprite.center_y = Master_Location_Dict[move][1] + (60*pointLength*o)
             tempSprite.pos = move
@@ -215,8 +216,6 @@ def createMoveEndSprites(activeSprite,Board,player):
         sprites.append(tempSprite)
 
     return sprites
-
-
 
 
 ### GAME STATE S###
@@ -230,11 +229,13 @@ def draw_Splash(buttons_excited,Game_Type,version):
     drawButton("1 PLAYER",350,150,250,excited=buttons_excited[2],defaultColor=(button_used if Game_Type == "1P" else button_default))
     drawButton("2 PLAYER",850,150,250,excited=buttons_excited[3],defaultColor=(button_used if Game_Type == "2P" else button_default))
     drawButtonIcon(gear_icon,1125,725,excited=buttons_excited[4])
+    drawButtonIcon(quit_icon,75,725,excited=buttons_excited[5])
     # Button 1: 375 < x < 825 and 262 < y < 338 
     # Button 2: 475 < x < 725 and 112 < y < 188
     # Button 3: 225 < x < 475 and 112 < y < 188
     # Button 4: 725 < x < 975 and 112 < y < 188
     # Button 5: 1085 < x < 1165 and 685 < y < 765
+    # Button 6: 35 < x < 105 and 685 < y < 765
 
 def draw_Settings(buttons_excited,game_settings):
     drawButton("Back",100,737,excited=buttons_excited[0])
@@ -296,39 +297,57 @@ def draw_2P_GameStart(buttons_excited,Board):
     #Button2: 20 < x < 80 and 720 < y < 780
     #Button3: 20 < x < 80 and 650 < y < 710
 
-def draw_2P_PreTurnP1(excited_buttons,Board):
+def draw_2P_PreTurnP1(buttons_excited,Board):
     drawBoard()
     color = checkerColor1
     arcade.draw_rectangle_filled(601,401,12,762,color)
     drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
-    drawButton("ROLL",1100,351,150,75,excited_buttons[0])
+    drawButton("Roll",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
 
-def draw_2P_PreTurnP2(excited_buttons,Board):
+def draw_2P_PreTurnP2(buttons_excited,Board):
     drawBoard()
     color = checkerColor2
     arcade.draw_rectangle_filled(601,401,12,762,color)
     drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
-    drawButton("ROLL",1100,351,150,75,excited_buttons[0])
+    drawButton("Roll",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
 
-def draw_2P_TurnP1(excited_buttons,Board,Turn):
+def draw_2P_TurnP1(buttons_excited,Board,Turn):
     drawBoard()
     color = checkerColor1
     arcade.draw_rectangle_filled(601,401,12,762,color)
     drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
     drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
-    drawButton("END",1100,400,150,75,excited_buttons[0])
+    drawButton("End",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
 
-def draw_2P_TurnP2(excited_buttons,Board,Turn):
+def draw_2P_TurnP2(buttons_excited,Board,Turn):
     drawBoard()
     color = checkerColor2
     arcade.draw_rectangle_filled(601,401,12,762,color)
     drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
     drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
-    drawButton("END",1100,400,150,75,excited_buttons[0])
+    drawButton("End",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
 
 def draw_2P_Turn_Main(sprites):
-    sprites.draw
+    sprites.draw()
 
 def draw_2P_Turn_Branch(main_sprite,sprites):
     main_sprite.draw()
     sprites.draw()
+
+def draw_GameOver(player,buttons_excited):
+    color = checkerColor1 if player == 1 else checkerColor2
+    arcade.draw_rectangle_filled(600,400,1200,800,color)
+    arcade.draw_text("GAME OVER",300,500,arcade.color.BLACK,60,600,"center")
+    arcade.draw_text("By Wills Erda",300,440,arcade.color.AERO_BLUE,40,600,"center")
+    drawButton("New Game",425,300,200,excited=buttons_excited)
+    drawButton("Quit",775,300,200,excited=buttons_excited)
+    #Button 1: 325 < x < 525 and 262 < y < 338
+    #Button 2: 575 < x < 775 and 262 < y < 338

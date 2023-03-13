@@ -25,7 +25,7 @@ class Game_Window(arcade.Window):
         
         self.step = "main"
 
-        self.game_winner = None
+        self.Game_Winner = None
         self.Main_Board = None
         self.Current_Turn = None
 
@@ -53,6 +53,8 @@ class Game_Window(arcade.Window):
         if self.state == "2P_TurnP2":
             Graphics.draw_2P_TurnP2(self.buttons_excited,self.Main_Board,self.currentTurn)
             Graphics.draw_2P_Turn_Main(self.currentTurn.sprites_move_start) if self.step == "main" else Graphics.draw_2P_Turn_Branch(self.currentTurn.sprite_active,self.currentTurn.sprites_move_end)
+        if self.state == "GameOver":
+            Graphics.draw_GameOver(self.Game_Winner,self.buttons_excited)
 
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
@@ -63,6 +65,7 @@ class Game_Window(arcade.Window):
             self.buttons_excited[2] = True if 225 < x < 475 and 112 < y < 188 else False
             self.buttons_excited[3] = True if 725 < x < 975 and 112 < y < 188 else False
             self.buttons_excited[4] = True if 1085 < x < 1165 and 685 < y < 765 else False
+            self.buttons_excited[5] = True if 35 < x < 105 and 685 < y < 765 else False
 
         if self.state == "Settings":
             self.buttons_excited[0] = True if 25 < x < 175 and 700 < y <775 else False
@@ -82,10 +85,14 @@ class Game_Window(arcade.Window):
             self.buttons_excited[14] = True if 775 < x < 875 and 375 < y < 405 else False
             self.buttons_excited[15] = True if 900 < x < 1000 and 375 < y < 405 else False
 
-        if self.state in {"2P_PreStart","2P_GameStart"}:
+        if self.state in {"2P_PreStart","2P_GameStart","2P_PreTurnP1","2P_PreTurnP2","2P_TurnP1","2P_TurnP2"}:
             self.buttons_excited[0] = True if 1025 < x < 1175 and 362 < y < 438 else False
             self.buttons_excited[1] = True if 20 < x < 80 and 720 < y < 780 else False
             self.buttons_excited[2] = True if 20 < x < 80 and 650 < y < 710 else False
+
+        if self.state == "GameOver":
+            self.buttons_excited[0] = True if 325 < x < 525 and 262 < y < 338 else False
+            self.buttons_excited[1] = True if 575 < x < 775 and 262 < y < 338 else False
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
         
@@ -108,6 +115,8 @@ class Game_Window(arcade.Window):
                 self.state = "Settings"
                 self.last_state = "Splash"
                 arcade.play_sound(Graphics.button_click)
+            if 35 < x < 105 and 685 < y < 765:
+                arcade.exit()
 
         elif self.state == "Settings":
             if 25 < x < 175 and 700 < y <775:
@@ -177,13 +186,13 @@ class Game_Window(arcade.Window):
 
         elif self.state == "2P_GameStart":
             if 1025 < x < 1175 and 362 < y < 438:
-                startingPlayer = random.randint(0,1)
+                startingPlayer = random.randint(1,2)
                 self.currentTurn = Logic.Turn(startingPlayer,"Human",self.game_settings,First=True)
                 self.currentTurn.updatePossibleMoves(self.Main_Board)
                 self.currentTurn.formSpriteList(self.Main_Board)
                 
                 self.state = "2P_TurnP1" if startingPlayer == 1 else "2P_TurnP2"
-                arcade.play_sound(Graphics.button_click)
+                arcade.play_sound(Graphics.dice_roll)
             if 20 < x < 80 and 720 < y < 780:
                 self.state = "Splash"
                 arcade.play_sound(Graphics.button_click)
@@ -194,23 +203,37 @@ class Game_Window(arcade.Window):
 
         elif self.state == "2P_PreTurnP1":
             #If "ROLL" Button Pressed:
-            if 1025 < x < 1175 and 313 < y < 388:
-                self.currentTurn = Logic.Turn(1,self.Main_Board,self.game_settings)
+            if 1025 < x < 1175 and 362 < y < 438:
+                self.currentTurn = Logic.Turn(1,"Human",self.game_settings)
                 self.currentTurn.updatePossibleMoves(self.Main_Board)
                 print("Possible Moves Updated") #DEBUG
                 self.currentTurn.formSpriteList(self.Main_Board)
                 self.state = "2P_TurnP1"
                 arcade.play_sound(Graphics.dice_roll,3)
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "2P_PreTurnP1"
+                arcade.play_sound(Graphics.button_click)
 
         elif self.state == "2P_PreTurnP2":
             #If "ROLL" Button Pressed:
-            if 1025 < x < 1175 and 313 < y < 388:
-                self.currentTurn = Logic.Turn(0,self.Main_Board,self.game_settings)
+            if 1025 < x < 1175 and 362 < y < 438:
+                self.currentTurn = Logic.Turn(2,"Human",self.game_settings)
                 self.currentTurn.updatePossibleMoves(self.Main_Board)
                 print("Possible Moves Updated") #DEBUG
                 self.currentTurn.formSpriteList(self.Main_Board)
                 self.state = "2P_TurnP2"
                 arcade.play_sound(Graphics.dice_roll,3)
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "2P_PreTurnP2"
+                arcade.play_sound(Graphics.button_click)
 
         elif self.state == "2P_TurnP1":
             if self.step == "main":
@@ -218,7 +241,7 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
                 if clicked_sprite != []:
                     self.currentTurn.sprite_active = clicked_sprite[0]
-                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board,self.currentTurn.player)
+                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board)
                     self.step = "branch"
 
             elif self.step == "branch":
@@ -227,14 +250,14 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                 if clicked_sprite != []:
                     arcade.play_sound(Graphics.checker_move,5)
-                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,1)
-                    if self.Main_Board.calcPip()[0] == 0:
+                    self.Main_Board.updateWithMove((self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos),1)
+                    if self.Main_Board.pip[0] == 0:
                         self.state = "GameOver"
-                        self.game_winner = 1
+                        self.Game_Winner = 1
                         return
-                    roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,1)
-                    self.currentTurn.availableRolls.remove(roll)
-                    if len(self.currentTurn.availableRolls) > 0:
+                    roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.unused_dice,1)
+                    self.currentTurn.unused_dice.remove(roll)
+                    if len(self.currentTurn.unused_dice) > 0:
                         self.currentTurn.updatePossibleMoves(self.Main_Board)
                         self.currentTurn.formSpriteList(self.Main_Board)
                     else:
@@ -242,7 +265,15 @@ class Game_Window(arcade.Window):
 
             if 1025 < x < 1175 and 362 < y < 438:
                 arcade.play_sound(Graphics.button_click)
-                self.state = "2P_PreTurnP1"
+                self.state = "2P_PreTurnP2"
+
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "2P_TurnP1"
+                arcade.play_sound(Graphics.button_click)
 
         elif self.state == "2P_TurnP2":
             if self.step == "main":
@@ -250,7 +281,7 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_start)
                 if clicked_sprite != []:
                     self.currentTurn.sprite_active = clicked_sprite[0]
-                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board,self.currentTurn.player)
+                    self.currentTurn.sprites_move_end = Graphics.createMoveEndSprites(self.currentTurn.sprite_active,self.Main_Board)
                     self.step = "branch"
 
             elif self.step == "branch":
@@ -259,14 +290,14 @@ class Game_Window(arcade.Window):
                 clicked_sprite = arcade.get_sprites_at_point((x,y),self.currentTurn.sprites_move_end)
                 if clicked_sprite != []:
                     arcade.play_sound(Graphics.checker_move,5)
-                    self.Main_Board.updateWithMove(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,0)
-                    if self.Main_Board.calcPip()[1] == 0:
-                        self.state = "GAME-END"
-                        self.game_winner = 0
+                    self.Main_Board.updateWithMove((self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos),2)
+                    if self.Main_Board.pip[1] == 0:
+                        self.state = "GameOver"
+                        self.Game_Winner = 2
                         return
-                    roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.availableRolls,0)
-                    self.currentTurn.availableRolls.remove(roll)
-                    if len(self.currentTurn.availableRolls) > 0:
+                    roll = self.currentTurn.fromMoveToRoll(self.currentTurn.sprite_active.move[0],clicked_sprite[0].pos,self.currentTurn.unused_dice,0)
+                    self.currentTurn.unused_dice.remove(roll)
+                    if len(self.currentTurn.unused_dice) > 0:
                         self.currentTurn.updatePossibleMoves(self.Main_Board)
                         self.currentTurn.formSpriteList(self.Main_Board)
                     else:
@@ -276,6 +307,21 @@ class Game_Window(arcade.Window):
             if 1025 < x < 1175 and 362 < y < 438:
                 arcade.play_sound(Graphics.button_click)
                 self.state = "2P_PreTurnP1"
+            
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "2P_TurnP2"
+                arcade.play_sound(Graphics.button_click)
+
+        elif self.state == "GameOver":
+            if 325 < x < 525 and 262 < y < 338:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 575 < x < 775 and 262 < y < 338:
+                arcade.exit()
 
         print(f"states after click: state = {self.state} // step = {self.step}") #DEBUG
 

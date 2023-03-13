@@ -19,24 +19,23 @@ class Board:
         self.PositionListOff = [0,0]
         self.PositionListBar = []
         self.takeOutStatus = [False,False]
-        self.pip = [167,167]
+        self.pip = (167, 167)
     def updatePip(self):
         darkPip = 0
         lightPip = 0
         for listNum in range(len(self.PositionListPoints)):
             list = self.PositionListPoints[listNum]
+            listNum = listNum + 1
             if len(list) > 0:
                 if list[0] == 1:
                     darkPip = darkPip + (len(list)*(25-listNum))
                 if list[0] == 2:
                     lightPip = lightPip + (len(list)*listNum)
-            listNum = listNum + 1
         for piece in self.PositionListBar:
             if piece == 1:
                 darkPip = darkPip + 25
             if piece == 2:
                 lightPip = lightPip + 25
-        self.pip = (darkPip,lightPip)
     def findLastOccupiedPoint(self,player):
         if player == 1:
             for index in range(0,24,1):
@@ -71,6 +70,7 @@ class Board:
                 self.PositionListPoints[endPointIndex].remove(opponent)
                 self.PositionListBar.append(opponent)
             self.PositionListPoints[endPointIndex].append(player)
+        self.updatePip()
     def calcMovesForDie(self,roll,player,isBiggestDie):
         self.updateBearOffStatus()
         moveList = []
@@ -78,7 +78,7 @@ class Board:
             if point > 24 or point < 1:
                 return False
             pointList = self.PositionListPoints[point-1]
-            opp = 1 if player == 0 else 0
+            opp = 1 if player == 2 else 2
             if len(pointList) == 0:
                 return True
             if len(pointList) > 0 and pointList[0] == player:
@@ -89,7 +89,7 @@ class Board:
         if player == 1:
             if 1 in self.PositionListBar:
                 if canMoveTo(roll,1) == True:
-                    moveList.append(("hit",[roll]))
+                    moveList.append(("bar",[roll]))
             else:
                 for point in range(24):
                     pointList = self.PositionListPoints[point]
@@ -98,25 +98,25 @@ class Board:
                             moveList.append((point+1,[point+roll+1]))
                 if self.takeOutStatus[0] == True:
                     if len(self.PositionListPoints[24-roll]) > 0 and self.PositionListPoints[24-roll][0] == 1:
-                        moveList.append((25-roll,["safe"]))
+                        moveList.append((25-roll,["off"]))
                     if isBiggestDie == True and self.findLastOccupiedPoint(1) > 25-roll:
-                        moveList.append((self.findLastOccupiedPoint(1),["safe"]))
+                        moveList.append((self.findLastOccupiedPoint(1),["off"]))
 
-        if player == 0:
-            if 0 in self.PositionListBar:
-                if canMoveTo(25-roll,0) == True:
-                    moveList.append(("hit",[25-roll]))
+        if player == 2:
+            if 2 in self.PositionListBar:
+                if canMoveTo(25-roll,2) == True:
+                    moveList.append(("bar",[25-roll]))
             else:
                 for point in range(24):
                     pointList = self.PositionListPoints[point]
-                    if len(pointList) > 0 and pointList[0] == 0:
-                        if canMoveTo(point-roll+1,0) == True:
+                    if len(pointList) > 0 and pointList[0] == 2:
+                        if canMoveTo(point-roll+1,2) == True:
                             moveList.append((point+1,[point-roll+1]))
                 if self.takeOutStatus[1] == True:
-                    if len(self.PositionListPoints[roll-1]) > 0 and self.PositionListPoints[roll-1][0] == 0: 
-                        moveList.append((roll,["safe"]))
-                    if isBiggestDie == True and self.findLastOccupiedPoint(0) < roll:
-                        moveList.append((self.findLastOccupiedPoint(0),["safe"]))
+                    if len(self.PositionListPoints[roll-1]) > 0 and self.PositionListPoints[roll-1][0] == 2: 
+                        moveList.append((roll,["off"]))
+                    if isBiggestDie == True and self.findLastOccupiedPoint(2) < roll:
+                        moveList.append((self.findLastOccupiedPoint(2),["off"]))
 
         return moveList
 
@@ -148,7 +148,6 @@ class Turn:
             self.unused_dice = copy.deepcopy(self.roll)
         
         print(f"New Turn Created // Roll = {self.roll} , Unused Dice = {self.unused_dice}") #DEBUG
-
     def updatePossibleMoves(self,Board):
         print("Running UpdatePossibleMoves") #Debug
         self.current_possible_moves = []
@@ -184,6 +183,17 @@ class Turn:
     def formSpriteList(self,board):
         self.sprites_move_start = createMoveStartSprites(self.current_possible_moves,board,self.player)
         print(f"New Move Start Sprites Created with move list: {self.current_possible_moves}") #DEBUG
+    def fromMoveToRoll(self,start,end,rolls,player):
+        if start == "bar":
+            roll = end if player == 1 else (25 - end)
+        elif end == "off":
+            roll = start if start in rolls else rolls[0]
+        else:
+            diff = end - start
+            roll = diff if diff > 0 else (diff * -1)
+        return roll
+
+
 
 #Calculating Moves Logic
 
