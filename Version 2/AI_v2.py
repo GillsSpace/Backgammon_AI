@@ -13,7 +13,7 @@ def randomMove(ActiveBoard:Board, ActiveTurn:Turn):
     print(Move1) #DEBUG
     roll = ActiveTurn.fromMoveToRoll(Move1[0],Move1[1],ActiveTurn.unused_dice,ActiveTurn.player)
     ActiveTurn.unused_dice.remove(roll)
-    algoBoard.updateWithMove(Move1[0],Move1[1],ActiveTurn.player)
+    algoBoard.updateWithMove(Move1,ActiveTurn.player)
 
     ActiveTurn.updatePossibleMoves(algoBoard)
     possibleMoves = ActiveTurn.current_possible_moves
@@ -21,16 +21,16 @@ def randomMove(ActiveBoard:Board, ActiveTurn:Turn):
     Move2 = (Move2[0], random.choice(Move2[1]))
     roll = ActiveTurn.fromMoveToRoll(Move2[0],Move2[1],ActiveTurn.unused_dice,ActiveTurn.player)
     ActiveTurn.unused_dice.remove(roll)
-    algoBoard.updateWithMove(Move2[0],Move2[1],ActiveTurn.player)
+    algoBoard.updateWithMove(Move2,ActiveTurn.player)
 
-    if ActiveTurn.doublesTurn == True:
+    if ActiveTurn.doubles_turn == True:
         ActiveTurn.updatePossibleMoves(algoBoard)
         possibleMoves = ActiveTurn.current_possible_moves
         Move3 = random.choice(possibleMoves)
         Move3 = (Move3[0], random.choice(Move3[1]))
         roll = ActiveTurn.fromMoveToRoll(Move3[0],Move3[1],ActiveTurn.unused_dice,ActiveTurn.player)
         ActiveTurn.unused_dice.remove(roll)
-        algoBoard.updateWithMove(Move3[0],Move3[1],ActiveTurn.player)
+        algoBoard.updateWithMove(Move3,ActiveTurn.player)
 
         ActiveTurn.updatePossibleMoves(algoBoard)
         possibleMoves = ActiveTurn.current_possible_moves

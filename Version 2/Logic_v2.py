@@ -120,7 +120,9 @@ class Board:
                         moveList.append((self.findLastOccupiedPoint(2),["off"]))
 
         return moveList
-
+    def updateWithMoves(self,moves,player):
+        for move in moves:
+            self.updateWithMove(move,player)
 
 class Turn:
     def __init__(self,player,playerType,settings,First=False,roll=None) -> None:

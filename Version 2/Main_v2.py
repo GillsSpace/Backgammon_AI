@@ -1,6 +1,7 @@
 import arcade
 import Graphics_v2 as Graphics
 import Logic_v2 as Logic
+import AI_v2 as AI
 import random
 import time
 
@@ -18,12 +19,14 @@ class Game_Window(arcade.Window):
         self.buttons_excited = [False] * 16
         
         self.game_type = "2P"
-        self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Random"}    
+        self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Random"}   
+        self.aiMoves = [] 
 
         self.state = "Splash"
         self.last_state = "Splash"
         
         self.step = "main"
+        self.inputFor = "Human"
 
         self.Game_Winner = None
         self.Main_Board = None
@@ -58,13 +61,16 @@ class Game_Window(arcade.Window):
         if self.state == "1P_PreStart":
             Graphics.draw_1P_PreStart(self.buttons_excited)
         if self.state == "1P_GameStart":
-            pass
+            Graphics.draw_1P_GameStart(self.buttons_excited,self.Main_Board)
         if self.state == "1P_GameStart_Inputs":
-            pass
+            Graphics.draw_1P_GameStart_Inputs(self.buttons_excited,self.Main_Board)
         if self.state == "1P_TurnHuman":
-            pass
+            Graphics.draw_1P_TurnHuman(self.buttons_excited,self.Main_Board,self.Current_Turn)
+            Graphics.draw_1P_Turn_Main(self.Current_Turn.sprites_move_start) if self.step == "main" else Graphics.draw_1P_Turn_Branch(self.Current_Turn.sprite_active,self.Current_Turn.sprites_move_end)
         if self.state == "1P_TurnAI":
-            pass
+            Graphics.draw_1P_TurnAI(self.buttons_excited,self.Main_Board,self.Current_Turn)
+            if self.game_settings["AI Lines"] == True:
+                Graphics.DrawMoveLines(self.aiMoves,self.Main_Board)
         if self.state == "1P_RollInputs":
             pass
         
@@ -100,19 +106,17 @@ class Game_Window(arcade.Window):
             self.buttons_excited[14] = True if 775 < x < 875 and 375 < y < 405 else False
             self.buttons_excited[15] = True if 900 < x < 1000 and 375 < y < 405 else False
 
-        if self.state in {"2P_PreStart","2P_GameStart","2P_PreTurnP1","2P_PreTurnP2","2P_TurnP1","2P_TurnP2","1P_PreStart"}:
+        if self.state in {"2P_PreStart","2P_GameStart","2P_PreTurnP1","2P_PreTurnP2","2P_TurnP1","2P_TurnP2","1P_PreStart","1P_GameStart","1P_TurnHuman","1P_TurnAI"}:
             self.buttons_excited[0] = True if 1025 < x < 1175 and 362 < y < 438 else False
             self.buttons_excited[1] = True if 20 < x < 80 and 720 < y < 780 else False
             self.buttons_excited[2] = True if 20 < x < 80 and 650 < y < 710 else False
 
-        if self.state == "1P_GameStart":
-            pass
         if self.state == "1P_GameStart_Inputs":
-            pass
-        if self.state == "1P_TurnHuman":
-            pass
-        if self.state == "1P_TurnAI":
-            pass
+            self.buttons_excited[0] = True if 1025 < x < 1175 and 425 < y < 575 else False
+            self.buttons_excited[1] = True if 1025 < x < 1175 and 225 < y < 375 else False
+            self.buttons_excited[2] = True if 20 < x < 80 and 720 < y < 780 else False
+            self.buttons_excited[3] = True if 20 < x < 80 and 650 < y < 710 else False
+
         if self.state == "1P_RollInputs":
             pass
 
@@ -357,13 +361,110 @@ class Game_Window(arcade.Window):
                 self.last_state = "1P_PreStart"
                 arcade.play_sound(Graphics.button_click)
         elif self.state == "1P_GameStart":
-            pass
+            if 1025 < x < 1175 and 362 < y < 438:
+                startingPlayer = random.randint(1,2)
+
+                #IF 1 - Human Player
+                if startingPlayer == 1:
+                    self.Current_Turn = Logic.Turn(1,"Human",self.game_settings,First=True)
+                    self.Current_Turn.updatePossibleMoves(self.Main_Board)
+                    self.Current_Turn.formSpriteList(self.Main_Board)
+
+                #IF 2 - AI Player
+                if startingPlayer == 2:
+                    self.Current_Turn = Logic.Turn(startingPlayer,"AI",self.game_settings,First=True)
+                    self.Current_Turn.updatePossibleMoves(self.Main_Board)
+
+                    Moves = AI.Main(self.Main_Board,self.Current_Turn)
+                    self.aiMoves = Moves
+
+                    self.Main_Board.updateWithMoves(Moves,2)
+                
+                self.state = "1P_TurnHuman" if startingPlayer == 1 else "1P_TurnAI"
+                arcade.play_sound(Graphics.dice_roll)
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "1P_GameStart"
+                arcade.play_sound(Graphics.button_click)
         elif self.state == "1P_GameStart_Inputs":
-            pass
+            if 1025 < x < 1175 and 425 < y < 575:
+                self.state = "1P_RollInputs"
+                self.inputFor = "AI"
+                arcade.play_sound(Graphics.button_click)
+            if 1025 < x < 1175 and 225 < y < 375:
+                self.state = "1P_RollInputs"
+                self.inputFor = "Human"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "1P_GameStart_Inputs"
+                arcade.play_sound(Graphics.button_click)
         elif self.state == "1P_TurnHuman":
-            pass
+            if self.step == "main":
+                #When an possible move sprite is clicked:
+                clicked_sprite = arcade.get_sprites_at_point((x,y),self.Current_Turn.sprites_move_start)
+                if clicked_sprite != []:
+                    self.Current_Turn.sprite_active = clicked_sprite[0]
+                    self.Current_Turn.sprites_move_end = Graphics.createMoveEndSprites(self.Current_Turn.sprite_active,self.Main_Board)
+                    self.step = "branch"
+
+            elif self.step == "branch":
+                self.step = "main"
+                #When a possible sub-move sprite is clicked:
+                clicked_sprite = arcade.get_sprites_at_point((x,y),self.Current_Turn.sprites_move_end)
+                if clicked_sprite != []:
+                    arcade.play_sound(Graphics.checker_move,5)
+                    self.Main_Board.updateWithMove((self.Current_Turn.sprite_active.move[0],clicked_sprite[0].pos),1)
+                    if self.Main_Board.pip[0] == 0:
+                        self.state = "GameOver"
+                        self.Game_Winner = 1
+                        return
+                    roll = self.Current_Turn.fromMoveToRoll(self.Current_Turn.sprite_active.move[0],clicked_sprite[0].pos,self.Current_Turn.unused_dice,1)
+                    self.Current_Turn.unused_dice.remove(roll)
+                    if len(self.Current_Turn.unused_dice) > 0:
+                        self.Current_Turn.updatePossibleMoves(self.Main_Board)
+                        self.Current_Turn.formSpriteList(self.Main_Board)
+                    else:
+                        self.Current_Turn.sprites_move_start = arcade.SpriteList()
+
+            if 1025 < x < 1175 and 362 < y < 438:
+                arcade.play_sound(Graphics.button_click)
+                self.state = "1P_TurnAI"
+                self.Current_Turn = Logic.Turn(2,"AI",self.game_settings)
+                self.Current_Turn.updatePossibleMoves(self.Main_Board)
+
+                Moves = AI.Main(self.Main_Board,self.Current_Turn)
+                self.aiMoves = Moves
+
+                self.Main_Board.updateWithMoves(Moves,2)
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "1P_TurnHuman"
+                arcade.play_sound(Graphics.button_click)
         elif self.state == "1P_TurnAI":
-            pass
+            if 1025 < x < 1175 and 362 < y < 438:
+                arcade.play_sound(Graphics.button_click)
+                self.state = "1P_TurnHuman"
+
+                self.Current_Turn = Logic.Turn(1,"Human",self.game_settings)
+                self.Current_Turn.updatePossibleMoves(self.Main_Board)
+                self.Current_Turn.formSpriteList(self.Main_Board)
+            if 20 < x < 80 and 720 < y < 780:
+                self.state = "Splash"
+                arcade.play_sound(Graphics.button_click)
+            if 20 < x < 80 and 650 < y < 710:
+                self.state = "Settings"
+                self.last_state = "1P_TurnAI"
+                arcade.play_sound(Graphics.button_click)
         elif self.state == "1P_RollInputs":
             pass
 
@@ -374,7 +475,7 @@ class Game_Window(arcade.Window):
             if 575 < x < 775 and 262 < y < 338:
                 arcade.exit()
 
-        print(f"states after click: state = {self.state} // step = {self.step}") #DEBUG
+        print(f"states after click: state = {self.state} // step = {self.step} // inputFor = {self.inputFor}") #DEBUG
 
 
 #Initial Run Setup:

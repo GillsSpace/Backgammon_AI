@@ -46,6 +46,12 @@ def drawButtonSmall(text,centerx,centery,width,height,excited=False, fontSize=15
     arcade.draw_rectangle_filled(centerx,centery,width,height,color)
     arcade.draw_rectangle_outline(centerx,centery,width,height,board_border,6)
     arcade.draw_text(text,(centerx - (.5*width)),(centery - 5),black,fontSize,width,"center","arial",bold=True)
+def drawButtonMultiLine1(text1, text2, centerx, centery, width=150, height=75, excited=False, fontSize=30, defaultColor=board_color):
+    color = defaultColor if excited == False else button_excited
+    arcade.draw_rectangle_filled(centerx,centery,width,height,color)
+    arcade.draw_rectangle_outline(centerx,centery,width,height,board_border,12)
+    arcade.draw_text(text1,(centerx - (.5*width)),(centery + 25),black,fontSize,width,"center","arial",bold=True,anchor_y="center")
+    arcade.draw_text(text2,(centerx - (.5*width)),(centery - 25),black,fontSize,width,"center","arial",bold=True,anchor_y="center")
 def drawSignature(version):
     arcade.draw_text("Backgammon by Wills Erda",1000,25,black,10)
     arcade.draw_text(f"v{version} @2022 ",1000,10,black,10)
@@ -123,11 +129,11 @@ def drawPIP(pip):
     arcade.draw_rectangle_outline(150,775,60,30,black,2)
     arcade.draw_text(pip[0],75,15,board_color,20,150,"center","arial")
     arcade.draw_text(pip[1],75,765,board_color,20,150,"center","arial")
-def drawPieces(LocationList,Sideboard_Pieces_List,Out_Pieces_List,pip):
+def drawPieces(PositionListPoints,PositionListOff,PositionListBar,pip):
     drawPIP(pip)
-    for listNum in range(len(LocationList,)):
+    for listNum in range(len(PositionListPoints,)):
         listNum = listNum + 1
-        list = LocationList[listNum - 1]
+        list = PositionListPoints[listNum - 1]
         if len(list) != 0: #Set Necessary Variables For Drawn Points
             color = checkerColor1 if list[0] == 1 else checkerColor2
             location = listNum
@@ -146,17 +152,17 @@ def drawPieces(LocationList,Sideboard_Pieces_List,Out_Pieces_List,pip):
                 adjustment = (30-height)*orientation
                 arcade.draw_ellipse_filled(centerx,centery+offset+adjustment,60,height,color)
                 arcade.draw_ellipse_outline(centerx,centery+offset+adjustment,60,height,arcade.color.BLACK,2)
-    for pc in range(Sideboard_Pieces_List[0]):
+    for pc in range(PositionListOff[0]):
         arcade.draw_rectangle_filled(150,341-(20*(pc)),60,20,checkerColor1)
         arcade.draw_line(120,331-(20*pc),180,331-(20*pc),arcade.color.BLACK,2)
-    for pc in range(Sideboard_Pieces_List[1]):
+    for pc in range(PositionListOff[1]):
         arcade.draw_rectangle_filled(150,461+(20*(pc)),60,20,checkerColor2)
         arcade.draw_line(120,471+(20*pc),180,471+(20*pc),arcade.color.BLACK,2)
-    if len(Out_Pieces_List) != 0:
-        totalDist = 70 * len(Out_Pieces_List)
+    if len(PositionListBar) != 0:
+        totalDist = 70 * len(PositionListBar)
         startDist = totalDist/2
-        for pc in range(len(Out_Pieces_List)):
-            color = checkerColor1 if Out_Pieces_List[pc] == 1 else checkerColor2
+        for pc in range(len(PositionListBar)):
+            color = checkerColor1 if PositionListBar[pc] == 1 else checkerColor2
             arcade.draw_circle_filled(601,401-startDist+35+(60*pc),30,color)
             arcade.draw_circle_outline(601,401-startDist+35+(60*pc),30,arcade.color.BLACK,2)
 
@@ -216,6 +222,23 @@ def createMoveEndSprites(activeSprite,Board):
         sprites.append(tempSprite)
 
     return sprites
+
+#Drawing Move Line:
+def DrawMoveLines(Moves,Board):
+    for move in Moves:
+        startPoint = move[0]
+        endPoint = move[1]
+        orientationStart = 1 if startPoint > 12 else -1
+        orientationEnd = 1 if endPoint > 12 else -1
+        numberOnStartPoint = len(Board.PositionListPoints[startPoint-1])
+        numberOnEndPoint = len(Board.PositionListPoints[endPoint-1])
+        startX = Master_Location_Dict[startPoint][0]
+        startY = Master_Location_Dict[startPoint][1]
+        endX = Master_Location_Dict[endPoint][0]
+        endY = Master_Location_Dict[endPoint][1]
+
+        arcade.draw_circle_outline(startX, startY + (60*numberOnStartPoint*orientationStart),30,black,2)
+        arcade.draw_line(startX,startY + (60*numberOnStartPoint*orientationStart),endX,endY + (60*(numberOnEndPoint - 1)*orientationEnd),black,2)
 
 
 ### GAME STATE S###
@@ -352,17 +375,55 @@ def draw_1P_PreStart(buttons_excited):
     #Button2: 20 < x < 80 and 720 < y < 780
     #Button3: 20 < x < 80 and 650 < y < 710
 
-def draw_1P_GameStart():
-    pass
+def draw_1P_GameStart(buttons_excited,Board):
+    drawBoard()
+    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawButton("Roll",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
+    #Button1: 1025 < x < 1175 and 362 < y < 438
+    #Button2: 20 < x < 80 and 720 < y < 780
+    #Button3: 20 < x < 80 and 650 < y < 710
 
-def draw_1P_GameStart_Inputs():
-    pass
+def draw_1P_GameStart_Inputs(buttons_excited,Board):
+    drawBoard()
+    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawButtonMultiLine1("AI", "First",1100,500,150,150,buttons_excited[0])
+    drawButtonMultiLine1("Human", "First",1100,300,150,150,buttons_excited[1])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[2],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[3],border=6)
+    #Button1: 1025 < x < 1175 and 425 < y < 575
+    #Button1: 1025 < x < 1175 and 225 < y < 375
+    #Button2: 20 < x < 80 and 720 < y < 780
+    #Button3: 20 < x < 80 and 650 < y < 710
 
-def draw_1P_TurnHuman():
-    pass
+def draw_1P_TurnHuman(buttons_excited,Board,Turn):
+    drawBoard()
+    color = checkerColor1
+    arcade.draw_rectangle_filled(601,401,12,762,color)
+    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
+    drawButton("End",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
 
-def draw_1P_TurnAI():
-    pass
+def draw_1P_Turn_Main(sprites):
+    sprites.draw()
+
+def draw_1P_Turn_Branch(main_sprite,sprites):
+    main_sprite.draw()
+    sprites.draw()
+
+
+def draw_1P_TurnAI(buttons_excited,Board,Turn):
+    drawBoard()
+    color = checkerColor2
+    arcade.draw_rectangle_filled(601,401,12,762,color)
+    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
+    drawButton("Roll",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
 
 def draw_1P_RollInputs():
     pass
