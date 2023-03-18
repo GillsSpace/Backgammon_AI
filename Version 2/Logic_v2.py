@@ -1,6 +1,6 @@
 import random
 import copy
-from Graphics_v2 import createMoveStartSprites
+from Graphics_v2 import createMoveStartSprites, GenerateMoveLineData
 
 def rollDice():
     num1 = random.randint(1,6)
@@ -16,6 +16,7 @@ class Board:
         self.pip = (0,0)
     def setStartPositions(self):
         self.PositionListPoints = [[1,1],[],[],[],[],[2,2,2,2,2],[],[2,2,2],[],[],[],[1,1,1,1,1],[2,2,2,2,2],[],[],[],[1,1,1],[],[1,1,1,1,1],[],[],[],[],[2,2]]
+        # self.PositionListPoints = [[],[],[],[],[],[2,2,2,2,2],[],[],[],[],[],[],[],[],[],[],[],[],[1,1,1,1,1],[],[],[],[],[]]
         self.PositionListOff = [0,0]
         self.PositionListBar = []
         self.bearOffStatus = [False,False]
@@ -121,8 +122,12 @@ class Board:
 
         return moveList
     def updateWithMoves(self,moves,player):
+        moveData = []
         for move in moves:
             self.updateWithMove(move,player)
+            data = GenerateMoveLineData(move,self)
+            moveData.append(data)
+        self.moveData = moveData
 
 class Turn:
     def __init__(self,player,playerType,settings,First=False,roll=None) -> None:
@@ -188,6 +193,8 @@ class Turn:
             roll = end if player == 1 else (25 - end)
         elif end == "off":
             roll = start if start in rolls else (25 - start)
+            if roll not in rolls:
+                roll = max(rolls)
         else:
             diff = end - start
             roll = diff if diff > 0 else (diff * -1)

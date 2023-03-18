@@ -31,10 +31,10 @@ black = arcade.color.BLACK
 
 
 #Helper Functions:
-def drawButton(text, centerx, centery, width=150, height=75, excited=False, fontSize=30, defaultColor=board_color):
+def drawButton(text, centerx, centery, width=150, height=75, excited=False, fontSize=30, defaultColor=board_color, border=12):
     color = defaultColor if excited == False else button_excited
     arcade.draw_rectangle_filled(centerx,centery,width,height,color)
-    arcade.draw_rectangle_outline(centerx,centery,width,height,board_border,12)
+    arcade.draw_rectangle_outline(centerx,centery,width,height,board_border,border)
     arcade.draw_text(text,(centerx - (.5*width)),(centery - 15),black,fontSize,width,"center","arial",bold=True)
 def drawButtonIcon(icon, centerx, centery, width=75, height=75, excited=False, defaultColor=board_color, border=12):
     color = defaultColor if excited == False else button_excited
@@ -78,6 +78,28 @@ def drawBoard():
     arcade.draw_rectangle_outline(150,601,64,304,board_border,8)
     arcade.draw_rectangle_filled(150,201,60,300,board_color)
     arcade.draw_rectangle_filled(150,601,60,300,board_color)
+def diceSub(baseX,baseY,num,color,override=False,altColor=black):
+        p1 = [baseX+13,baseY+13]
+        p2 = [baseX+13,baseY+25]
+        p3 = [baseX+13,baseY+38]
+        p4 = [baseX+25,baseY+25]
+        p5 = [baseX+38,baseY+13]
+        p6 = [baseX+38,baseY+25]
+        p7 = [baseX+38,baseY+38]
+        arcade.draw_rectangle_filled(baseX+25,baseY+25,50,50,color if override == False else altColor)
+        arcade.draw_rectangle_outline(baseX+25,baseY+25,50,50,black,2)
+        if num == 1:
+            arcade.draw_points([p4],black,7)
+        if num == 2:
+            arcade.draw_points([p3,p5],black,7)
+        if num == 3:
+            arcade.draw_points([p1,p4,p7],black,7)
+        if num == 4:
+            arcade.draw_points([p1,p3,p5,p7],black,7)
+        if num == 5:
+            arcade.draw_points([p1,p3,p4,p5,p7],black,7)
+        if num == 6:
+            arcade.draw_points([p1,p2,p3,p5,p6,p7],black,7)
 def drawDice(num1,num2,availableRolls):
     tempList = copy.deepcopy(availableRolls)
     U1 = U2 = U3 = U4 = True
@@ -93,28 +115,6 @@ def drawDice(num1,num2,availableRolls):
     if num2 in tempList:
         U4 = False
         tempList.remove(num2)
-    def diceSub(baseX,baseY,num,color):
-        p1 = [baseX+13,baseY+13]
-        p2 = [baseX+13,baseY+25]
-        p3 = [baseX+13,baseY+38]
-        p4 = [baseX+25,baseY+25]
-        p5 = [baseX+38,baseY+13]
-        p6 = [baseX+38,baseY+25]
-        p7 = [baseX+38,baseY+38]
-        arcade.draw_rectangle_filled(baseX+25,baseY+25,50,50,color)
-        arcade.draw_rectangle_outline(baseX+25,baseY+25,50,50,black,2)
-        if num == 1:
-            arcade.draw_points([p4],black,7)
-        if num == 2:
-            arcade.draw_points([p3,p5],black,7)
-        if num == 3:
-            arcade.draw_points([p1,p4,p7],black,7)
-        if num == 4:
-            arcade.draw_points([p1,p3,p5,p7],black,7)
-        if num == 5:
-            arcade.draw_points([p1,p3,p4,p5,p7],black,7)
-        if num == 6:
-            arcade.draw_points([p1,p2,p3,p5,p6,p7],black,7)
     diceSub(1040,455,num1, board_color if U1 == False else arcade.color.CHARCOAL)
     diceSub(1110,455,num2, board_color if U2 == False else arcade.color.CHARCOAL)
     if num1 == num2:
@@ -224,21 +224,33 @@ def createMoveEndSprites(activeSprite,Board):
     return sprites
 
 #Drawing Move Line:
-def DrawMoveLines(Moves,Board):
-    for move in Moves:
-        startPoint = move[0]
-        endPoint = move[1]
-        orientationStart = 1 if startPoint > 12 else -1
-        orientationEnd = 1 if endPoint > 12 else -1
-        numberOnStartPoint = len(Board.PositionListPoints[startPoint-1])
-        numberOnEndPoint = len(Board.PositionListPoints[endPoint-1])
-        startX = Master_Location_Dict[startPoint][0]
-        startY = Master_Location_Dict[startPoint][1]
-        endX = Master_Location_Dict[endPoint][0]
-        endY = Master_Location_Dict[endPoint][1]
+def GenerateMoveLineData(Move,Board):
+    startPoint = Move[0]
+    endPoint = Move[1]
 
-        arcade.draw_circle_outline(startX, startY + (60*numberOnStartPoint*orientationStart),30,black,2)
-        arcade.draw_line(startX,startY + (60*numberOnStartPoint*orientationStart),endX,endY + (60*(numberOnEndPoint - 1)*orientationEnd),black,2)
+    if startPoint == "bar":
+        startX = 601
+        startY = 401
+    else:
+        orientationStart = 1 if startPoint > 12 else -1
+        numberOnStartPoint = len(Board.PositionListPoints[startPoint-1])
+        startX = Master_Location_Dict[startPoint][0] 
+        startY = Master_Location_Dict[startPoint][1] + (60*numberOnStartPoint*orientationStart)
+
+    if endPoint == "off":
+        endX = 150
+        endY = 401
+    else:
+        orientationEnd = 1 if endPoint > 12 else -1
+        numberOnEndPoint = len(Board.PositionListPoints[endPoint-1])
+        endX = Master_Location_Dict[endPoint][0]
+        endY = Master_Location_Dict[endPoint][1]  + (60*(numberOnEndPoint - 1)*orientationEnd)
+        
+    return (startX,startY,endX,endY)
+def DrawMoveLines(MoveData):
+    for move in MoveData:
+        arcade.draw_circle_outline(move[0],move[1],30,black,2)
+        arcade.draw_line(move[0],move[1],move[2],move[3],black,2)
 
 
 ### GAME STATE S###
@@ -300,7 +312,6 @@ def draw_Settings(buttons_excited,game_settings):
     # Button 14: 650 < x < 750 and 375 < y < 405
     # Button 15: 775 < x < 875 and 375 < y < 405
     # Button 16: 900 < x < 1000 and 375 < y < 405
-
 
 def draw_2P_PreStart(buttons_excited):
     drawBoard()
@@ -414,7 +425,6 @@ def draw_1P_Turn_Branch(main_sprite,sprites):
     main_sprite.draw()
     sprites.draw()
 
-
 def draw_1P_TurnAI(buttons_excited,Board,Turn):
     drawBoard()
     color = checkerColor2
@@ -425,16 +435,54 @@ def draw_1P_TurnAI(buttons_excited,Board,Turn):
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
     drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
 
-def draw_1P_RollInputs():
-    pass
+def draw_1P_RollInputs(buttons_excited,Board,player,selectedRolls):
+    drawBoard()
+    color = checkerColor1 if player == "Human" else checkerColor2
+    arcade.draw_rectangle_filled(601,401,12,762,color)
+    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
 
+    arcade.draw_text("Select Rolls",1000,600,black,20,200,"center",bold=True,italic=True)
 
-def draw_GameOver(player,buttons_excited):
+    diceSub(1035,525,1,button_used if selectedRolls[0] == 1 else button_default,override=buttons_excited[0],altColor=button_excited)
+    diceSub(1115,525,1,button_used if selectedRolls[1] == 1 else button_default,override=buttons_excited[1],altColor=button_excited)
+    diceSub(1035,465,2,button_used if selectedRolls[0] == 2 else button_default,override=buttons_excited[2],altColor=button_excited)
+    diceSub(1115,465,2,button_used if selectedRolls[1] == 2 else button_default,override=buttons_excited[3],altColor=button_excited)
+    diceSub(1035,405,3,button_used if selectedRolls[0] == 3 else button_default,override=buttons_excited[4],altColor=button_excited)
+    diceSub(1115,405,3,button_used if selectedRolls[1] == 3 else button_default,override=buttons_excited[5],altColor=button_excited)
+    diceSub(1035,345,4,button_used if selectedRolls[0] == 4 else button_default,override=buttons_excited[6],altColor=button_excited)
+    diceSub(1115,345,4,button_used if selectedRolls[1] == 4 else button_default,override=buttons_excited[7],altColor=button_excited)
+    diceSub(1035,285,5,button_used if selectedRolls[0] == 5 else button_default,override=buttons_excited[8],altColor=button_excited)
+    diceSub(1115,285,5,button_used if selectedRolls[1] == 5 else button_default,override=buttons_excited[9],altColor=button_excited)
+    diceSub(1035,225,6,button_used if selectedRolls[0] == 6 else button_default,override=buttons_excited[10],altColor=button_excited)
+    diceSub(1115,225,6,button_used if selectedRolls[1] == 6 else button_default,override=buttons_excited[11],altColor=button_excited)
+
+    drawButton("Confirm",1100,150,150,60,excited=buttons_excited[12],fontSize=20,border=8)
+
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[13],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[14],border=6)
+
+    #Button 1: 1035 < x < 1085 and 525 < y < 575
+    #Button 2: 1115 < x < 1165 and 525 < y < 575
+    #Button 3: 1035 < x < 1085 and 465 < y < 515
+    #Button 4: 1115 < x < 1165 and 465 < y < 515
+    #Button 5: 1035 < x < 1085 and 405 < y < 455
+    #Button 6: 1115 < x < 1165 and 405 < y < 455
+    #Button 7: 1035 < x < 1085 and 345 < y < 395
+    #Button 8: 1115 < x < 1165 and 345 < y < 395
+    #Button 9: 1035 < x < 1085 and 285 < y < 335
+    #Button 10: 1115 < x < 1165 and 285 < y < 335
+    #Button 11: 1035 < x < 1085 and 225 < y < 275
+    #Button 12: 1115 < x < 1165 and 225 < y < 275
+    #Button 13: 1025 < x < 1175 and 120 < y < 180
+    #Button 14: 20 < x < 80 and 720 < y < 780
+    #Button 15: 20 < x < 80 and 650 < y < 710
+
+def draw_GameOver(player,buttons_excited,version):
     color = checkerColor1 if player == 1 else checkerColor2
     arcade.draw_rectangle_filled(600,400,1200,800,color)
     arcade.draw_text("GAME OVER",300,500,arcade.color.BLACK,60,600,"center")
-    arcade.draw_text("By Wills Erda",300,440,arcade.color.AERO_BLUE,40,600,"center")
-    drawButton("New Game",425,300,200,excited=buttons_excited)
+    drawButton("New",425,300,200,excited=buttons_excited)
     drawButton("Quit",775,300,200,excited=buttons_excited)
+    drawSignature(version)
     #Button 1: 325 < x < 525 and 262 < y < 338
     #Button 2: 575 < x < 775 and 262 < y < 338
