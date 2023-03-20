@@ -16,11 +16,12 @@ class Board:
         self.pip = (0,0)
     def setStartPositions(self):
         self.PositionListPoints = [[1,1],[],[],[],[],[2,2,2,2,2],[],[2,2,2],[],[],[],[1,1,1,1,1],[2,2,2,2,2],[],[],[],[1,1,1],[],[1,1,1,1,1],[],[],[],[],[2,2]]
-        # self.PositionListPoints = [[],[],[],[],[],[2,2,2,2,2],[],[],[],[],[],[],[],[],[],[],[],[],[1,1,1,1,1],[],[],[],[],[]]
+        # self.PositionListPoints = [[],[],[],[],[],[2,2,2,2,2],[],[],[],[],[],[],[],[],[],[],[],[],[1,1,1,1,1],[],[],[],[],[]] #DEBUG
         self.PositionListOff = [0,0]
         self.PositionListBar = []
         self.bearOffStatus = [False,False]
         self.pip = (167, 167)
+        self.TurnNumber = 0
     def updatePip(self):
         darkPip = 0
         lightPip = 0

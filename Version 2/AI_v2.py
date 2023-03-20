@@ -18,12 +18,12 @@ def randomMove(ActiveBoard:Board, ActiveTurn:Turn):
         ActiveTurn.unused_dice.remove(roll)
         algoBoard.updateWithMove(Move1,ActiveTurn.player)
         if algoBoard.pip[ActiveTurn.player - 1] == 0:
-            return(Move1)
+            return [Move1]
 
     ActiveTurn.updatePossibleMoves(algoBoard)
     possibleMoves = ActiveTurn.current_possible_moves
     if len(possibleMoves) == 0:
-        return (Move1)
+        return [Move1]
     else:
         Move2 = random.choice(possibleMoves)
         Move2 = (Move2[0], random.choice(Move2[1]))

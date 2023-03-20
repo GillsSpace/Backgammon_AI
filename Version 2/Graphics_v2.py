@@ -253,8 +253,9 @@ def DrawMoveLines(MoveData):
         arcade.draw_line(move[0],move[1],move[2],move[3],black,2)
 
 
-### GAME STATE S###
+### GAME STATES ###
 
+#General: ---
 def draw_Splash(buttons_excited,Game_Type,version):
     arcade.draw_text("BACKGAMMON",300,500,darkTextColor,60,600,"center")
     arcade.draw_text("By Wills Erda",300,440,lightTextColor,40,600,"center")
@@ -313,6 +314,7 @@ def draw_Settings(buttons_excited,game_settings):
     # Button 15: 775 < x < 875 and 375 < y < 405
     # Button 16: 900 < x < 1000 and 375 < y < 405
 
+#2 Player: ---
 def draw_2P_PreStart(buttons_excited):
     drawBoard()
     drawButton("PLAY",1100,400,150,75,buttons_excited[0])
@@ -377,6 +379,7 @@ def draw_2P_Turn_Branch(main_sprite,sprites):
     main_sprite.draw()
     sprites.draw()
 
+#1 Player: ---
 def draw_1P_PreStart(buttons_excited):
     drawBoard()
     drawButton("PLAY",1100,400,150,75,buttons_excited[0])
@@ -477,10 +480,36 @@ def draw_1P_RollInputs(buttons_excited,Board,player,selectedRolls):
     #Button 14: 20 < x < 80 and 720 < y < 780
     #Button 15: 20 < x < 80 and 650 < y < 710
 
-def draw_GameOver(player,buttons_excited,version):
+#Simulation: ---
+def draw_0P_PreStart(buttons_excited,Board):
+    drawBoard()
+    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawButton("Play",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
+    #Button1: 1025 < x < 1175 and 362 < y < 438
+    #Button2: 20 < x < 80 and 720 < y < 780
+    #Button3: 20 < x < 80 and 650 < y < 710
+def draw_0P_Turn(buttons_excited,Board,Turn):
+    drawBoard()
+    color = checkerColor1 if Turn.player == 1 else checkerColor2
+    arcade.draw_rectangle_filled(601,401,12,762,color)
+    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
+    drawButton("Next",1100,400,150,75,buttons_excited[0])
+    drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[2],border=6)
+    drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[3],border=6)
+    #Button1: 1025 < x < 1175 and 262 < y < 338
+    #Button3: 20 < x < 80 and 720 < y < 780
+    #Button4: 20 < x < 80 and 650 < y < 710
+
+
+#Game Over: --- 
+def draw_GameOver(player,buttons_excited,version,TurnNumber):
     color = checkerColor1 if player == 1 else checkerColor2
     arcade.draw_rectangle_filled(600,400,1200,800,color)
     arcade.draw_text("GAME OVER",300,500,arcade.color.BLACK,60,600,"center")
+    arcade.draw_text(TurnNumber,10,10,black,)
     drawButton("New",425,300,200,excited=buttons_excited)
     drawButton("Quit",775,300,200,excited=buttons_excited)
     drawSignature(version)
