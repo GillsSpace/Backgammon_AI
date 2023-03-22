@@ -18,7 +18,7 @@ class Game_Window(arcade.Window):
         self.buttons_excited = [False] * 16
         
         self.game_type = "0P"
-        self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Random"}   
+        self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"PBP"}   
         self.TurnNumber = 0
 
         self.state = "Splash"
@@ -581,7 +581,7 @@ class Game_Window(arcade.Window):
                 self.Current_Turn = Logic.Turn(startingPlayer,"AI",self.game_settings,First=True)
                 self.Current_Turn.updatePossibleMoves(self.Main_Board)
 
-                Moves = AI.Main(self.Main_Board,self.Current_Turn)
+                Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                 self.aiMoves = Moves
                 self.Main_Board.updateWithMoves(Moves,self.Current_Turn.player)
 

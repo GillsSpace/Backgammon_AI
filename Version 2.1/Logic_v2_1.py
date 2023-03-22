@@ -1,11 +1,16 @@
 import random
 import copy
 from Graphics_v2_1 import createMoveStartSprites, GenerateMoveLineData
+import itertools
 
 def rollDice():
     num1 = random.randint(1,6)
     num2 = random.randint(1,6)
     return [num1,num2]
+
+def byGroup(k):
+    k = sorted(sorted(x) for x in k)
+    return [k for k,_ in itertools.groupby(k)]
 
 class Board:
     def __init__(self) -> None:
@@ -159,7 +164,6 @@ class Turn:
         
         print(f"New Turn Created // Roll = {self.roll} , Unused Dice = {self.unused_dice}") #DEBUG
     def updatePossibleMoves(self,Board):
-        print("Running UpdatePossibleMoves") #Debug
         self.current_possible_moves = []
         if self.doubles_turn == True and len(self.unused_dice) > 0:
             self.current_possible_moves = Board.calcMovesForDie(self.roll[0],self.player, True, True)
@@ -186,9 +190,45 @@ class Turn:
                         self.current_possible_moves.append(finalList)
             else:
                 self.current_possible_moves = self.current_possible_moves[0]
+    def updatePossibleMovesAI(self,Board:Board,player=None):
+        player = self.player if player == None else player
+        self.current_possible_moves = []
+        if self.doubles_turn == False:
+            biggerDie = self.roll[0] if self.roll[0] >= self.roll[1] else self.roll[1]
+            FirstMoves = []
+            for roll in self.unused_dice: #All Possible First Moves
+                FirstMoves.append(Board.calcMovesForDie(roll,player,(roll == biggerDie),False))
+            FirstMoves = FirstMoves[0] + FirstMoves[1]
+            for move in FirstMoves:
+                algoBoard1 = copy.deepcopy(Board)
+                algoBoard1.updateWithMove((move[0],move[1][0]),player)
+                usedRoll = self.fromMoveToRoll(move[0],move[1][0],self.roll,player)
+                secondMoves = algoBoard1.calcMovesForDie((self.roll[0] if self.roll[1] == usedRoll else self.roll[1]),player,True,True)
+                for secondMove in secondMoves:
+                    self.current_possible_moves.append(((move[0],move[1][0]),(secondMove[0],secondMove[1][0])))
+            self.current_possible_moves = list(set(self.current_possible_moves))
+            self.current_possible_moves = byGroup(self.current_possible_moves)
+        else:
+            FirstMoves = Board.calcMovesForDie(self.roll[0],player,True,True)
+            for move in FirstMoves:
+                algoBoard1 = copy.deepcopy(Board)
+                algoBoard1.updateWithMove((move[0],move[1][0]),player)
+                secondMoves = algoBoard1.calcMovesForDie(self.roll[0],player,True,True)
+                for secondMove in secondMoves:
+                    algoBoard2 = copy.deepcopy(Board)
+                    algoBoard2.updateWithMoves(((move[0],move[1][0]),(secondMove[0],secondMove[1][0])),player)
+                    thirdMoves = algoBoard2.calcMovesForDie(self.roll[0],player,True,True)
+                    for thirdMove in thirdMoves:
+                        algoBoard3 = copy.deepcopy(Board)
+                        algoBoard3.updateWithMoves(((move[0],move[1][0]),(secondMove[0],secondMove[1][0]),(thirdMove[0],thirdMove[1][0])),player)
+                        forthMoves = algoBoard3.calcMovesForDie(self.roll[0],player,True,True)
+                        for forthMove in forthMoves:
+                            self.current_possible_moves.append(((move[0],move[1][0]),(secondMove[0],secondMove[1][0]),(thirdMove[0],thirdMove[1][0]),(forthMove[0],forthMove[1][0])))
+            self.current_possible_moves = list(set(self.current_possible_moves))
+            self.current_possible_moves = byGroup(self.current_possible_moves)
+    
     def formSpriteList(self,board):
         self.sprites_move_start = createMoveStartSprites(self.current_possible_moves,board,self.player)
-        print(f"New Move Start Sprites Created with move list: {self.current_possible_moves}") #DEBUG
     def fromMoveToRoll(self,start,end,rolls,player):
         if start == "bar":
             roll = end if player == 1 else (25 - end)
