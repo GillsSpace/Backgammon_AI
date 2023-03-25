@@ -62,13 +62,20 @@ def randomMove(ActiveBoard:Board, ActiveTurn:Turn):
 
 def pickBestPip(ActiveBoard:Board, ActiveTurn:Turn):
     pipsList = []
+    ActiveTurn.updatePossibleMovesAI(ActiveBoard,ActiveTurn.player)
+    print(f"Board = {ActiveBoard.PositionListPoints}")
+    print(f"Possible Moves = {ActiveTurn.current_possible_moves}")
 
     for Moves in ActiveTurn.current_possible_moves:
         algoBoard = copy.deepcopy(ActiveBoard)
         algoBoard.updateWithMoves(Moves,ActiveTurn.player)
         algoBoard.updatePip()
-        pipDiff = (algoBoard.pip[0] - algoBoard.pip[1]) if ActiveTurn.player == 1 else (algoBoard.pip[1] - algoBoard.pip[0])
+        pipDiff = (algoBoard.pip[1] - algoBoard.pip[0]) if ActiveTurn.player == 1 else (algoBoard.pip[0] - algoBoard.pip[1])
         pipsList.append(pipDiff)
+        print(f"Moves = {Moves} // Player = {ActiveTurn.player} // pip dif = {pipDiff}")
+
+    if len(pipsList) == 0:
+        return []
 
     maxPipDiff = max(pipsList)
     indexOfMove = pipsList.index(maxPipDiff)

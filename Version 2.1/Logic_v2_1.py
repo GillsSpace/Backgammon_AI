@@ -2,19 +2,22 @@ import random
 import copy
 from Graphics_v2_1 import createMoveStartSprites, GenerateMoveLineData
 import itertools
+import collections
 
 def rollDice():
     num1 = random.randint(1,6)
     num2 = random.randint(1,6)
     return [num1,num2]
 
-def byGroup(k):
-    k = sorted(sorted(x) for x in k)
-    return [k for k,_ in itertools.groupby(k)]
+def byDict(k):
+    s = collections.OrderedDict()
+    for i in k:
+        s[tuple(sorted(i))] = i
+    return list(s.values())
 
 class Board:
     def __init__(self) -> None:
-        self.PositionListPoints = [[]] * 15
+        self.PositionListPoints = [[]] * 24
         self.PositionListOff = [0,0]
         self.PositionListBar = []
         self.bearOffStatus = [False,False]
@@ -58,14 +61,14 @@ class Board:
         self.bearOffStatus[1] = True if self.findLastOccupiedPoint(2) < 7 else False
     def updateWithMove(self,move,player):
         opponent = 1 if player == 2 else 2
-        if move[0] == "bar":
+        if move[0] == 1001:
             endPointIndex = move[1] - 1
             self.PositionListBar.remove(player)
             if len(self.PositionListPoints[endPointIndex]) > 0 and self.PositionListPoints[endPointIndex][0] == opponent:
                 self.PositionListPoints[endPointIndex].remove(opponent)
                 self.PositionListBar.append(opponent)
             self.PositionListPoints[endPointIndex].append(player)
-        elif move[1] == "off":
+        elif move[1] == 2002:
             startPointIndex = move[0] - 1
             self.PositionListPoints[startPointIndex].remove(player)
             self.PositionListOff[player - 1] += 1 
@@ -97,7 +100,7 @@ class Board:
         if player == 1:
             if 1 in self.PositionListBar:
                 if canMoveTo(roll,1) == True:
-                    moveList.append(("bar",[roll]))
+                    moveList.append((1001,[roll]))
             else:
                 for point in range(24):
                     pointList = self.PositionListPoints[point]
@@ -106,14 +109,14 @@ class Board:
                             moveList.append((point+1,[point+roll+1]))
                 if self.bearOffStatus[0] == True:
                     if len(self.PositionListPoints[24-roll]) > 0 and self.PositionListPoints[24-roll][0] == 1:
-                        moveList.append((25-roll,["off"]))
+                        moveList.append((25-roll,[2002]))
                     if (isBiggestDie == True or secondMove == True) and self.findLastOccupiedPoint(1) > 25-roll:
-                        moveList.append((self.findLastOccupiedPoint(1),["off"]))
+                        moveList.append((self.findLastOccupiedPoint(1),[2002]))
 
         if player == 2:
             if 2 in self.PositionListBar:
                 if canMoveTo(25-roll,2) == True:
-                    moveList.append(("bar",[25-roll]))
+                    moveList.append((1001,[25-roll]))
             else:
                 for point in range(24):
                     pointList = self.PositionListPoints[point]
@@ -122,17 +125,22 @@ class Board:
                             moveList.append((point+1,[point-roll+1]))
                 if self.bearOffStatus[1] == True:
                     if len(self.PositionListPoints[roll-1]) > 0 and self.PositionListPoints[roll-1][0] == 2: 
-                        moveList.append((roll,["off"]))
+                        moveList.append((roll,[2002]))
                     if (isBiggestDie == True or secondMove == True) and self.findLastOccupiedPoint(2) < roll:
-                        moveList.append((self.findLastOccupiedPoint(2),["off"]))
+                        moveList.append((self.findLastOccupiedPoint(2),[2002]))
 
         return moveList
     def updateWithMoves(self,moves,player):
         moveData = []
-        for move in moves:
-            self.updateWithMove(move,player)
-            data = GenerateMoveLineData(move,self)
-            moveData.append(data)
+        print(moves)
+        if len(moves) > 0 and type(moves[0]) == int:
+            self.updateWithMove(moves,player)
+        else:
+            for move in moves:
+                print(move)
+                self.updateWithMove(move,player)
+                data = GenerateMoveLineData(move,self)
+                moveData.append(data)
         self.moveData = moveData
 
 class Turn:
@@ -162,7 +170,7 @@ class Turn:
         else:
             self.unused_dice = copy.deepcopy(self.roll)
         
-        print(f"New Turn Created // Roll = {self.roll} , Unused Dice = {self.unused_dice}") #DEBUG
+        print(f"New Turn Created // player = {self.player} // Roll = {self.roll} , Unused Dice = {self.unused_dice}") #DEBUG
     def updatePossibleMoves(self,Board):
         self.current_possible_moves = []
         if self.doubles_turn == True and len(self.unused_dice) > 0:
@@ -202,37 +210,52 @@ class Turn:
             for move in FirstMoves:
                 algoBoard1 = copy.deepcopy(Board)
                 algoBoard1.updateWithMove((move[0],move[1][0]),player)
+                if algoBoard1.pip[player - 1] == 0:
+                    self.current_possible_moves = [(move[0],move[1][0])]
+                    print(" -- Interruption: GameWin Move Returned --")
+                    return 
                 usedRoll = self.fromMoveToRoll(move[0],move[1][0],self.roll,player)
                 secondMoves = algoBoard1.calcMovesForDie((self.roll[0] if self.roll[1] == usedRoll else self.roll[1]),player,True,True)
                 for secondMove in secondMoves:
                     self.current_possible_moves.append(((move[0],move[1][0]),(secondMove[0],secondMove[1][0])))
             self.current_possible_moves = list(set(self.current_possible_moves))
-            self.current_possible_moves = byGroup(self.current_possible_moves)
+            self.current_possible_moves = byDict(self.current_possible_moves)
         else:
             FirstMoves = Board.calcMovesForDie(self.roll[0],player,True,True)
             for move in FirstMoves:
                 algoBoard1 = copy.deepcopy(Board)
                 algoBoard1.updateWithMove((move[0],move[1][0]),player)
+                if algoBoard1.pip[player - 1] == 0:
+                    self.current_possible_moves = [(move[0],move[1][0])]
+                    print(" -- Interruption: GameWin Move Returned --")
+                    return
                 secondMoves = algoBoard1.calcMovesForDie(self.roll[0],player,True,True)
                 for secondMove in secondMoves:
                     algoBoard2 = copy.deepcopy(Board)
                     algoBoard2.updateWithMoves(((move[0],move[1][0]),(secondMove[0],secondMove[1][0])),player)
+                    if algoBoard2.pip[player - 1] == 0:
+                        self.current_possible_moves = [((move[0],move[1][0]),(secondMove[0],secondMove[1][0]))]
+                        print(" -- Interruption: GameWin Move Returned --")
+                        return 
                     thirdMoves = algoBoard2.calcMovesForDie(self.roll[0],player,True,True)
                     for thirdMove in thirdMoves:
                         algoBoard3 = copy.deepcopy(Board)
                         algoBoard3.updateWithMoves(((move[0],move[1][0]),(secondMove[0],secondMove[1][0]),(thirdMove[0],thirdMove[1][0])),player)
+                        if algoBoard3.pip[player - 1] == 0:
+                            self.current_possible_moves = [((move[0],move[1][0]),(secondMove[0],secondMove[1][0]),(thirdMove[0],thirdMove[1][0]))]
+                            print(" -- Interruption: GameWin Move Returned --")
+                            return 
                         forthMoves = algoBoard3.calcMovesForDie(self.roll[0],player,True,True)
                         for forthMove in forthMoves:
                             self.current_possible_moves.append(((move[0],move[1][0]),(secondMove[0],secondMove[1][0]),(thirdMove[0],thirdMove[1][0]),(forthMove[0],forthMove[1][0])))
             self.current_possible_moves = list(set(self.current_possible_moves))
-            self.current_possible_moves = byGroup(self.current_possible_moves)
-    
+            self.current_possible_moves = byDict(self.current_possible_moves)
     def formSpriteList(self,board):
         self.sprites_move_start = createMoveStartSprites(self.current_possible_moves,board,self.player)
     def fromMoveToRoll(self,start,end,rolls,player):
-        if start == "bar":
+        if start == 1001:
             roll = end if player == 1 else (25 - end)
-        elif end == "off":
+        elif end == 2002:
             roll = start if start in rolls else (25 - start)
             if roll not in rolls:
                 roll = max(rolls)

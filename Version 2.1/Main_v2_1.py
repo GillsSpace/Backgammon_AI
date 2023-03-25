@@ -5,9 +5,10 @@ import AI_v2_1 as AI
 import random
 
 #Set Version:
-Crit_Version = 2.0
+Crit_Version = 2.1
 
 #Convention: Player1 = 1, dark ,first list item // Player2 = 0, light, second list item, first AI player
+#            Moves: 1001 = Bar and 2002 = off
 
 #Main Game Control Class
 class Game_Window(arcade.Window):
@@ -400,7 +401,7 @@ class Game_Window(arcade.Window):
                     self.Current_Turn = Logic.Turn(startingPlayer,"AI",self.game_settings,First=True)
                     self.Current_Turn.updatePossibleMoves(self.Main_Board)
 
-                    Moves = AI.Main(self.Main_Board,self.Current_Turn)
+                    Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                     self.aiMoves = Moves
 
                     self.Main_Board.updateWithMoves(Moves,2)
@@ -464,7 +465,7 @@ class Game_Window(arcade.Window):
                     self.state = "1P_TurnAI"
                     self.Current_Turn = Logic.Turn(2,"AI",self.game_settings)
                     self.Current_Turn.updatePossibleMoves(self.Main_Board)
-                    Moves = AI.Main(self.Main_Board,self.Current_Turn)
+                    Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                     self.aiMoves = Moves
                     self.Main_Board.updateWithMoves(Moves,2)
                     if self.Main_Board.pip[1] == 0:
@@ -579,7 +580,7 @@ class Game_Window(arcade.Window):
                 self.TurnNumber = 0
                 
                 self.Current_Turn = Logic.Turn(startingPlayer,"AI",self.game_settings,First=True)
-                self.Current_Turn.updatePossibleMoves(self.Main_Board)
+                self.Current_Turn.updatePossibleMovesAI(self.Main_Board)
 
                 Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                 self.aiMoves = Moves
@@ -598,10 +599,10 @@ class Game_Window(arcade.Window):
         
             if 1025 < x < 1175 and 362 < y < 438:
                 nextPlayer = 1 if self.Current_Turn.player == 2 else 2
-                self.Current_Turn = Logic.Turn(nextPlayer,"AI",self.game_settings,First=True)
-                self.Current_Turn.updatePossibleMoves(self.Main_Board)
+                self.Current_Turn = Logic.Turn(nextPlayer,"AI",self.game_settings)
+                self.Current_Turn.updatePossibleMovesAI(self.Main_Board)
 
-                Moves = AI.Main(self.Main_Board,self.Current_Turn)
+                Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                 self.aiMoves = Moves
                 self.Main_Board.updateWithMoves(Moves,self.Current_Turn.player)
                 self.TurnNumber = self.TurnNumber + 1
@@ -612,7 +613,6 @@ class Game_Window(arcade.Window):
                     return
 
                 arcade.play_sound(Graphics.button_click)
-
             if 20 < x < 80 and 720 < y < 780:
                 self.state = "Splash"
                 arcade.play_sound(Graphics.button_click)
@@ -636,8 +636,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
 
 

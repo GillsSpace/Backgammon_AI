@@ -175,7 +175,7 @@ def createMoveStartSprites(possibleMoves,Board,player):
     for move in possibleMoves:
         startPoint = move[0]
 
-        if startPoint == "bar":
+        if startPoint == 1001:
             totalDist = 70 * len(board_bar_list)
             startDist = totalDist/2
             for pc in range(len(board_bar_list)):
@@ -203,7 +203,7 @@ def createMoveEndSprites(activeSprite,Board):
 
     for move in activeSprite.move[1]:
 
-        if move == "off":
+        if move == 2002:
             tempSprite = arcade.Sprite("Images/Submove.png",.07)
             tempSprite.center_x = 150
             tempSprite.center_y = 400
@@ -228,7 +228,7 @@ def GenerateMoveLineData(Move,Board):
     startPoint = Move[0]
     endPoint = Move[1]
 
-    if startPoint == "bar":
+    if startPoint == 1001:
         startX = 601
         startY = 401
     else:
@@ -237,7 +237,7 @@ def GenerateMoveLineData(Move,Board):
         startX = Master_Location_Dict[startPoint][0] 
         startY = Master_Location_Dict[startPoint][1] + (60*numberOnStartPoint*orientationStart)
 
-    if endPoint == "off":
+    if endPoint == 2002:
         endX = 150
         endY = 401
     else:
