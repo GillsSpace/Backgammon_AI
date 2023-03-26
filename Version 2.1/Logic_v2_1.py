@@ -28,6 +28,7 @@ class Board:
         self.PositionListOff = [0,0]
         self.PositionListBar = []
         self.bearOffStatus = [False,False]
+        self.lastPoints = [0,0]
         self.pip = (167, 167)
         self.TurnNumber = 0
     def updatePip(self):
@@ -47,18 +48,18 @@ class Board:
             if piece == 2:
                 lightPip = lightPip + 25
         self.pip = (darkPip,lightPip)
-    def findLastOccupiedPoint(self,player):
+    def updateLastOccupiedPoint(self,player):
         if player == 1:
             for index in range(0,24,1):
                 if len(self.PositionListPoints[index]) > 0 and self.PositionListPoints[index][0] == player:
-                    return index + 1
+                    self.lastPoints[0] = index + 1
         if player == 2:
             for index in range(23,-1,-1):
                 if len(self.PositionListPoints[index]) > 0 and self.PositionListPoints[index][0] == player:
-                    return index + 1
+                    self.lastPoints[1] = index + 1
     def updateBearOffStatus(self):
-        self.bearOffStatus[0] = True if self.findLastOccupiedPoint(1) > 18 else False
-        self.bearOffStatus[1] = True if self.findLastOccupiedPoint(2) < 7 else False
+        self.bearOffStatus[0] = True if self.lastPoints[0] > 18 else False
+        self.bearOffStatus[1] = True if self.lastPoints[1] < 7 else False
     def updateWithMove(self,move,player):
         opponent = 1 if player == 2 else 2
         if move[0] == 1001:
@@ -83,6 +84,7 @@ class Board:
             self.PositionListPoints[endPointIndex].append(player)
         self.updatePip()
     def calcMovesForDie(self,roll,player,isBiggestDie,secondMove):
+        self.updateLastOccupiedPoint(player)
         self.updateBearOffStatus()
         moveList = []
         def canMoveTo(point,player):
@@ -110,8 +112,8 @@ class Board:
                 if self.bearOffStatus[0] == True:
                     if len(self.PositionListPoints[24-roll]) > 0 and self.PositionListPoints[24-roll][0] == 1:
                         moveList.append((25-roll,[2002]))
-                    if (isBiggestDie == True or secondMove == True) and self.findLastOccupiedPoint(1) > 25-roll:
-                        moveList.append((self.findLastOccupiedPoint(1),[2002]))
+                    if (isBiggestDie == True or secondMove == True) and self.lastPoints[0] > 25-roll:
+                        moveList.append((self.lastPoints[0],[2002]))
 
         if player == 2:
             if 2 in self.PositionListBar:
@@ -126,21 +128,20 @@ class Board:
                 if self.bearOffStatus[1] == True:
                     if len(self.PositionListPoints[roll-1]) > 0 and self.PositionListPoints[roll-1][0] == 2: 
                         moveList.append((roll,[2002]))
-                    if (isBiggestDie == True or secondMove == True) and self.findLastOccupiedPoint(2) < roll:
-                        moveList.append((self.findLastOccupiedPoint(2),[2002]))
+                    if (isBiggestDie == True or secondMove == True) and self.lastPoints[1] < roll:
+                        moveList.append((self.lastPoints[1],[2002]))
 
         return moveList
-    def updateWithMoves(self,moves,player):
+    def updateWithMoves(self,moves,player,final=False):
         moveData = []
-        print(moves)
         if len(moves) > 0 and type(moves[0]) == int:
             self.updateWithMove(moves,player)
         else:
             for move in moves:
-                print(move)
                 self.updateWithMove(move,player)
-                data = GenerateMoveLineData(move,self)
-                moveData.append(data)
+                if final == True:
+                    data = GenerateMoveLineData(move,self)
+                    moveData.append(data)
         self.moveData = moveData
 
 class Turn:
@@ -170,7 +171,7 @@ class Turn:
         else:
             self.unused_dice = copy.deepcopy(self.roll)
         
-        print(f"New Turn Created // player = {self.player} // Roll = {self.roll} , Unused Dice = {self.unused_dice}") #DEBUG
+        # print(f"New Turn Created // player = {self.player} // Roll = {self.roll} , Unused Dice = {self.unused_dice}") #DEBUG
     def updatePossibleMoves(self,Board):
         self.current_possible_moves = []
         if self.doubles_turn == True and len(self.unused_dice) > 0:
@@ -212,7 +213,6 @@ class Turn:
                 algoBoard1.updateWithMove((move[0],move[1][0]),player)
                 if algoBoard1.pip[player - 1] == 0:
                     self.current_possible_moves = [(move[0],move[1][0])]
-                    print(" -- Interruption: GameWin Move Returned --")
                     return 
                 usedRoll = self.fromMoveToRoll(move[0],move[1][0],self.roll,player)
                 secondMoves = algoBoard1.calcMovesForDie((self.roll[0] if self.roll[1] == usedRoll else self.roll[1]),player,True,True)
@@ -227,7 +227,6 @@ class Turn:
                 algoBoard1.updateWithMove((move[0],move[1][0]),player)
                 if algoBoard1.pip[player - 1] == 0:
                     self.current_possible_moves = [(move[0],move[1][0])]
-                    print(" -- Interruption: GameWin Move Returned --")
                     return
                 secondMoves = algoBoard1.calcMovesForDie(self.roll[0],player,True,True)
                 for secondMove in secondMoves:
@@ -235,7 +234,6 @@ class Turn:
                     algoBoard2.updateWithMoves(((move[0],move[1][0]),(secondMove[0],secondMove[1][0])),player)
                     if algoBoard2.pip[player - 1] == 0:
                         self.current_possible_moves = [((move[0],move[1][0]),(secondMove[0],secondMove[1][0]))]
-                        print(" -- Interruption: GameWin Move Returned --")
                         return 
                     thirdMoves = algoBoard2.calcMovesForDie(self.roll[0],player,True,True)
                     for thirdMove in thirdMoves:
@@ -243,7 +241,6 @@ class Turn:
                         algoBoard3.updateWithMoves(((move[0],move[1][0]),(secondMove[0],secondMove[1][0]),(thirdMove[0],thirdMove[1][0])),player)
                         if algoBoard3.pip[player - 1] == 0:
                             self.current_possible_moves = [((move[0],move[1][0]),(secondMove[0],secondMove[1][0]),(thirdMove[0],thirdMove[1][0]))]
-                            print(" -- Interruption: GameWin Move Returned --")
                             return 
                         forthMoves = algoBoard3.calcMovesForDie(self.roll[0],player,True,True)
                         for forthMove in forthMoves:

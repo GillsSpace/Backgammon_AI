@@ -2,6 +2,7 @@ import random
 import copy
 from Logic_v2_1 import Board,Turn
 
+#AI Types:
 def randomMove(ActiveBoard:Board, ActiveTurn:Turn):
     algoBoard = copy.deepcopy(ActiveBoard)
 
@@ -63,8 +64,6 @@ def randomMove(ActiveBoard:Board, ActiveTurn:Turn):
 def pickBestPip(ActiveBoard:Board, ActiveTurn:Turn):
     pipsList = []
     ActiveTurn.updatePossibleMovesAI(ActiveBoard,ActiveTurn.player)
-    print(f"Board = {ActiveBoard.PositionListPoints}")
-    print(f"Possible Moves = {ActiveTurn.current_possible_moves}")
 
     for Moves in ActiveTurn.current_possible_moves:
         algoBoard = copy.deepcopy(ActiveBoard)
@@ -72,7 +71,6 @@ def pickBestPip(ActiveBoard:Board, ActiveTurn:Turn):
         algoBoard.updatePip()
         pipDiff = (algoBoard.pip[1] - algoBoard.pip[0]) if ActiveTurn.player == 1 else (algoBoard.pip[0] - algoBoard.pip[1])
         pipsList.append(pipDiff)
-        print(f"Moves = {Moves} // Player = {ActiveTurn.player} // pip dif = {pipDiff}")
 
     if len(pipsList) == 0:
         return []
@@ -82,29 +80,12 @@ def pickBestPip(ActiveBoard:Board, ActiveTurn:Turn):
 
     return ActiveTurn.current_possible_moves[indexOfMove]
 
-    
-def treeSearch(ActiveBoard:Board, ActiveTurn:Turn, depth):
-    algoBoard = copy.deepcopy(ActiveBoard)
 
-    ActiveTurn.updatePossibleMoves(algoBoard)
-    possibleMoves = ActiveTurn.current_possible_moves
-    if len(possibleMoves) == 0:
-        return ()
-    
-    else:
-        Move1 = random.choice(possibleMoves)
-        Move1 = (Move1[0], random.choice(Move1[1]))
-        roll = ActiveTurn.fromMoveToRoll(Move1[0],Move1[1],ActiveTurn.unused_dice,ActiveTurn.player)
-        ActiveTurn.unused_dice.remove(roll)
-        algoBoard.updateWithMove(Move1,ActiveTurn.player)
-        if algoBoard.pip[ActiveTurn.player - 1] == 0:
-            return [Move1]
-
+#Main Function - Called 
 def Main(Main_Board:Board,Main_Turn:Turn,aiType):
     AI_player = aiType
     if AI_player == "Random":
         Moves = randomMove(Main_Board,Main_Turn)
-        print(f"Final Move list = {Moves}") #DEBUG
         return Moves
     elif AI_player == "Tree":
         pass
@@ -112,5 +93,4 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType):
         pass
     elif AI_player == "PBP":
         Moves = pickBestPip(Main_Board,Main_Turn)
-        print(f"Final Move list = {Moves}") #DEBUG
         return Moves

@@ -404,7 +404,7 @@ class Game_Window(arcade.Window):
                     Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                     self.aiMoves = Moves
 
-                    self.Main_Board.updateWithMoves(Moves,2)
+                    self.Main_Board.updateWithMoves(Moves,2,True)
                 
                 self.state = "1P_TurnHuman" if startingPlayer == 1 else "1P_TurnAI"
                 arcade.play_sound(Graphics.dice_roll)
@@ -467,7 +467,7 @@ class Game_Window(arcade.Window):
                     self.Current_Turn.updatePossibleMoves(self.Main_Board)
                     Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                     self.aiMoves = Moves
-                    self.Main_Board.updateWithMoves(Moves,2)
+                    self.Main_Board.updateWithMoves(Moves,2,True)
                     if self.Main_Board.pip[1] == 0:
                         self.state = "GameOver"
                         self.Game_Winner = 2
@@ -558,7 +558,7 @@ class Game_Window(arcade.Window):
                     self.Current_Turn.updatePossibleMoves(self.Main_Board)
                     Moves = AI.Main(self.Main_Board,self.Current_Turn)
                     self.aiMoves = Moves
-                    self.Main_Board.updateWithMoves(Moves,2)
+                    self.Main_Board.updateWithMoves(Moves,2,True)
                     if self.Main_Board.pip[1] == 0:
                         self.state = "GameOver"
                         self.Game_Winner = 2
@@ -584,7 +584,7 @@ class Game_Window(arcade.Window):
 
                 Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                 self.aiMoves = Moves
-                self.Main_Board.updateWithMoves(Moves,self.Current_Turn.player)
+                self.Main_Board.updateWithMoves(Moves,self.Current_Turn.player,True)
 
                 self.state = "0P_Turn"
                 arcade.play_sound(Graphics.button_click)
@@ -604,7 +604,7 @@ class Game_Window(arcade.Window):
 
                 Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                 self.aiMoves = Moves
-                self.Main_Board.updateWithMoves(Moves,self.Current_Turn.player)
+                self.Main_Board.updateWithMoves(Moves,self.Current_Turn.player,True)
                 self.TurnNumber = self.TurnNumber + 1
 
                 if self.Main_Board.pip[0 if self.Current_Turn.player == 1 else 1] == 0:
