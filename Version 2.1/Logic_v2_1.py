@@ -1,7 +1,6 @@
 import random
 import copy
 from Graphics_v2_1 import createMoveStartSprites, GenerateMoveLineData
-import itertools
 import collections
 
 def rollDice():
@@ -22,13 +21,14 @@ class Board:
         self.PositionListBar = []
         self.bearOffStatus = [False,False]
         self.pip = (0,0)
+        self.lastPoints = [0,0]
     def setStartPositions(self):
         self.PositionListPoints = [[1,1],[],[],[],[],[2,2,2,2,2],[],[2,2,2],[],[],[],[1,1,1,1,1],[2,2,2,2,2],[],[],[],[1,1,1],[],[1,1,1,1,1],[],[],[],[],[2,2]]
         # self.PositionListPoints = [[],[],[],[],[],[2,2,2,2,2],[],[],[],[],[],[],[],[],[],[],[],[],[1,1,1,1,1],[],[],[],[],[]] #DEBUG
         self.PositionListOff = [0,0]
         self.PositionListBar = []
         self.bearOffStatus = [False,False]
-        self.lastPoints = [0,0]
+        self.lastPoints = [1,24]
         self.pip = (167, 167)
         self.TurnNumber = 0
     def updatePip(self):
@@ -53,10 +53,12 @@ class Board:
             for index in range(0,24,1):
                 if len(self.PositionListPoints[index]) > 0 and self.PositionListPoints[index][0] == player:
                     self.lastPoints[0] = index + 1
+                    return
         if player == 2:
             for index in range(23,-1,-1):
                 if len(self.PositionListPoints[index]) > 0 and self.PositionListPoints[index][0] == player:
                     self.lastPoints[1] = index + 1
+                    return
     def updateBearOffStatus(self):
         self.bearOffStatus[0] = True if self.lastPoints[0] > 18 else False
         self.bearOffStatus[1] = True if self.lastPoints[1] < 7 else False
@@ -216,6 +218,9 @@ class Turn:
                     return 
                 usedRoll = self.fromMoveToRoll(move[0],move[1][0],self.roll,player)
                 secondMoves = algoBoard1.calcMovesForDie((self.roll[0] if self.roll[1] == usedRoll else self.roll[1]),player,True,True)
+                if len(secondMoves) == 0:
+                    self.current_possible_moves = [(FirstMoves[0][0],FirstMoves[0][1][0])]
+                    return
                 for secondMove in secondMoves:
                     self.current_possible_moves.append(((move[0],move[1][0]),(secondMove[0],secondMove[1][0])))
             self.current_possible_moves = list(set(self.current_possible_moves))

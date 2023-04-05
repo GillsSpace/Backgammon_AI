@@ -80,6 +80,8 @@ def pickBestPip(ActiveBoard:Board, ActiveTurn:Turn):
 
     return ActiveTurn.current_possible_moves[indexOfMove]
 
+def treeSearchIII(ActiveBoard:Board, ActiveTurn:Turn):
+    pass
 
 #Main Function - Called 
 def Main(Main_Board:Board,Main_Turn:Turn,aiType):

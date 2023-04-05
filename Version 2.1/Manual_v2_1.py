@@ -3,7 +3,7 @@ import AI_v2_1 as AI
 import random
 import itertools
 import time
-
+import copy
 
 #Testing Functions:
 def printBoardInfo(Board:Logic.Board):
@@ -48,6 +48,7 @@ def RunGames(AiType1,AiType2,iterations):
         turns.append(turnNum)
         wins[winner - 1] = wins[winner - 1] + 1
         i = i + 1
+        print(f" Game Number = {i}  // winner = {winner} // Number of Turns = {turnNum}")
     et = time.time()
 
     elapsed_time = et - st
@@ -72,6 +73,18 @@ Board.setStartPositions()
 # TestAIMoveUpdates(Board,1,(4,2))
 
 # RunGames("Random","PBP",10)
-RunGames("Random","PBP",1000)
+# RunGames("PBP","PBP",1000)
+
+# Board.PositionListPoints = [[],[1],[1],[],[],[2,2,2],[],[2,2,2,2],[2],[],[],[1,1,1],[2,2,2],[],[],[],[1,1],[1,1],[1,1,1,1],[],[2],[2],[1,1],[]] 
+# Board.PositionListBar = [2,2]
+
+Turn = Logic.Turn(2,"AI",None,False,[6,4])
+Turn.updatePossibleMovesAI(Board,2)
+print(Turn.current_possible_moves)
+
+Moves = AI.Main(Board,Turn,"PBP")
+print(Moves)
+
+
 
 #Notes: 
