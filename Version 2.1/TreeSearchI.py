@@ -3,6 +3,9 @@ import random
 import copy
 import collections
 
+#Data:
+Data_rollOptions = [(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(2,2),(2,3),(2,4),(2,5),(2,6),(3,3),(3,4),(3,5),(3,6),(4,4),(4,5),(4,6),(5,5),(5,6),(6,6)]
+
 #Helper Functions:
 def removeDuplicateMoves(inputList):
     s = collections.OrderedDict()
@@ -237,6 +240,7 @@ class TurnSolution:
     def __init__(self, Board:FastBoard, MoveSequence) -> None:
         self.Board = Board
         self.MoveSequence = MoveSequence
+        self.expectedPipDiff = 0
 
 class SubTurn:
     def __init__(self, Board:FastBoard, PrimaryMoveSequence, Roll, Player) -> None:
@@ -244,10 +248,17 @@ class SubTurn:
         self.PrimaryMoveSequence = PrimaryMoveSequence
         self.Roll = Roll
         self.Player = Player
+        self.smallestPip = 0
 
 
-def GenerateTurnSolutions(Board:FastBoard, Roll):
-    pass
+def ReturnTurnSolutions(inputBoard:FastBoard,inputTurn:FastTurn):
+    turnSolutions = []
+    playerTurnSequences = inputBoard.returnMoveSequences(inputTurn.player,inputTurn.roll)
+    for moveSequence in playerTurnSequences:
+        instanceTurnSolution = TurnSolution(inputBoard,moveSequence)
+        instanceTurnSolution.Board = instanceTurnSolution.Board.makeMoves(moveSequence,inputTurn.player)
+        turnSolutions.append(instanceTurnSolution)
+    return turnSolutions
 
 def PipMinMaxBasic():
     pass
@@ -262,11 +273,13 @@ turn = FastTurn(1,(1,2))
 
 #Running:
 def Full_Run(inputBoard:FastBoard,inputTurn:FastTurn):
-    turnSolutions = []
-    maxPlayerTurnSequences = inputBoard.returnMoveSequences(inputTurn.player,inputTurn.roll)
-    for moveSequence in maxPlayerTurnSequences:
-        instanceTurnSolution = TurnSolution(inputBoard,moveSequence)
-        instanceTurnSolution.Board = instanceTurnSolution.Board.makeMoves(moveSequence,inputTurn.player)
-        turnSolutions.append(instanceTurnSolution)
+    initialTurnSolutions = ReturnTurnSolutions(inputBoard,inputTurn)
+    for turnSolution in initialTurnSolutions:
+        subTurnsList = []
+        for roll in Data_rollOptions:
+            instanceSubTurn = SubTurn(turnSolution.board,turnSolution.MoveSequence,roll,inputTurn.player)
+            subTurnsList.append(instanceSubTurn)
+        for subTurn in subTurnsList:
+            pass
 
 Full_Run(board,turn)
