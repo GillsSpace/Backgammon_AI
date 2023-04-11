@@ -7,11 +7,6 @@ import collections
 Data_rollOptions = [(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(2,2),(2,3),(2,4),(2,5),(2,6),(3,3),(3,4),(3,5),(3,6),(4,4),(4,5),(4,6),(5,5),(5,6),(6,6)]
 
 #Helper Functions:
-def removeDuplicateMoves(inputList):
-    s = collections.OrderedDict()
-    for i in inputList:
-        s[tuple(sorted(i))] = i
-    return list(s.values())
 def fromMoveToDie(start,end,roll,player):
     if start == 1001:
         die = end if player == 1 else (25 - end)
@@ -23,6 +18,8 @@ def fromMoveToDie(start,end,roll,player):
         diff = end - start
         die = diff if diff > 0 else (diff * -1)
     return die
+def average(inputList):
+    return sum(inputList) / len(inputList)
 
 class FastTurn:
     def __init__(self,player,roll) -> None:
@@ -132,7 +129,7 @@ class FastBoard:
         def canMoveTo(point,player):
             if point > 24 or point < 1:
                 return False
-            oppValue = 1 if player == 2 else -1
+            oppValue = -1 if player == 2 else 1
             if self.positions[point-1] == 0:
                 return True
             if self.positions[point-1] > 0 and player == 2:
@@ -141,16 +138,17 @@ class FastBoard:
                 return True
             if self.positions[point-1] == oppValue:
                 return True
+                print("Hit Move to Found")#DEBUG
         
         if player == 1:
             if self.positions[24] > 0:
                 if canMoveTo(die,1) == True:
                     moveList.append((1001,die))
             else:
-                for point in range(24):
-                    if self.positions[point] < 0:
-                        if canMoveTo(point+die+1,1) == True:
-                            moveList.append((point+1,point+die+1))
+                for pointIndex in range(24):
+                    if self.positions[pointIndex] < 0:
+                        if canMoveTo(pointIndex+die+1,1) == True:
+                            moveList.append((pointIndex+1,pointIndex+die+1))
                 if self.bearOffStatus[0] == True:
                     if self.positions[24-die] < 0:
                         moveList.append((25-die,2002))
@@ -162,10 +160,10 @@ class FastBoard:
                 if canMoveTo(25-die,2) == True:
                     moveList.append((1001,25-die))
             else:
-                for point in range(24):
-                    if self.positions[point] > 0:
-                        if canMoveTo(point-die+1,2) == True:
-                            moveList.append((point+1,point-die+1))
+                for pointIndex in range(24):
+                    if self.positions[pointIndex] > 0:
+                        if canMoveTo(pointIndex-die+1,2) == True:
+                            moveList.append((pointIndex+1,pointIndex-die+1))
                 if self.bearOffStatus[1] == True:
                     if self.positions[die-1] > 0: 
                         moveList.append((die,2002))
@@ -178,6 +176,7 @@ class FastBoard:
         pass
     def returnMoveSequences(self,player,roll):
         Sequences = []
+        EndBoards = []
         if roll[0] != roll[1]:
             biggerDie = roll[0] if roll[0] >= roll[1] else roll[1]
             FirstMoves = []
@@ -203,8 +202,11 @@ class FastBoard:
                     Sequences = [move]
                     return Sequences
                 for secondMove in SecondMoves:
-                    Sequences.append((move,secondMove))
-            Sequences = removeDuplicateMoves(Sequences)
+                    algoBoard2 = copy.deepcopy(self)
+                    algoBoard2.makeMoves((move,secondMove),player)
+                    if algoBoard2.positions not in EndBoards:
+                        Sequences.append((move,secondMove))
+                        EndBoards.append(algoBoard2.positions)
             return Sequences
         
         else:
@@ -231,55 +233,98 @@ class FastBoard:
                             return Sequences
                         ForthMoves = algoBoard3.returnMovesForDie(roll[0],player,True)
                         for forthMove in ForthMoves:
-                            Sequences.append((firstMove,secondMove,thirdMove,forthMove))
-            Sequences = removeDuplicateMoves(Sequences)
+                            algoBoard4 = copy.deepcopy(self)
+                            algoBoard4.makeMoves((firstMove,secondMove,thirdMove,forthMove),player)
+                            if algoBoard4.positions not in EndBoards:
+                                Sequences.append((firstMove,secondMove,thirdMove,forthMove))
+                                EndBoards.append(algoBoard4.positions)
             return Sequences
 
 
 class TurnSolution:
     def __init__(self, Board:FastBoard, MoveSequence) -> None:
-        self.Board = Board
+        self.Board = copy.deepcopy(Board)
         self.MoveSequence = MoveSequence
         self.expectedPipDiff = 0
 
 class SubTurn:
+    #Represents a possible turn of the opponent's
     def __init__(self, Board:FastBoard, PrimaryMoveSequence, Roll, Player) -> None:
-        self.Board = Board
+        self.Board = copy.deepcopy(Board)
         self.PrimaryMoveSequence = PrimaryMoveSequence
         self.Roll = Roll
         self.Player = Player
-        self.smallestPip = 0
+        self.largestPipDiff = 0 #represents the largest pip difference opponent can generate from the subTurn.
 
 
 def ReturnTurnSolutions(inputBoard:FastBoard,inputTurn:FastTurn):
+    print(f"Running ReturnTurnSolutions for Board: {inputBoard.positions}")
     turnSolutions = []
     playerTurnSequences = inputBoard.returnMoveSequences(inputTurn.player,inputTurn.roll)
     for moveSequence in playerTurnSequences:
         instanceTurnSolution = TurnSolution(inputBoard,moveSequence)
-        instanceTurnSolution.Board = instanceTurnSolution.Board.makeMoves(moveSequence,inputTurn.player)
+        instanceTurnSolution.Board.makeMoves(moveSequence,inputTurn.player)
         turnSolutions.append(instanceTurnSolution)
     return turnSolutions
 
-def PipMinMaxBasic():
-    pass
+def PipMinMaxBasic(subTurn:SubTurn,player,Max=True): 
+    #From an input of a SubTurn, returns either the maximum or minimum pip difference that can be generated in the courses of the subTurn
+
+    pipList = []
+    PossibleMovesList = subTurn.Board.returnMoveSequences(player,subTurn.Roll)
+
+    for moves in PossibleMovesList:
+        algoBoard = copy.deepcopy(subTurn.Board)
+        algoBoard.makeMoves(moves,player)
+        algoBoard.updatePip()
+        pipDiff = (algoBoard.pip[1] - algoBoard.pip[0]) if player == 1 else (algoBoard.pip[0] - algoBoard.pip[1])
+        pipList.append(pipDiff)
+        print(f"      Move = {moves} // Final Board = {algoBoard.positions} // pipDiff = {pipDiff}")
+    
+    if len(pipList) == 0:
+        pipDiff = (subTurn.Board.pip[1] - subTurn.Board.pip[0]) if player == 1 else (subTurn.Board.pip[0] - subTurn.Board.pip[1])
+        return pipDiff
+    
+    maxPipDiff = max(pipList)
+    minPipDiff = min(pipList)
+
+    if Max == True:
+        return maxPipDiff
+    else:
+        return minPipDiff
 
 #testing
 board = FastBoard()
-print(board.returnMovesForDie(2,1,False))
-print(board.returnMoveSequences(1,(2,1)))
-print(board.returnPip())
 turn = FastTurn(1,(1,2))
+# board.positions = [0,-1,-1,0,0,5,0,3,0,0,0,-5,5,0,0,0,-3,0,-5,0,0,0,0,2,0,0,0,0]
+
+print(f"--Testing--")
+print(f"Board: {board.positions}")
+print(f"Turn: player = {turn.player} // roll = {turn.roll}")
 
 
 #Running:
 def Full_Run(inputBoard:FastBoard,inputTurn:FastTurn):
+    print(f"Initial Board Pip = {inputBoard.returnPip()}")
     initialTurnSolutions = ReturnTurnSolutions(inputBoard,inputTurn)
     for turnSolution in initialTurnSolutions:
+        print(f"T.S. Start: board = {turnSolution.Board.positions} // move = {turnSolution.MoveSequence} // exp. pip diff = {turnSolution.expectedPipDiff}")
+        print(f"T.S. Initial Board Pip = {turnSolution.Board.returnPip()}")
         subTurnsList = []
         for roll in Data_rollOptions:
-            instanceSubTurn = SubTurn(turnSolution.board,turnSolution.MoveSequence,roll,inputTurn.player)
+            instanceSubTurn = SubTurn(turnSolution.Board,turnSolution.MoveSequence,roll,(1 if inputTurn.player == 2 else 2))
             subTurnsList.append(instanceSubTurn)
+        MaxPipDiffs = []
         for subTurn in subTurnsList:
-            pass
+            print(f"   SubTurnStart: roll = {subTurn.Roll} // player = {subTurn.Player} // largest pip diff for opponent = {subTurn.largestPipDiff}")
+            subTurn.largestPipDiff = PipMinMaxBasic(subTurn,subTurn.Player)
+            MaxPipDiffs.append(subTurn.largestPipDiff)
+            if subTurn.Roll[0] != subTurn.Roll[1]:
+                #accounts fot weighted average of non-double rolls, appends the value twice:
+                MaxPipDiffs.append(subTurn.largestPipDiff)
+            print(f"   SubTurnEnd: roll = {subTurn.Roll} // player = {subTurn.Player} // largest pip diff for opponent = {subTurn.largestPipDiff}")
+        turnSolution.expectedPipDiff = average(MaxPipDiffs)
+        print(f"T.S. End: board = {turnSolution.Board.positions} // move = {turnSolution.MoveSequence} // exp. pip diff = {turnSolution.expectedPipDiff}")
+
 
 Full_Run(board,turn)
