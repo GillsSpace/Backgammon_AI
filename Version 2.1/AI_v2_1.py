@@ -1,6 +1,32 @@
 import random
 import copy
 from Logic_v2_1 import Board,Turn
+import TreeSearchI
+
+#Conversions:
+def from_Board_to_FastBoard(Board:Board):
+    positionList = []
+    for point in Board.PositionListPoints:
+        if len(point) == 0:
+            positionList.append(0)
+        if len(point) > 0 and point[0] == 1:
+            positionList.append(-1 * len(point))
+        if len(point) > 0 and point[0] == 2:
+            positionList.append(len(point))
+    player1 = 0
+    player2 = 0
+    for item in Board.PositionListBar:
+        if item == 1:
+            player1 = player1 + 1
+        else:
+            player2 = player2 + 1
+    positionList.append(player1)
+    positionList.append(player2)
+    positionList.append(Board.PositionListOff[0])
+    positionList.append(Board.PositionListOff[1])
+    New_Board = TreeSearchI.FastBoard(positionList)
+    return New_Board
+
 
 #AI Types:
 def randomMove(ActiveBoard:Board, ActiveTurn:Turn):
@@ -80,8 +106,11 @@ def pickBestPip(ActiveBoard:Board, ActiveTurn:Turn):
 
     return ActiveTurn.current_possible_moves[indexOfMove]
 
-def treeSearchIII(ActiveBoard:Board, ActiveTurn:Turn):
-    pass
+def treeSearchI(ActiveBoard:Board, ActiveTurn:Turn):
+    fastBoard = from_Board_to_FastBoard(ActiveBoard)
+    fastTurn = TreeSearchI.FastTurn(ActiveTurn.player,ActiveTurn.roll)
+
+    return TreeSearchI.Full_Run(fastBoard,fastTurn)
 
 #Main Function - Called 
 def Main(Main_Board:Board,Main_Turn:Turn,aiType):
@@ -89,8 +118,9 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType):
     if AI_player == "Random":
         Moves = randomMove(Main_Board,Main_Turn)
         return Moves
-    elif AI_player == "Tree":
-        pass
+    elif AI_player == "Tree Search I":
+        Moves = treeSearchI(Main_Board,Main_Turn)
+        return Moves
     elif AI_player == "DRL":
         pass
     elif AI_player == "PBP":

@@ -19,7 +19,7 @@ class Game_Window(arcade.Window):
         self.buttons_excited = [False] * 16
         
         self.game_type = "0P"
-        self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"PBP"}   
+        self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Tree Search I"}   
         self.TurnNumber = 0
 
         self.state = "Splash"

@@ -21,6 +21,7 @@ def fromMoveToDie(start,end,roll,player):
 def average(inputList):
     return sum(inputList) / len(inputList)
 
+#Classes:
 class FastTurn:
     def __init__(self,player,roll) -> None:
         self.player = player
@@ -240,7 +241,6 @@ class FastBoard:
                                 EndBoards.append(algoBoard4.positions)
             return Sequences
 
-
 class TurnSolution:
     def __init__(self, Board:FastBoard, MoveSequence) -> None:
         self.Board = copy.deepcopy(Board)
@@ -256,9 +256,7 @@ class SubTurn:
         self.Player = Player
         self.largestPipDiff = 0 #represents the largest pip difference opponent can generate from the subTurn.
 
-
 def ReturnTurnSolutions(inputBoard:FastBoard,inputTurn:FastTurn):
-    print(f"Running ReturnTurnSolutions for Board: {inputBoard.positions}")
     turnSolutions = []
     playerTurnSequences = inputBoard.returnMoveSequences(inputTurn.player,inputTurn.roll)
     for moveSequence in playerTurnSequences:
@@ -279,7 +277,6 @@ def PipMinMaxBasic(subTurn:SubTurn,player,Max=True):
         algoBoard.updatePip()
         pipDiff = (algoBoard.pip[1] - algoBoard.pip[0]) if player == 1 else (algoBoard.pip[0] - algoBoard.pip[1])
         pipList.append(pipDiff)
-        print(f"      Move = {moves} // Final Board = {algoBoard.positions} // pipDiff = {pipDiff}")
     
     if len(pipList) == 0:
         pipDiff = (subTurn.Board.pip[1] - subTurn.Board.pip[0]) if player == 1 else (subTurn.Board.pip[0] - subTurn.Board.pip[1])
@@ -293,38 +290,30 @@ def PipMinMaxBasic(subTurn:SubTurn,player,Max=True):
     else:
         return minPipDiff
 
-#testing
-board = FastBoard()
-turn = FastTurn(1,(1,2))
-# board.positions = [0,-1,-1,0,0,5,0,3,0,0,0,-5,5,0,0,0,-3,0,-5,0,0,0,0,2,0,0,0,0]
-
-print(f"--Testing--")
-print(f"Board: {board.positions}")
-print(f"Turn: player = {turn.player} // roll = {turn.roll}")
-
-
 #Running:
 def Full_Run(inputBoard:FastBoard,inputTurn:FastTurn):
-    print(f"Initial Board Pip = {inputBoard.returnPip()}")
+    #Takes a input of a FastBoard and a FastTurn and returns the optimal move for the current player to make. 
     initialTurnSolutions = ReturnTurnSolutions(inputBoard,inputTurn)
+    possiblePipDiffs = []
     for turnSolution in initialTurnSolutions:
-        print(f"T.S. Start: board = {turnSolution.Board.positions} // move = {turnSolution.MoveSequence} // exp. pip diff = {turnSolution.expectedPipDiff}")
-        print(f"T.S. Initial Board Pip = {turnSolution.Board.returnPip()}")
         subTurnsList = []
         for roll in Data_rollOptions:
             instanceSubTurn = SubTurn(turnSolution.Board,turnSolution.MoveSequence,roll,(1 if inputTurn.player == 2 else 2))
             subTurnsList.append(instanceSubTurn)
         MaxPipDiffs = []
         for subTurn in subTurnsList:
-            print(f"   SubTurnStart: roll = {subTurn.Roll} // player = {subTurn.Player} // largest pip diff for opponent = {subTurn.largestPipDiff}")
             subTurn.largestPipDiff = PipMinMaxBasic(subTurn,subTurn.Player)
             MaxPipDiffs.append(subTurn.largestPipDiff)
             if subTurn.Roll[0] != subTurn.Roll[1]:
                 #accounts fot weighted average of non-double rolls, appends the value twice:
                 MaxPipDiffs.append(subTurn.largestPipDiff)
-            print(f"   SubTurnEnd: roll = {subTurn.Roll} // player = {subTurn.Player} // largest pip diff for opponent = {subTurn.largestPipDiff}")
         turnSolution.expectedPipDiff = average(MaxPipDiffs)
-        print(f"T.S. End: board = {turnSolution.Board.positions} // move = {turnSolution.MoveSequence} // exp. pip diff = {turnSolution.expectedPipDiff}")
+        possiblePipDiffs.append(turnSolution.expectedPipDiff)
 
-
-Full_Run(board,turn)
+    if len(possiblePipDiffs) != 0:
+        maxPipDiff = min(possiblePipDiffs)
+        #Using min function because possible pip differences are calculated for opponents. 
+        indexOfTurn = possiblePipDiffs.index(maxPipDiff)
+        return initialTurnSolutions[indexOfTurn].MoveSequence 
+    else:
+        return None  

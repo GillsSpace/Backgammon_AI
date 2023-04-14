@@ -1,5 +1,6 @@
 import Logic_v2_1 as Logic
 import AI_v2_1 as AI
+import TreeSearchI
 import random
 import itertools
 import time
@@ -66,25 +67,11 @@ def TestAIMoveUpdates(Board:Logic.Board,player,roll):
 
 
 #Current Test Code
+# Board = TreeSearchI.FastBoard()
 Board = Logic.Board()
 Board.setStartPositions()
 
-# Board.PositionListPoints = [[],[],[],[],[],[2,2,2,2,2],[],[],[],[],[],[],[],[],[],[],[],[],[1,1,1,1,1],[],[],[],[],[]] 
-# TestAIMoveUpdates(Board,1,(4,2))
+print(Board.PositionListPoints)
 
-# RunGames("Random","PBP",10)
-# RunGames("PBP","PBP",1000)
+print(AI.from_Board_to_FastBoard(Board).positions)
 
-# Board.PositionListPoints = [[],[1],[1],[],[],[2,2,2],[],[2,2,2,2],[2],[],[],[1,1,1],[2,2,2],[],[],[],[1,1],[1,1],[1,1,1,1],[],[2],[2],[1,1],[]] 
-# Board.PositionListBar = [2,2]
-
-Turn = Logic.Turn(2,"AI",None,False,[6,4])
-Turn.updatePossibleMovesAI(Board,2)
-print(Turn.current_possible_moves)
-
-Moves = AI.Main(Board,Turn,"PBP")
-print(Moves)
-
-
-
-#Notes: 
