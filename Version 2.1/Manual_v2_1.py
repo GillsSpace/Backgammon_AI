@@ -70,8 +70,15 @@ def TestAIMoveUpdates(Board:Logic.Board,player,roll):
 # Board = TreeSearchI.FastBoard()
 Board = Logic.Board()
 Board.setStartPositions()
+Board.PositionListPoints = [[2],[2,2,2,2],[2,2,2],[],[],[2,2,2,2,2,2],[],[],[],[2],[],[],[],[],[],[],[],[],[],[],[1,1],[1,1,1,1],[],[1,1,1,1,1,1]] #DEBUG
 
 print(Board.PositionListPoints)
 
-print(AI.from_Board_to_FastBoard(Board).positions)
+fatsBoard = AI.from_Board_to_FastBoard(Board)
+fastTurn = TreeSearchI.FastTurn(1,(2,2))
+
+print(fatsBoard.returnMoveSequences(1,(2,2)))
+
+# moves = TreeSearchI.Full_Run(fatsBoard,fastTurn)
+# print(moves)
 

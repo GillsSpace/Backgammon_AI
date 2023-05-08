@@ -2,6 +2,7 @@ import random
 import copy
 from Logic_v2_1 import Board,Turn
 import TreeSearchI
+import time
 
 #Conversions:
 def from_Board_to_FastBoard(Board:Board):
@@ -119,7 +120,11 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType):
         Moves = randomMove(Main_Board,Main_Turn)
         return Moves
     elif AI_player == "Tree Search I":
+        print(f"Running tree search; Roll = {Main_Turn.roll}")
+        st = time.time()
         Moves = treeSearchI(Main_Board,Main_Turn)
+        et = time.time()
+        print(f"Finished Run; Elapsed Time = {et-st}")
         return Moves
     elif AI_player == "DRL":
         pass
