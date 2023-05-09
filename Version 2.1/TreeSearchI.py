@@ -176,6 +176,8 @@ class FastBoard:
     def returnMoveSet(self,player,roll):
         pass
     def returnMoveSequences(self,player,roll):
+        self.updateLastOccupiedPoint(player)
+        self.updateBearOffStatus()
         Sequences = []
         EndBoards = []
         if roll[0] != roll[1]:

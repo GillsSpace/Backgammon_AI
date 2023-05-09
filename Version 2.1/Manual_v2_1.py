@@ -75,9 +75,12 @@ Board.PositionListPoints = [[2],[2,2,2,2],[2,2,2],[],[],[2,2,2,2,2,2],[],[],[],[
 print(Board.PositionListPoints)
 
 fatsBoard = AI.from_Board_to_FastBoard(Board)
-fastTurn = TreeSearchI.FastTurn(1,(2,2))
+# fastTurn = TreeSearchI.FastTurn(1,(2,2))
+print(fatsBoard.positions)
 
-print(fatsBoard.returnMoveSequences(1,(2,2)))
+print("")
+print("Sequence Generation:")
+print(fatsBoard.returnMoveSequences(1,(6,6)))
 
 # moves = TreeSearchI.Full_Run(fatsBoard,fastTurn)
 # print(moves)

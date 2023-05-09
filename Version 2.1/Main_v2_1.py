@@ -16,7 +16,7 @@ class Game_Window(arcade.Window):
         super().__init__(1200,800,"Backgammon")
         arcade.set_background_color(arcade.color.DARK_SCARLET)
 
-        self.buttons_excited = [False] * 16
+        self.buttons_excited = [False] * 25
         
         self.game_type = "0P"
         self.game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Tree Search I"}   
@@ -114,6 +114,11 @@ class Game_Window(arcade.Window):
             self.buttons_excited[13] = True if 650 < x < 750 and 375 < y < 405 else False
             self.buttons_excited[14] = True if 775 < x < 875 and 375 < y < 405 else False
             self.buttons_excited[15] = True if 900 < x < 1000 and 375 < y < 405 else False
+            self.buttons_excited[16] = True if 1025 < x < 1125 and 375 < y < 405 else False
+            self.buttons_excited[17] = True if 650 < x < 750 and 325 < y < 355 else False
+            self.buttons_excited[18] = True if 775 < x < 875 and 325 < y < 355 else False
+            self.buttons_excited[19] = True if 900 < x < 1000 and 325 < y < 355 else False
+            self.buttons_excited[20] = True if 1025 < x < 1125 and 325 < y < 355 else False
 
         if self.state in {"2P_PreStart","2P_GameStart","2P_PreTurnP1","2P_PreTurnP2","2P_TurnP1","2P_TurnP2","1P_PreStart","1P_GameStart","1P_TurnHuman","1P_TurnAI","0P_Turn"}:
             self.buttons_excited[0] = True if 1025 < x < 1175 and 362 < y < 438 else False
@@ -222,10 +227,25 @@ class Game_Window(arcade.Window):
                 self.game_settings["AI Player"] = "Random"
                 arcade.play_sound(Graphics.button_click)
             if 775 < x < 875 and 375 < y < 405:
-                self.game_settings["AI Player"] = "Tree"
+                self.game_settings["AI Player"] = "PBP"
                 arcade.play_sound(Graphics.button_click)
             if 900 < x < 1000 and 375 < y < 405:
-                self.game_settings["AI Player"] = "DRL"
+                self.game_settings["AI Player"] = "Tree Search I"
+                arcade.play_sound(Graphics.button_click)
+            if 1025 < x < 1125 and 375 < y < 405:
+                self.game_settings["AI Player"] = "TBD1"
+                arcade.play_sound(Graphics.button_click)    
+            if 650 < x < 750 and 325 < y < 355:
+                self.game_settings["AI Player"] = "TBD2"
+                arcade.play_sound(Graphics.button_click)
+            if 775 < x < 875 and 325 < y < 355:
+                self.game_settings["AI Player"] = "TBD3"
+                arcade.play_sound(Graphics.button_click)
+            if 900 < x < 1000 and 325 < y < 355:
+                self.game_settings["AI Player"] = "TBD4"
+                arcade.play_sound(Graphics.button_click)
+            if 1025 < x < 1125 and 325 < y < 355:
+                self.game_settings["AI Player"] = "TBD5"
                 arcade.play_sound(Graphics.button_click)
 
         elif self.state == "2P_PreStart":

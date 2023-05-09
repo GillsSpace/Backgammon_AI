@@ -295,8 +295,13 @@ def draw_Settings(buttons_excited,game_settings):
     drawButtonSmall("On",700,432,100,30,buttons_excited[11],10,defaultColor=(button_used if game_settings["Display AI Info"] == True else button_default))
     drawButtonSmall("Off",825,432,100,30,buttons_excited[12],10,defaultColor=(button_used if game_settings["Display AI Info"] == False else button_default))
     drawButtonSmall("Random",700,382,100,30,buttons_excited[13],10,defaultColor=(button_used if game_settings["AI Player"] == "Random" else button_default))
-    drawButtonSmall("Tree",825,382,100,30,buttons_excited[14],10,defaultColor=(button_used if game_settings["AI Player"] == "Tree" else button_default))
-    drawButtonSmall("DRL",950,382,100,30,buttons_excited[15],10,defaultColor=(button_used if game_settings["AI Player"] == "DRL" else button_default))
+    drawButtonSmall("PBP",825,382,100,30,buttons_excited[14],10,defaultColor=(button_used if game_settings["AI Player"] == "PBP" else button_default))
+    drawButtonSmall("TS1",950,382,100,30,buttons_excited[15],10,defaultColor=(button_used if game_settings["AI Player"] == "Tree Search I" else button_default))
+    drawButtonSmall("TBD1",1075,382,100,30,buttons_excited[16],10,defaultColor=(button_used if game_settings["AI Player"] == "TBD1" else button_default))
+    drawButtonSmall("TBD2",700,332,100,30,buttons_excited[17],10,defaultColor=(button_used if game_settings["AI Player"] == "TBD2" else button_default))
+    drawButtonSmall("TBD3",825,332,100,30,buttons_excited[18],10,defaultColor=(button_used if game_settings["AI Player"] == "TBD3" else button_default))
+    drawButtonSmall("TBD4",950,332,100,30,buttons_excited[19],10,defaultColor=(button_used if game_settings["AI Player"] == "TBD4" else button_default))
+    drawButtonSmall("TBD5",1075,332,100,30,buttons_excited[20],10,defaultColor=(button_used if game_settings["AI Player"] == "TBD5" else button_default))
     # Button 1: 25 < x < 175 and 700 < y <775
     # Button 2: 650 < x < 750 and 675 < y < 705
     # Button 3: 775 < x < 875 and 675 < y < 705
