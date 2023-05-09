@@ -66,11 +66,18 @@ def TestAIMoveUpdates(Board:Logic.Board,player,roll):
     print(f"PossibleMoves = {Turn.current_possible_moves}")
 
 
-#Current Test Code
+##### Current Test Code #####
+
+player = 1
+roll = (4,4)
+
 # Board = TreeSearchI.FastBoard()
 Board = Logic.Board()
 Board.setStartPositions()
-Board.PositionListPoints = [[2],[2,2,2,2],[2,2,2],[],[],[2,2,2,2,2,2],[],[],[],[2],[],[],[],[],[],[],[],[],[],[],[1,1],[1,1,1,1],[],[1,1,1,1,1,1]] #DEBUG
+Board.PositionListPoints = [[2,2,2,2,2,2,2],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[1,1,1,1,1,1]] #DEBUG
+
+game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Tree Search I"}  
+Turn = Logic.Turn(player,"AI",game_settings,False,roll)
 
 print(Board.PositionListPoints)
 
@@ -80,7 +87,11 @@ print(fatsBoard.positions)
 
 print("")
 print("Sequence Generation:")
-print(fatsBoard.returnMoveSequences(1,(6,6)))
+print(fatsBoard.returnMoveSequences(player,roll))
+
+Moves = AI.Main(Board,Turn,"Tree Search I")
+Board.updateWithMoves(Moves,player)
+print(Board.PositionListPoints)
 
 # moves = TreeSearchI.Full_Run(fatsBoard,fastTurn)
 # print(moves)

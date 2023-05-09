@@ -120,11 +120,11 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType):
         Moves = randomMove(Main_Board,Main_Turn)
         return Moves
     elif AI_player == "Tree Search I":
-        print(f"Running tree search; Roll = {Main_Turn.roll}")
+        print(f"Running Tree Search I; Roll = {Main_Turn.roll}")
         st = time.time()
         Moves = treeSearchI(Main_Board,Main_Turn)
         et = time.time()
-        print(f"Finished Run; Elapsed Time = {et-st}")
+        print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
     elif AI_player == "DRL":
         pass

@@ -48,6 +48,7 @@ class FastBoard:
         p1_pip += 25 * self.positions[24]
         p2_pip += 25 * self.positions[25]
         self.pip = (p1_pip, p2_pip)
+
     def returnPip(self): #Returns a Pip Value: (P1 pip, P2 pip)
         p1_pip = 0
         p2_pip = 0
@@ -60,7 +61,7 @@ class FastBoard:
         p2_pip += 25 * self.positions[25]
         return (p1_pip, p2_pip)
 
-    def makeMove(self,move,player): #Updates the Board with an inputted move: (start point,end point)
+    def makeMove(self,move,player,fromMakeMoves=False): #Updates the Board with an inputted move: (start point,end point) // also updates pip, lastPoint, and BearOff
         if move[0] == 1001:
             endPointIndex = move[1] - 1
             self.positions[23 + player] -= 1
@@ -102,30 +103,38 @@ class FastBoard:
                     self.positions[24] += 1
                 else:
                     self.positions[endPointIndex] += 1
-        self.updatePip()
-    def makeMoves(self,moves,player): #Updates the Board with a series of moves: ((move1),(move2),ect.)
+        if fromMakeMoves == False:
+            self.updatePip()
+            self.updateLastOccupiedPoint(player)
+            self.updateBearOffStatus()
+
+    def makeMoves(self,moves,player): #Updates the Board with a series of moves: ((move1),(move2),ect.) // also updates pip, lastPoint, and BearOff
         if len(moves) > 0 and type(moves[0]) == int:
-            self.makeMove(moves,player)
+            self.makeMove(moves,player,True)
         else:
             for move in moves:
-                self.makeMove(move,player)
+                self.makeMove(move,player,True)
+        self.updatePip()
+        self.updateLastOccupiedPoint(player)
+        self.updateBearOffStatus()
 
-    def updateLastOccupiedPoint(self,player):
+    def updateLastOccupiedPoint(self,player): #Updates the self.lastPoints value for the given player
         if player == 1:
             for index in range(0,24,1):
                 if self.positions[index] < 0:
                     self.lastPoints[0] = index + 1
-                    return
-        if player == 2:
+                    break
+        else:
             for index in range(23,-1,-1):
                 if self.positions[index] > 0:
                     self.lastPoints[1] = index + 1
-                    return
-    def updateBearOffStatus(self):
+                    break 
+                
+    def updateBearOffStatus(self): #Updates the self.bearOffStatus values based on current lastPoints
         self.bearOffStatus[0] = True if self.lastPoints[0] > 18 else False
         self.bearOffStatus[1] = True if self.lastPoints[1] < 7 else False
 
-    def returnMovesForDie(self,die,player,isBiggestDieOrSecondMove):
+    def returnMovesForDie(self,die,player,isBiggestDieOrSecondMove): #returns all move options a die can be used for in the current board state: [(moveOption1),(moveOption2),ect.]
         moveList = []
         def canMoveTo(point,player):
             if point > 24 or point < 1:
@@ -139,7 +148,6 @@ class FastBoard:
                 return True
             if self.positions[point-1] == oppValue:
                 return True
-                print("Hit Move to Found")#DEBUG
         
         if player == 1:
             if self.positions[24] > 0:
@@ -175,9 +183,8 @@ class FastBoard:
 
     def returnMoveSet(self,player,roll):
         pass
-    def returnMoveSequences(self,player,roll):
-        self.updateLastOccupiedPoint(player)
-        self.updateBearOffStatus()
+
+    def returnMoveSequences(self,player,roll): #for a given roll returns list of moves sequences that result in unique Board States: [((move1),(move2)),((move1),(move2)), ect.]
         Sequences = []
         EndBoards = []
         if roll[0] != roll[1]:
@@ -185,8 +192,6 @@ class FastBoard:
             FirstMoves = []
 
             #All Possible First Moves
-            self.updateLastOccupiedPoint(player)
-            self.updateBearOffStatus()
             for die in roll: 
                 FirstMoves.append(self.returnMovesForDie(die,player,(biggerDie == die)))
             FirstMoves = FirstMoves[0] + FirstMoves[1]
@@ -194,7 +199,6 @@ class FastBoard:
             for move in FirstMoves:
                 algoBoard1 = copy.deepcopy(self)
                 algoBoard1.makeMove(move,player)
-                self.updatePip()
                 if algoBoard1.pip[player - 1] == 0:
                     Sequences = [move]
                     return Sequences
@@ -202,8 +206,8 @@ class FastBoard:
                 unusedDie = roll[0] if roll[1] == usedDie else roll[1]
                 SecondMoves = algoBoard1.returnMovesForDie(unusedDie,player,True)
                 if len(SecondMoves) == 0:
-                    Sequences = [move]
-                    return Sequences
+                    Sequences.append(move)
+                    continue
                 for secondMove in SecondMoves:
                     algoBoard2 = copy.deepcopy(self)
                     algoBoard2.makeMoves((move,secondMove),player)
@@ -218,15 +222,15 @@ class FastBoard:
                 algoBoard1 = copy.deepcopy(self)
                 algoBoard1.makeMove(firstMove,player)
                 if algoBoard1.pip[player - 1] == 0:
-                    Sequences = [firstMove]
+                    Sequences = [(firstMove)]
                     return Sequences
                 SecondMoves = algoBoard1.returnMovesForDie(roll[0],player,True)
                 for secondMove in SecondMoves:
                     algoBoard2 = copy.deepcopy(algoBoard1)
                     algoBoard2.makeMove(secondMove,player)
                     if algoBoard2.pip[player - 1] == 0:
-                        Sequences = [(firstMove,secondMove)]
-                        return Sequences
+                        Sequences.append(firstMove,secondMove)
+                        continue
                     ThirdMoves = algoBoard2.returnMovesForDie(roll[0],player,True)
                     for thirdMove in ThirdMoves:
                         algoBoard3 = copy.deepcopy(algoBoard2)
