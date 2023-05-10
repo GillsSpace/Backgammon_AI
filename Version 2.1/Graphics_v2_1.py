@@ -247,6 +247,31 @@ def GenerateMoveLineData(Move,Board):
         endY = Master_Location_Dict[endPoint][1]  + (60*(numberOnEndPoint - 1)*orientationEnd)
         
     return (startX,startY,endX,endY)
+
+def GenerateMoveLineDataFast(Move,Board):
+    startPoint = Move[0]
+    endPoint = Move[1]
+
+    if startPoint == 1001:
+        startX = 601
+        startY = 401
+    else:
+        orientationStart = 1 if startPoint > 12 else -1
+        numberOnStartPoint = abs(Board.positions[startPoint-1])
+        startX = Master_Location_Dict[startPoint][0] 
+        startY = Master_Location_Dict[startPoint][1] + (60*numberOnStartPoint*orientationStart)
+
+    if endPoint == 2002:
+        endX = 150
+        endY = 401
+    else:
+        orientationEnd = 1 if endPoint > 12 else -1
+        numberOnEndPoint = abs(Board.positions[endPoint-1])
+        endX = Master_Location_Dict[endPoint][0]
+        endY = Master_Location_Dict[endPoint][1]  + (60*(numberOnEndPoint - 1)*orientationEnd)
+        
+    return (startX,startY,endX,endY)
+
 def DrawMoveLines(MoveData):
     for move in MoveData:
         arcade.draw_circle_outline(move[0],move[1],30,black,2)
