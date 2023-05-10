@@ -292,11 +292,12 @@ class FullTurn:
         else:
             self.unused_dice = copy.deepcopy(self.roll)
 
-    def updatePossibleMovesHumanFormat(self,Board: FastBoard):
+    def updatePossibleMovesHumanFormat(self,Board: FastBoard): #updates self.currentPossibleMoves in Human playerType Format for use by Main Game Loop
         # Human Format: [(startPoint,[possibleFirstEndPoint, possibleSecondEndPoint]), (1, [3, 5]), (12, [14]), (17, [19]), (19, [21, 23])]
         self.current_possible_moves = []
         if self.doubles_turn == True and len(self.unused_dice) > 0:
             self.current_possible_moves = Board.returnMovesForDie(self.roll[0],self.player, True)
+            self.current_possible_moves = [(move[0],[move[1]]) for move in self.current_possible_moves]
         else:
             biggerDie = self.roll[0] if self.roll[0] > self.roll[1] else self.roll[1]
             for roll in self.unused_dice:
@@ -312,18 +313,20 @@ class FullTurn:
                     numFin = []
                     for move in workingMovesList:
                         if startPoint == move[0]:
-                            numFin.append(move[1][0])
-                    finalList = ((startPoint),(numFin))
+                            numFin.append(move[1])
+                    finalList = ((startPoint),(numFin)) 
                     if finalList in self.current_possible_moves:
                         pass
                     else:
                         self.current_possible_moves.append(finalList)
             else:
                 self.current_possible_moves = self.current_possible_moves[0]
-    def updatePossibleMovesStandardFormat(self,Board: FastBoard):
+    def updatePossibleMovesStandardFormat(self,Board: FastBoard): #updates self.currentPossibleMoves to full set of unique move sequences for use by AI programs
         self.current_possible_moves = Board.returnMoveSequences(self.player,self.roll)
 
-       
+    def formSpriteList(self,Board): #creates and updates a sprit list for use by Main Game Loop
+        #Needs Human Format for self.current_possible_moves 
+        self.sprites_move_start = createMoveStartSprites(self.current_possible_moves,self.player)
 
 class Board:
     def __init__(self) -> None:
