@@ -410,13 +410,13 @@ class Game_Window(arcade.Window):
 
                 #IF 1 - Human Player
                 if startingPlayer == 1:
-                    self.Current_Turn = Logic.Turn(1,"Human",self.game_settings,First=True)
+                    self.Current_Turn = Logic.Turn(1,"Human",First=True)
                     self.Current_Turn.updatePossibleMovesHumanFormat(self.Main_Board)
                     self.Current_Turn.formSpriteList(self.Main_Board)
 
                 #IF 2 - AI Player
                 if startingPlayer == 2:
-                    self.Current_Turn = Logic.Turn(startingPlayer,"AI",self.game_settings,First=True)
+                    self.Current_Turn = Logic.Turn(startingPlayer,"AI",First=True)
                     self.Current_Turn.updatePossibleMovesStandardFormat(self.Main_Board) #THINK ==> Is this necessary?
 
                     Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
@@ -481,8 +481,8 @@ class Game_Window(arcade.Window):
 
                 if self.game_settings["1P Inputs"] == "Generated":
                     self.state = "1P_TurnAI"
-                    self.Current_Turn = Logic.Turn(2,"AI",self.game_settings)
-                    self.Current_Turn.updatePossibleMoves(self.Main_Board)
+                    self.Current_Turn = Logic.Turn(2,"AI")
+                    self.Current_Turn.updatePossibleMovesStandardFormat(self.Main_Board)
                     Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                     self.aiMoves = Moves
                     self.Main_Board.makeMoves(Moves,2,True)
@@ -509,7 +509,7 @@ class Game_Window(arcade.Window):
 
                 if self.game_settings["1P Inputs"] == "Generated":
                     self.state = "1P_TurnHuman"
-                    self.Current_Turn = Logic.Turn(1,"Human",self.game_settings)
+                    self.Current_Turn = Logic.Turn(1,"Human")
                     self.Current_Turn.updatePossibleMovesHumanFormat(self.Main_Board)
                     self.Current_Turn.formSpriteList(self.Main_Board)
 
@@ -566,13 +566,13 @@ class Game_Window(arcade.Window):
                 
                 if self.inputFor == "Human":
                     self.state = "1P_TurnHuman"
-                    self.Current_Turn = Logic.Turn(1,"Human",self.game_settings,roll=self.currentRollInputs)
+                    self.Current_Turn = Logic.Turn(1,"Human",roll=self.currentRollInputs)
                     self.Current_Turn.updatePossibleMovesHumanFormat(self.Main_Board)
                     self.Current_Turn.formSpriteList(self.Main_Board)
 
                 if self.inputFor == "AI":
                     self.state = "1P_TurnAI"
-                    self.Current_Turn = Logic.Turn(2,"AI",self.game_settings,roll=self.currentRollInputs)
+                    self.Current_Turn = Logic.Turn(2,"AI",roll=self.currentRollInputs)
                     self.Current_Turn.updatePossibleMovesStandardFormat(self.Main_Board) #THINK ==> Is this necessary?
                     Moves = AI.Main(self.Main_Board,self.Current_Turn)
                     self.aiMoves = Moves
@@ -597,7 +597,7 @@ class Game_Window(arcade.Window):
                 startingPlayer = random.randint(1,2)
                 self.TurnNumber = 0
                 
-                self.Current_Turn = Logic.Turn(startingPlayer,"AI",self.game_settings,First=True)
+                self.Current_Turn = Logic.Turn(startingPlayer,"AI",First=True)
                 self.Current_Turn.updatePossibleMovesStandardFormat(self.Main_Board)
 
                 Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
@@ -617,7 +617,7 @@ class Game_Window(arcade.Window):
         
             if 1025 < x < 1175 and 362 < y < 438:
                 nextPlayer = 1 if self.Current_Turn.player == 2 else 2
-                self.Current_Turn = Logic.Turn(nextPlayer,"AI",self.game_settings)
+                self.Current_Turn = Logic.Turn(nextPlayer,"AI")
                 self.Current_Turn.updatePossibleMovesStandardFormat(self.Main_Board)
 
                 Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])

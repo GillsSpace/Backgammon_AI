@@ -129,45 +129,48 @@ def drawPIP(pip):
     arcade.draw_rectangle_outline(150,775,60,30,black,2)
     arcade.draw_text(pip[0],75,15,board_color,20,150,"center","arial")
     arcade.draw_text(pip[1],75,765,board_color,20,150,"center","arial")
-def drawPieces(PositionListPoints,PositionListOff,PositionListBar,pip):
+def drawPieces(positions,pip):
     drawPIP(pip)
-    for listNum in range(len(PositionListPoints,)):
-        listNum = listNum + 1
-        list = PositionListPoints[listNum - 1]
-        if len(list) != 0: #Set Necessary Variables For Drawn Points
-            color = checkerColor1 if list[0] == 1 else checkerColor2
+    for index in range(24):
+        listNum = index + 1
+        pointNum = positions[index]
+        if pointNum != 0: #Set Necessary Variables For Drawn Points
+            color = checkerColor1 if pointNum < 0 else checkerColor2
             location = listNum
             orientation = 1 if location > 12 else -1
             centerx = Master_Location_Dict[location][0]
             centery = Master_Location_Dict[location][1] 
-        if len(list) < 7 and len(list) != 0: #Draw Points with 6 or less Pieces
-            for i in range(len(list)):
+        if abs(pointNum) < 7 and abs(pointNum) != 0: #Draw Points with 6 or less Pieces
+            for i in range(abs(pointNum)):
                 offset = ((i)*60*orientation)
                 arcade.draw_circle_filled(centerx,centery+offset,30,color)
                 arcade.draw_circle_outline(centerx,centery+offset,30,arcade.color.BLACK,2)
-        if len(list) > 6: #Draw  Points with 7 or more Pieces
-            for i in range(len(list)):
-                height = 360/len(list)
+        if abs(pointNum) > 6: #Draw  Points with 7 or more Pieces
+            for i in range(abs(pointNum)):
+                height = 360/abs(pointNum)
                 offset = ((i)*height*orientation)
                 adjustment = (30-height)*orientation
                 arcade.draw_ellipse_filled(centerx,centery+offset+adjustment,60,height,color)
                 arcade.draw_ellipse_outline(centerx,centery+offset+adjustment,60,height,arcade.color.BLACK,2)
-    for pc in range(PositionListOff[0]):
+    for pc in range(positions[26]):
         arcade.draw_rectangle_filled(150,341-(20*(pc)),60,20,checkerColor1)
         arcade.draw_line(120,331-(20*pc),180,331-(20*pc),arcade.color.BLACK,2)
-    for pc in range(PositionListOff[1]):
+    for pc in range(positions[27]):
         arcade.draw_rectangle_filled(150,461+(20*(pc)),60,20,checkerColor2)
         arcade.draw_line(120,471+(20*pc),180,471+(20*pc),arcade.color.BLACK,2)
-    if len(PositionListBar) != 0:
-        totalDist = 70 * len(PositionListBar)
+    if positions[24] != 0 or positions[24]:
+        list1 = [1] * -positions[24]
+        list2 = [2] * positions[25]
+        barList = list1 + list2
+        totalDist = 70 * len(barList)
         startDist = totalDist/2
-        for pc in range(len(PositionListBar)):
-            color = checkerColor1 if PositionListBar[pc] == 1 else checkerColor2
+        for pc in range(len(barList)):
+            color = checkerColor1 if barList[pc] == 1 else checkerColor2
             arcade.draw_circle_filled(601,401-startDist+35+(60*pc),30,color)
             arcade.draw_circle_outline(601,401-startDist+35+(60*pc),30,arcade.color.BLACK,2)
 
 #Sprite Management:
-def createMoveStartSprites(possibleMoves,Board,player):
+def createMoveStartSprites(possibleMoves,Board,player): #UPDATE NEEDED
     board_location_list = Board.PositionListPoints
     board_bar_list = Board.PositionListBar
     sprites = arcade.SpriteList()
@@ -197,7 +200,7 @@ def createMoveStartSprites(possibleMoves,Board,player):
         sprites.append(tempSprite)
 
     return sprites
-def createMoveEndSprites(activeSprite,Board):
+def createMoveEndSprites(activeSprite,Board): #UPDATE NEEDED
     board_location_list = Board.PositionListPoints
     sprites = arcade.SpriteList()
 
@@ -224,31 +227,7 @@ def createMoveEndSprites(activeSprite,Board):
     return sprites
 
 #Drawing Move Line:
-def GenerateMoveLineData(Move,Board):
-    startPoint = Move[0]
-    endPoint = Move[1]
-
-    if startPoint == 1001:
-        startX = 601
-        startY = 401
-    else:
-        orientationStart = 1 if startPoint > 12 else -1
-        numberOnStartPoint = len(Board.PositionListPoints[startPoint-1])
-        startX = Master_Location_Dict[startPoint][0] 
-        startY = Master_Location_Dict[startPoint][1] + (60*numberOnStartPoint*orientationStart)
-
-    if endPoint == 2002:
-        endX = 150
-        endY = 401
-    else:
-        orientationEnd = 1 if endPoint > 12 else -1
-        numberOnEndPoint = len(Board.PositionListPoints[endPoint-1])
-        endX = Master_Location_Dict[endPoint][0]
-        endY = Master_Location_Dict[endPoint][1]  + (60*(numberOnEndPoint - 1)*orientationEnd)
-        
-    return (startX,startY,endX,endY)
-
-def GenerateMoveLineDataFast(Move,Board):
+def GenerateMoveLineDataFast(Move,Board): #UPDATE NEEDED
     startPoint = Move[0]
     endPoint = Move[1]
 
@@ -356,7 +335,7 @@ def draw_2P_PreStart(buttons_excited):
     
 def draw_2P_GameStart(buttons_excited,Board):
     drawBoard()
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawButton("Roll",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
     drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
@@ -368,7 +347,7 @@ def draw_2P_PreTurnP1(buttons_excited,Board):
     drawBoard()
     color = checkerColor1
     arcade.draw_rectangle_filled(601,401,12,762,color)
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawButton("Roll",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
     drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
@@ -377,7 +356,7 @@ def draw_2P_PreTurnP2(buttons_excited,Board):
     drawBoard()
     color = checkerColor2
     arcade.draw_rectangle_filled(601,401,12,762,color)
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawButton("Roll",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
     drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
@@ -386,7 +365,7 @@ def draw_2P_TurnP1(buttons_excited,Board,Turn):
     drawBoard()
     color = checkerColor1
     arcade.draw_rectangle_filled(601,401,12,762,color)
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
     drawButton("End",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
@@ -396,7 +375,7 @@ def draw_2P_TurnP2(buttons_excited,Board,Turn):
     drawBoard()
     color = checkerColor2
     arcade.draw_rectangle_filled(601,401,12,762,color)
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
     drawButton("End",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
@@ -421,7 +400,7 @@ def draw_1P_PreStart(buttons_excited):
 
 def draw_1P_GameStart(buttons_excited,Board):
     drawBoard()
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawButton("Roll",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
     drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
@@ -431,7 +410,7 @@ def draw_1P_GameStart(buttons_excited,Board):
 
 def draw_1P_GameStart_Inputs(buttons_excited,Board):
     drawBoard()
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawButtonMultiLine1("AI", "First",1100,500,150,150,buttons_excited[0])
     drawButtonMultiLine1("Human", "First",1100,300,150,150,buttons_excited[1])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[2],border=6)
@@ -445,7 +424,7 @@ def draw_1P_TurnHuman(buttons_excited,Board,Turn):
     drawBoard()
     color = checkerColor1
     arcade.draw_rectangle_filled(601,401,12,762,color)
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
     drawButton("End",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
@@ -462,7 +441,7 @@ def draw_1P_TurnAI(buttons_excited,Board,Turn):
     drawBoard()
     color = checkerColor2
     arcade.draw_rectangle_filled(601,401,12,762,color)
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
     drawButton("Roll",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
@@ -472,7 +451,7 @@ def draw_1P_RollInputs(buttons_excited,Board,player,selectedRolls):
     drawBoard()
     color = checkerColor1 if player == "Human" else checkerColor2
     arcade.draw_rectangle_filled(601,401,12,762,color)
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
 
     arcade.draw_text("Select Rolls",1000,600,black,20,200,"center",bold=True,italic=True)
 
@@ -513,7 +492,7 @@ def draw_1P_RollInputs(buttons_excited,Board,player,selectedRolls):
 #Simulation: ---
 def draw_0P_PreStart(buttons_excited,Board):
     drawBoard()
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawButton("Play",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[1],border=6)
     drawButtonIcon(gear_icon,50,680,60,60,excited=buttons_excited[2],border=6)
@@ -524,7 +503,7 @@ def draw_0P_Turn(buttons_excited,Board,Turn):
     drawBoard()
     color = checkerColor1 if Turn.player == 1 else checkerColor2
     arcade.draw_rectangle_filled(601,401,12,762,color)
-    drawPieces(Board.PositionListPoints,Board.PositionListOff,Board.PositionListBar,Board.pip)
+    drawPieces(Board.positions,Board.pip)
     drawDice(Turn.roll[0],Turn.roll[1],Turn.unused_dice)
     drawButton("Next",1100,400,150,75,buttons_excited[0])
     drawButtonIcon(exit_icon,50,750,60,60,excited=buttons_excited[2],border=6)

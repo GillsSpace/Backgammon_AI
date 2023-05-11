@@ -1,6 +1,6 @@
 import random
 import copy
-from Graphics_v2_2 import createMoveStartSprites, GenerateMoveLineData, GenerateMoveLineDataFast
+from Graphics_v2_2 import createMoveStartSprites, GenerateMoveLineDataFast
 import collections
 
 #Helper Functions:
