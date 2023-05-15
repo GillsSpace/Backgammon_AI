@@ -40,7 +40,11 @@ def treeSearchI(ActiveBoard:Board, ActiveTurn:Turn):
 def Main(Main_Board:Board,Main_Turn:Turn,aiType):
     AI_player = aiType
     if AI_player == "Random":
+        print(f"Running Random Move Selection; Roll = {Main_Turn.roll}")
+        st = time.time()
         Moves = randomMove(Main_Board,Main_Turn)
+        et = time.time()
+        print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
     elif AI_player == "Tree Search I":
         print(f"Running Tree Search I; Roll = {Main_Turn.roll}")
@@ -52,5 +56,9 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType):
     elif AI_player == "DRL":
         pass
     elif AI_player == "PBP":
+        print(f"Running PBP; Roll = {Main_Turn.roll}")
+        st = time.time()
         Moves = pickBestPip(Main_Board,Main_Turn)
+        et = time.time()
+        print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
