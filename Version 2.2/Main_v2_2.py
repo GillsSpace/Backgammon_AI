@@ -265,7 +265,7 @@ class Game_Window(arcade.Window):
         elif self.state == "2P_GameStart":
             if 1025 < x < 1175 and 362 < y < 438:
                 startingPlayer = random.randint(1,2)
-                self.Current_Turn = Logic.Turn(startingPlayer,"Human",self.game_settings,First=True)
+                self.Current_Turn = Logic.Turn(startingPlayer,"Human",First=True)
                 self.Current_Turn.updatePossibleMovesHumanFormat(self.Main_Board)
                 self.Current_Turn.formSpriteList(self.Main_Board)
                 
@@ -281,7 +281,7 @@ class Game_Window(arcade.Window):
         elif self.state == "2P_PreTurnP1":
             #If "ROLL" Button Pressed:
             if 1025 < x < 1175 and 362 < y < 438:
-                self.Current_Turn = Logic.Turn(1,"Human",self.game_settings)
+                self.Current_Turn = Logic.Turn(1,"Human",)
                 self.Current_Turn.updatePossibleMovesHumanFormat(self.Main_Board)
                 self.Current_Turn.formSpriteList(self.Main_Board)
                 self.state = "2P_TurnP1"
@@ -296,7 +296,7 @@ class Game_Window(arcade.Window):
         elif self.state == "2P_PreTurnP2":
             #If "ROLL" Button Pressed:
             if 1025 < x < 1175 and 362 < y < 438:
-                self.Current_Turn = Logic.Turn(2,"Human",self.game_settings)
+                self.Current_Turn = Logic.Turn(2,"Human")
                 self.Current_Turn.updatePossibleMovesHumanFormat(self.Main_Board)
                 self.Current_Turn.formSpriteList(self.Main_Board)
                 self.state = "2P_TurnP2"
@@ -508,10 +508,10 @@ class Game_Window(arcade.Window):
             if 1025 < x < 1175 and 362 < y < 438:
 
                 if self.game_settings["1P Inputs"] == "Generated":
-                    self.state = "1P_TurnHuman"
                     self.Current_Turn = Logic.Turn(1,"Human")
                     self.Current_Turn.updatePossibleMovesHumanFormat(self.Main_Board)
                     self.Current_Turn.formSpriteList(self.Main_Board)
+                    self.state = "1P_TurnHuman"
 
                 else:
                     self.state = "1P_RollInputs"

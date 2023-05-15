@@ -146,20 +146,19 @@ def drawPieces(positions,pip):
                 arcade.draw_circle_filled(centerx,centery+offset,30,color)
                 arcade.draw_circle_outline(centerx,centery+offset,30,arcade.color.BLACK,2)
         if abs(pointNum) > 6: #Draw  Points with 7 or more Pieces
+            offset = 360/abs(pointNum)
             for i in range(abs(pointNum)):
-                height = 360/abs(pointNum)
-                offset = ((i)*height*orientation)
-                adjustment = (30-height)*orientation
-                arcade.draw_ellipse_filled(centerx,centery+offset+adjustment,60,height,color)
-                arcade.draw_ellipse_outline(centerx,centery+offset+adjustment,60,height,arcade.color.BLACK,2)
+                off = offset * i * orientation
+                arcade.draw_circle_filled(centerx,centery+off,30,color)
+                arcade.draw_circle_outline(centerx,centery+off,30,arcade.color.BLACK,2)
     for pc in range(positions[26]):
         arcade.draw_rectangle_filled(150,341-(20*(pc)),60,20,checkerColor1)
         arcade.draw_line(120,331-(20*pc),180,331-(20*pc),arcade.color.BLACK,2)
     for pc in range(positions[27]):
         arcade.draw_rectangle_filled(150,461+(20*(pc)),60,20,checkerColor2)
         arcade.draw_line(120,471+(20*pc),180,471+(20*pc),arcade.color.BLACK,2)
-    if positions[24] != 0 or positions[24]:
-        list1 = [1] * -positions[24]
+    if positions[24] != 0 or positions[25] != 0:
+        list1 = [1] * positions[24]
         list2 = [2] * positions[25]
         barList = list1 + list2
         totalDist = 70 * len(barList)
@@ -171,8 +170,10 @@ def drawPieces(positions,pip):
 
 #Sprite Management:
 def createMoveStartSprites(possibleMoves,Board,player): #UPDATE NEEDED
-    board_location_list = Board.PositionListPoints
-    board_bar_list = Board.PositionListBar
+    board_location_list = Board.positions
+    list1 = [1] * Board.positions[24]
+    list2 = [2] * Board.positions[25]
+    board_bar_list = list1 + list2
     sprites = arcade.SpriteList()
 
     for move in possibleMoves:
@@ -191,7 +192,7 @@ def createMoveStartSprites(possibleMoves,Board,player): #UPDATE NEEDED
         
         else:
             o = 1 if startPoint > 12 else -1
-            pointLength = len(board_location_list[startPoint-1])
+            pointLength = abs(board_location_list[startPoint-1])
             tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Move.png",0.07)
             tempSprite.center_x = Master_Location_Dict[startPoint][0]
             tempSprite.center_y = Master_Location_Dict[startPoint][1] + (60*(pointLength - 1)*o)
@@ -201,7 +202,7 @@ def createMoveStartSprites(possibleMoves,Board,player): #UPDATE NEEDED
 
     return sprites
 def createMoveEndSprites(activeSprite,Board): #UPDATE NEEDED
-    board_location_list = Board.PositionListPoints
+    board_location_list = Board.positions
     sprites = arcade.SpriteList()
 
     for move in activeSprite.move[1]:
@@ -214,7 +215,7 @@ def createMoveEndSprites(activeSprite,Board): #UPDATE NEEDED
 
         else:
             o = 1 if move > 12 else -1
-            pointLength = len(board_location_list[move-1]) - 1
+            pointLength = abs(board_location_list[move-1]) - 1
             if pointLength == -1:
                 pointLength = 0
             tempSprite = arcade.Sprite("Images/Submove.png",.07)
@@ -251,10 +252,16 @@ def GenerateMoveLineDataFast(Move,Board): #UPDATE NEEDED
         
     return (startX,startY,endX,endY)
 
-def DrawMoveLines(MoveData):
-    for move in MoveData:
-        arcade.draw_circle_outline(move[0],move[1],30,black,2)
-        arcade.draw_line(move[0],move[1],move[2],move[3],black,2)
+def DrawMoveLines(Moves):
+    if Moves == []:
+        return
+    elif type(Moves[1]) == int:
+        arcade.draw_circle_outline(Moves[0],Moves[1],30,black,2)
+        arcade.draw_line(Moves[0],Moves[1],Moves[2],Moves[3],black,2)
+    else:
+        for move in Moves:
+            arcade.draw_circle_outline(move[0],move[1],30,black,2)
+            arcade.draw_line(move[0],move[1],move[2],move[3],black,2)
 
 
 ### GAME STATES ###

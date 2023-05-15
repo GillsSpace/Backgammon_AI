@@ -311,14 +311,18 @@ class Turn:
                     else:
                         self.current_possible_moves.append(finalList)
             else:
-                self.current_possible_moves = self.current_possible_moves[0]
+                workingMovesList = []
+                for possibleMove in self.current_possible_moves[0]:
+                    move = (possibleMove[0],[possibleMove[1]])
+                    workingMovesList.append(move)
+                self.current_possible_moves = workingMovesList
     
     def updatePossibleMovesStandardFormat(self,Board: Board): #updates self.currentPossibleMoves to full set of unique move sequences for use by AI programs
         self.current_possible_moves = Board.returnMoveSequences(self.player,self.roll)
 
     def formSpriteList(self,Board): #creates and updates a sprit list for use by Main Game Loop
         #Needs Human Format for self.current_possible_moves 
-        self.sprites_move_start = createMoveStartSprites(self.current_possible_moves,self.player)
+        self.sprites_move_start = createMoveStartSprites(self.current_possible_moves,Board,self.player)
 
 
 #Calculating Moves Logic
