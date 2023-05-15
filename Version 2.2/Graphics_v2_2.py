@@ -238,8 +238,12 @@ def GenerateMoveLineDataFast(Move,Board): #UPDATE NEEDED
     else:
         orientationStart = 1 if startPoint > 12 else -1
         numberOnStartPoint = abs(Board.positions[startPoint-1])
-        startX = Master_Location_Dict[startPoint][0] 
-        startY = Master_Location_Dict[startPoint][1] + (60*numberOnStartPoint*orientationStart)
+        startX = Master_Location_Dict[startPoint][0]
+        if numberOnStartPoint < 7:
+            startY = Master_Location_Dict[startPoint][1] + (60*numberOnStartPoint*orientationStart)
+        else:
+            offset = 360/numberOnStartPoint
+            startY = Master_Location_Dict[startPoint][1] + (offset*numberOnStartPoint*orientationStart)
 
     if endPoint == 2002:
         endX = 150
@@ -248,7 +252,11 @@ def GenerateMoveLineDataFast(Move,Board): #UPDATE NEEDED
         orientationEnd = 1 if endPoint > 12 else -1
         numberOnEndPoint = abs(Board.positions[endPoint-1])
         endX = Master_Location_Dict[endPoint][0]
-        endY = Master_Location_Dict[endPoint][1]  + (60*(numberOnEndPoint - 1)*orientationEnd)
+        if numberOnEndPoint < 7:
+            endY = Master_Location_Dict[endPoint][1]  + (60*(numberOnEndPoint - 1)*orientationEnd)
+        else:
+            offset = 360/numberOnEndPoint
+            endY = Master_Location_Dict[endPoint][1]  + (offset*(numberOnEndPoint - 1)*orientationEnd)
         
     return (startX,startY,endX,endY)
 

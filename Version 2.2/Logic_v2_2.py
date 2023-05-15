@@ -88,7 +88,7 @@ class Board:
                 self.positions[startPointIndex] += 1
             else:
                 self.positions[startPointIndex] -= 1
-            self.positions[25 + player]
+            self.positions[25 + player] +=1
         else:
             endPointIndex = move[1] - 1
             startPointIndex = move[0] - 1
@@ -237,7 +237,7 @@ class Board:
                     algoBoard2 = copy.deepcopy(algoBoard1)
                     algoBoard2.makeMove(secondMove,player)
                     if algoBoard2.pip[player - 1] == 0:
-                        Sequences.append(firstMove,secondMove)
+                        Sequences.append((firstMove,secondMove))
                         continue
                     ThirdMoves = algoBoard2.returnMovesForDie(roll[0],player,True)
                     for thirdMove in ThirdMoves:
