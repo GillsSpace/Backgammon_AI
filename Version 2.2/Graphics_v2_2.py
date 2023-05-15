@@ -185,7 +185,7 @@ def createMoveStartSprites(possibleMoves,Board,player): #UPDATE NEEDED
             for pc in range(len(board_bar_list)):
                 doDraw = True if board_bar_list[pc] == player else False
                 if doDraw == True:
-                    tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Move.png",0.07)
+                    tempSprite = arcade.Sprite("Images/Move.png",0.07)
                     tempSprite.center_x = 601
                     tempSprite.center_y = 401-startDist+35+(60*pc)
                     tempSprite.move = move
@@ -193,7 +193,7 @@ def createMoveStartSprites(possibleMoves,Board,player): #UPDATE NEEDED
         else:
             o = 1 if startPoint > 12 else -1
             pointLength = abs(board_location_list[startPoint-1])
-            tempSprite = arcade.Sprite("C:/Users/wills/OneDrive/Desktop/WFE/Code/(W) Backgammon/Images/Move.png",0.07)
+            tempSprite = arcade.Sprite("Images/Move.png",0.07)
             tempSprite.center_x = Master_Location_Dict[startPoint][0]
             tempSprite.center_y = Master_Location_Dict[startPoint][1] + (60*(pointLength - 1)*o)
             tempSprite.move = move
