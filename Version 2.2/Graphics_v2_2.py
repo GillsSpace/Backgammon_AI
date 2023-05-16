@@ -228,7 +228,7 @@ def createMoveEndSprites(activeSprite,Board): #UPDATE NEEDED
     return sprites
 
 #Drawing Move Line:
-def GenerateMoveLineDataFast(Move,Board): #UPDATE NEEDED
+def GenerateMoveLineDataFast(Move,Board):
     startPoint = Move[0]
     endPoint = Move[1]
 
