@@ -5,7 +5,7 @@ import AI_v2_2 as AI
 import random
 
 #Set Version:
-Crit_Version = 2.1
+Crit_Version = 2.2
 
 #Convention: Player1 = 1, dark ,first list item // Player2 = 0, light, second list item, first AI player
 #            Moves: 1001 = Bar and 2002 = off
