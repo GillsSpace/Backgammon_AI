@@ -3,12 +3,21 @@ import arcade
 import copy
 
 #Load images & sounds:
-gear_icon = arcade.load_texture("Images\gear_icon.png")
-exit_icon = arcade.load_texture("Images\exit_icon.png")
-quit_icon = arcade.load_texture("Images\quit_icon.png")
-button_click = arcade.Sound("Sounds/sound3.mp3")
-checker_move = arcade.Sound("Sounds/sound.mp3")
-dice_roll = arcade.Sound("Sounds/soundDice.mp3")
+try:
+    gear_icon = arcade.load_texture("..\Images\gear_icon.png")
+    exit_icon = arcade.load_texture("..\Images\exit_icon.png")
+    quit_icon = arcade.load_texture("..\Images\quit_icon.png")
+    button_click = arcade.Sound("..\Sounds/sound3.mp3")
+    checker_move = arcade.Sound("..\Sounds/sound.mp3")
+    dice_roll = arcade.Sound("..\Sounds/soundDice.mp3")
+except:
+    gear_icon = arcade.load_texture("Images\gear_icon.png")
+    exit_icon = arcade.load_texture("Images\exit_icon.png")
+    quit_icon = arcade.load_texture("Images\quit_icon.png")
+    button_click = arcade.Sound("Sounds/sound3.mp3")
+    checker_move = arcade.Sound("Sounds/sound.mp3")
+    dice_roll = arcade.Sound("Sounds/soundDice.mp3")
+
 
 #Data:
 Master_Location_Dict = {1:(247,755),2:(307,755),3:(367,755),4:(427,755),5:(487,755),6:(547,755),7:(655,755),8:(715,755),9:(775,755),10:(835,755),11:(895,755),12:(955,755),13:(955,47),14:(895,47),15:(835,47),16:(775,47),17:(715,47),18:(655,47),19:(547,47),20:(487,47),21:(427,47),22:(367,47),23:(307,47),24:(247,47)}
@@ -259,15 +268,14 @@ def GenerateMoveLineDataFast(Move,Board):
             endY = Master_Location_Dict[endPoint][1]  + (offset*(numberOnEndPoint - 1)*orientationEnd)
         
     return (startX,startY,endX,endY)
-
-def DrawMoveLines(Moves):
-    if Moves == []:
+def DrawMoveLines(MoveData):
+    if MoveData == []:
         return
-    elif type(Moves[1]) == int:
-        arcade.draw_circle_outline(Moves[0],Moves[1],30,black,2)
-        arcade.draw_line(Moves[0],Moves[1],Moves[2],Moves[3],black,2)
+    elif type(MoveData[1]) == int:
+        arcade.draw_circle_outline(MoveData[0],MoveData[1],30,black,2)
+        arcade.draw_line(MoveData[0],MoveData[1],MoveData[2],MoveData[3],black,2)
     else:
-        for move in Moves:
+        for move in MoveData:
             arcade.draw_circle_outline(move[0],move[1],30,black,2)
             arcade.draw_line(move[0],move[1],move[2],move[3],black,2)
 

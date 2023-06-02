@@ -83,7 +83,6 @@ def Full_Run(inputBoard:Board,inputTurn:FastTurn):
     initialTurnSolutions = ReturnTurnSolutions(inputBoard,inputTurn)
     possiblePipDiffs = []
     for turnSolution in initialTurnSolutions:
-        print(f"Turn Solutions evaluated: {turnSolution.MoveSequence}")
         subTurnsList = []
         for roll in Data_rollOptions:
             instanceSubTurn = SubTurn(turnSolution.Board,turnSolution.MoveSequence,roll,(1 if inputTurn.player == 2 else 2))
