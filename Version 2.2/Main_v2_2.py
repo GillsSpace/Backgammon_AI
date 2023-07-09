@@ -565,22 +565,22 @@ class Game_Window(arcade.Window):
             if 1025 < x < 1175 and 120 < y < 180:
                 
                 if self.inputFor == "Human":
-                    self.state = "1P_TurnHuman"
                     self.Current_Turn = Logic.Turn(1,"Human",roll=self.currentRollInputs)
                     self.Current_Turn.updatePossibleMovesHumanFormat(self.Main_Board)
                     self.Current_Turn.formSpriteList(self.Main_Board)
+                    self.state = "1P_TurnHuman"
 
                 if self.inputFor == "AI":
-                    self.state = "1P_TurnAI"
                     self.Current_Turn = Logic.Turn(2,"AI",roll=self.currentRollInputs)
                     self.Current_Turn.updatePossibleMovesStandardFormat(self.Main_Board) #THINK ==> Is this necessary?
-                    Moves = AI.Main(self.Main_Board,self.Current_Turn)
+                    Moves = AI.Main(self.Main_Board,self.Current_Turn,self.game_settings["AI Player"])
                     self.aiMoves = Moves
                     self.Main_Board.makeMoves(Moves,2,True)
                     if self.Main_Board.pip[1] == 0:
                         self.state = "GameOver"
                         self.Game_Winner = 2
                         return
+                    self.state = "1P_TurnAI"
 
                 arcade.play_sound(Graphics.button_click)
 

@@ -1,7 +1,7 @@
 import random
 import copy
 from Logic_v2_2 import Board,Turn
-import TreeSearchI
+import TreeSearchI_v2_2 as TreeSearchI
 import time
 
 #AI Types:

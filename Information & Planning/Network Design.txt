@@ -1,0 +1,17 @@
+Input:
+Values in the Board class self.positions variable: 28 integers
+
+Output:
+Value representing the presumed chance of winning for player 1: 1 float (0 to 1)
+
+Layers:
+Input Layer - 28 Nodes
+3 Hidden layers - 20 Nodes
+Output Layer
+
+Network Values:
+20 * 29 = 580
+20 * 21 * 2 = 840
+21 = 21
+
+1441 values --> 
