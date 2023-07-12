@@ -1,5 +1,6 @@
 import arcade
 import arcade.gui
+import Graphics_v3 as Graphics
 
 class MainMenuView(arcade.View):
 
@@ -34,7 +35,9 @@ class MainMenuView(arcade.View):
 
         @Sim_button.event("on_click")
         def on_click_Sim(event):
-            print("Settings:", event)
+            print("Changing view to Simulation")
+            simView = MainSimView(self.backgroundColor)
+            self.window.show_view(simView)
         @OnePlayer_button.event("on_click")
         def on_click_OnePlayer(event):
             print("Settings:", event)
@@ -74,6 +77,8 @@ class SettingsView(arcade.View):
 
         Back_button = arcade.gui.UIFlatButton(25,725,100,50,"Back")
 
+
+
         self.manager.add(Back_button)
 
 
@@ -87,3 +92,54 @@ class SettingsView(arcade.View):
     def on_draw(self):
         self.clear()
         self.manager.draw()
+
+class MainSimView(arcade.View):
+    def __init__(self,backgroundColor):
+        super().__init__()
+        self.backgroundColor = backgroundColor
+
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
+        Back_button = arcade.gui.UIFlatButton(15,745,75,40,"Exit")
+        Quit_button = arcade.gui.UIFlatButton(15,695,75,40,"Quit")
+        New_button  = arcade.gui.UIFlatButton(15,15,75,60,"New Game")
+        Setting_button = arcade.gui.UIFlatButton(1010,15,175,40,"Settings")
+
+        RunGame_button = arcade.gui.UIFlatButton(1010,745,175,40,"Run Game")
+        RunRandomTurn_button = arcade.gui.UIFlatButton(1010,695,175,40,"Run Turn")
+        RunSetTurn_button = arcade.gui.UIFlatButton(1010,645,175,40,"Run Set Turn")
+        EditBoard_button = arcade.gui.UIFlatButton(1010,595,175,40,"Edit Board")
+        
+
+        self.manager.add(Back_button)
+        self.manager.add(Quit_button)
+        self.manager.add(New_button)
+        self.manager.add(Setting_button)
+
+        self.manager.add(RunGame_button)
+        self.manager.add(RunRandomTurn_button)
+        self.manager.add(RunSetTurn_button)
+        self.manager.add(EditBoard_button)
+
+
+    def on_show_view(self):
+        self.manager.enable()
+        arcade.set_background_color(self.backgroundColor)
+
+    def on_hide_view(self):
+        self.manager.disable
+
+    def on_draw(self):
+        self.clear()
+
+        self.manager.draw()
+
+        Graphics.drawBoard()
+        Graphics.drawPIP((100,100))
+
+class EditBoardView(arcade.View):
+    pass
+
+
+

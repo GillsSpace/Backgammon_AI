@@ -16,6 +16,9 @@ class MainWindow(arcade.Window):
         super().__init__(width, height, title)
         arcade.set_background_color(BACKGROUND_COLOR)
 
+        self.settings = {"Agent1":"Human","Agent2":"Human"}
+        self.lastPage = "MainMenu"
+
     def setup(self):
         pass
 
