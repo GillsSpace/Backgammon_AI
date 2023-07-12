@@ -4,7 +4,7 @@ import pyglet
 import Logic_v2_2 as Logic
 import AI_v2_2 as AI
 import Graphics_v2_2 as Graphics
-import TreeSearchI
+import TreeSearchI_v2_2
 import random, itertools, time, copy
 
 #Testing Functions:

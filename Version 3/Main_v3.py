@@ -32,7 +32,7 @@ class MainWindow(arcade.Window):
 def main():
     mainWindow = MainWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Backgammon")
     mainWindow.setup() #Currently Unused
-    mainmenu_view = Views.MainMenuView()
+    mainmenu_view = Views.MainMenuView(BACKGROUND_COLOR)
     mainWindow.show_view(mainmenu_view)
     arcade.run()
 

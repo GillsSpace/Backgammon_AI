@@ -1,12 +1,11 @@
 import arcade
 import arcade.gui
 
-from Main_v3 import BACKGROUND_COLOR
-
 class MainMenuView(arcade.View):
 
-    def __init__(self):
+    def __init__(self,backgroundColor):
         super().__init__()
+        self.backgroundColor = backgroundColor
 
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
@@ -33,10 +32,29 @@ class MainMenuView(arcade.View):
 
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center_x",anchor_y="center",align_y=0,child=self.v_box))
 
+        @Sim_button.event("on_click")
+        def on_click_Sim(event):
+            print("Settings:", event)
+        @OnePlayer_button.event("on_click")
+        def on_click_OnePlayer(event):
+            print("Settings:", event)
+        @TwoPlayer_button.event("on_click")
+        def on_click_TwoPlayer(event):
+            print("Settings:", event)
+        @Settings_button.event("on_click")
+        def on_click_Settings(event):
+            print("Changing view to Settings")
+            settingsView = SettingsView(self.backgroundColor)
+            self.window.show_view(settingsView)
+        @Quit_button.event("on_click")
+        def on_click_Quit(event):
+            print("Application Quit")
+            arcade.close_window()
+
 
     def on_show_view(self):
         self.manager.enable()
-        arcade.set_background_color(BACKGROUND_COLOR)
+        arcade.set_background_color(self.backgroundColor)
 
     def on_hide_view(self):
         self.manager.disable
@@ -45,4 +63,27 @@ class MainMenuView(arcade.View):
         self.clear()
         self.manager.draw()
 
+class SettingsView(arcade.View):
 
+    def __init__(self,backgroundColor):
+        super().__init__()
+        self.backgroundColor = backgroundColor
+
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
+        Back_button = arcade.gui.UIFlatButton(25,725,100,50,"Back")
+
+        self.manager.add(Back_button)
+
+
+    def on_show_view(self):
+        self.manager.enable()
+        arcade.set_background_color(self.backgroundColor)
+
+    def on_hide_view(self):
+        self.manager.disable
+
+    def on_draw(self):
+        self.clear()
+        self.manager.draw()
