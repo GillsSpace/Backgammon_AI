@@ -1,8 +1,6 @@
-import time
-import random
 import copy
-import collections
-from Logic_v3 import Board
+from Main_Files.Logic_v3 import Board
+from Main_Files.AI_v3 import FastTurn
 
 #Data:
 Data_rollOptions = [(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(2,2),(2,3),(2,4),(2,5),(2,6),(3,3),(3,4),(3,5),(3,6),(4,4),(4,5),(4,6),(5,5),(5,6),(6,6)]
@@ -23,11 +21,6 @@ def average(inputList):
     return sum(inputList) / len(inputList)
 
 #Classes:
-class FastTurn:
-    def __init__(self,player,roll) -> None:
-        self.player = player
-        self.roll = roll
-
 class TurnSolution:
     def __init__(self, Board:Board, MoveSequence) -> None:
         self.Board = copy.deepcopy(Board)

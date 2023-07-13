@@ -1,8 +1,16 @@
 import random
 import copy
-from Logic_v2_2 import Board,Turn
-import TreeSearchI_v2_2 as TreeSearchI
+from Main_Files.Logic_v3 import Board,Turn
 import time
+
+from AI_Agents.TreeSearchI_v3 import Full_Run as TreeSearchI_Full_Run
+from AI_Agents.Network_Type1_v3 import Network_Type1_Full_Run
+
+#Helper Classes:
+class FastTurn:
+    def __init__(self,player,roll) -> None:
+        self.player = player
+        self.roll = roll
 
 #AI Types:
 def randomMove(ActiveBoard:Board, ActiveTurn:Turn):
@@ -33,11 +41,11 @@ def pickBestPip(ActiveBoard:Board, ActiveTurn:Turn):
     return ActiveTurn.current_possible_moves[indexOfMove]
 
 def treeSearchI(ActiveBoard:Board, ActiveTurn:Turn):
-    fastTurn = TreeSearchI.FastTurn(ActiveTurn.player,ActiveTurn.roll)
-    return TreeSearchI.Full_Run(ActiveBoard,fastTurn)
+    fastTurn = FastTurn(ActiveTurn.player,ActiveTurn.roll)
+    return TreeSearchI_Full_Run(ActiveBoard,fastTurn)
 
 #Main Function - Called 
-def Main(Main_Board:Board,Main_Turn:Turn,aiType):
+def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
     AI_player = aiType
     if AI_player == "Random":
         print(f"Running Random Move Selection; Roll = {Main_Turn.roll}")
@@ -62,3 +70,5 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType):
         et = time.time()
         print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
+    elif AI_player == "Network_Type1":
+        pass

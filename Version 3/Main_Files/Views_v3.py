@@ -1,6 +1,6 @@
 import arcade
 import arcade.gui
-import Graphics_v3 as Graphics
+import Main_Files.Graphics_v3 as Graphics
 
 class MainMenuView(arcade.View):
 
