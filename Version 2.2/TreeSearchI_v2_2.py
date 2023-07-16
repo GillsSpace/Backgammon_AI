@@ -98,9 +98,17 @@ def Full_Run(inputBoard:Board,inputTurn:FastTurn):
         possiblePipDiffs.append(turnSolution.expectedPipDiff)
 
     if len(possiblePipDiffs) != 0:
-        maxPipDiff = min(possiblePipDiffs)
-        #Using min function because possible pip differences are calculated for opponents. 
-        indexOfTurn = possiblePipDiffs.index(maxPipDiff)
-        return initialTurnSolutions[indexOfTurn].MoveSequence 
+        if inputTurn.player == 1:
+            maxPipDiff = min(possiblePipDiffs)
+            #Using min function because possible pip differences are calculated for opponents. 
+            indexOfTurn = possiblePipDiffs.index(maxPipDiff)
+            return initialTurnSolutions[indexOfTurn].MoveSequence 
+        else:
+            possiblePipDiffs.reverse()
+            initialTurnSolutions.reverse()
+            maxPipDiff = min(possiblePipDiffs)
+            #Using min function because possible pip differences are calculated for opponents. 
+            indexOfTurn = possiblePipDiffs.index(maxPipDiff)
+            return initialTurnSolutions[indexOfTurn].MoveSequence
     else:
         return [] 
