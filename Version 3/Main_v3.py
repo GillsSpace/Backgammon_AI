@@ -19,6 +19,7 @@ class MainWindow(arcade.Window):
         self.settings = {"Agent1":"Human","Agent2":"Human","1P Inputs Rolls":False}
         self.lastPage = None
         self.MainBoard = Logic.Board()
+        self.MainTurn = None
 
     def setup(self):
         mainmenu_view = Views.MainMenuView(BACKGROUND_COLOR)

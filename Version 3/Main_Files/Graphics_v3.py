@@ -8,22 +8,49 @@ try:
     gear_icon = arcade.load_texture("..\Images\gear_icon.png")
     exit_icon = arcade.load_texture("..\Images\exit_icon.png")
     quit_icon = arcade.load_texture("..\Images\quit_icon.png")
-    button_click = arcade.Sound("..\Sounds/sound3.mp3")
-    checker_move = arcade.Sound("..\Sounds/sound.mp3")
-    dice_roll = arcade.Sound("..\Sounds/soundDice.mp3")
+
+    delete_icon = arcade.load_texture("..\Images\delete_icon.png")
+    darkPiece_icon = arcade.load_texture("..\Images\darkPiece.png")
+    lightPiece_icon = arcade.load_texture("..\Images\lightPiece.png")
+    restart_icon = arcade.load_texture("..\Images\\restart_icon.png")
+
+    delete_icon2 = arcade.load_texture("..\Images\delete_icon2.png")
+    darkPiece_icon2 = arcade.load_texture("..\Images\darkPiece2.png")
+    lightPiece_icon2 = arcade.load_texture("..\Images\lightPiece2.png")
+    restart_icon2 = arcade.load_texture("..\Images\\restart_icon2.png")
+
+    delete_icon3 = arcade.load_texture("..\Images\delete_icon3.png")
+    darkPiece_icon3 = arcade.load_texture("..\Images\darkPiece3.png")
+    lightPiece_icon3 = arcade.load_texture("..\Images\lightPiece3.png")
+    restart_icon3 = arcade.load_texture("..\Images\\restart_icon3.png")
 except:
     gear_icon = arcade.load_texture("Images\gear_icon.png")
     exit_icon = arcade.load_texture("Images\exit_icon.png")
     quit_icon = arcade.load_texture("Images\quit_icon.png")
-    button_click = arcade.Sound("Sounds/sound3.mp3")
-    checker_move = arcade.Sound("Sounds/sound.mp3")
-    dice_roll = arcade.Sound("Sounds/soundDice.mp3")
+
+    delete_icon = arcade.load_texture("Images\delete_icon.png")
+    darkPiece_icon = arcade.load_texture("Images\darkPiece.png")
+    lightPiece_icon = arcade.load_texture("Images\lightPiece.png")
+    restart_icon = arcade.load_texture("Images\\restart_icon.png")
+
+    delete_icon2 = arcade.load_texture("Images\delete_icon2.png")
+    darkPiece_icon2 = arcade.load_texture("Images\darkPiece2.png")
+    lightPiece_icon2 = arcade.load_texture("Images\lightPiece2.png")
+    restart_icon2 = arcade.load_texture("Images\\restart_icon2.png")
+
+    delete_icon3 = arcade.load_texture("Images\delete_icon3.png")
+    darkPiece_icon3 = arcade.load_texture("Images\darkPiece3.png")
+    lightPiece_icon3 = arcade.load_texture("Images\lightPiece3.png")
+    restart_icon3 = arcade.load_texture("Images\\restart_icon3.png")
 
 
 #Data:
 Master_Location_Dict = {1:(247,755),2:(307,755),3:(367,755),4:(427,755),5:(487,755),6:(547,755),7:(655,755),8:(715,755),9:(775,755),10:(835,755),11:(895,755),12:(955,755),13:(955,47),14:(895,47),15:(835,47),16:(775,47),17:(715,47),18:(655,47),19:(547,47),20:(487,47),21:(427,47),22:(367,47),23:(307,47),24:(247,47)}
 
 #Theme:
+button_default = arcade.color.ALMOND
+button_excited = arcade.color.AERO_BLUE
+button_used = arcade.color.CHARCOAL
 checkerColor1 = arcade.color.SIENNA
 checkerColor2 = arcade.color.SKY_BLUE
 darkTextColor = arcade.color.BLACK
@@ -41,6 +68,11 @@ black = arcade.color.BLACK
 def drawSignature(version):
     arcade.draw_text("Backgammon by Wills Erda",1000,25,black,10)
     arcade.draw_text(f"v{version} @2022 ",1000,10,black,10)
+def drawButtonIcon(icon, centerx, centery, width=75, height=75, excited=False, defaultColor=board_color, border=12):
+    color = defaultColor if excited == False else button_excited
+    arcade.draw_rectangle_filled(centerx,centery,width,height,color)
+    arcade.draw_rectangle_outline(centerx,centery,width,height,board_border,border)
+    arcade.draw_texture_rectangle(centerx,centery,width-25,height-25,icon)
 
     
 #Drawing The Board:
