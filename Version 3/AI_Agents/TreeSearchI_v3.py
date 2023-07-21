@@ -1,6 +1,6 @@
 import copy
-from Main_Files.Logic_v3 import Board
-from Main_Files.AI_v3 import FastTurn
+from Main_Files.Logic_v3 import Board,Turn
+
 
 #Data:
 Data_rollOptions = [(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(2,2),(2,3),(2,4),(2,5),(2,6),(3,3),(3,4),(3,5),(3,6),(4,4),(4,5),(4,6),(5,5),(5,6),(6,6)]
@@ -26,6 +26,11 @@ class TurnSolution:
         self.Board = copy.deepcopy(Board)
         self.MoveSequence = MoveSequence
         self.expectedPipDiff = 0
+
+class FastTurn:
+    def __init__(self,player,roll) -> None:
+        self.player = player
+        self.roll = roll
 
 class SubTurn:
     #Represents a possible turn of the opponent's
@@ -71,14 +76,15 @@ def PipMinMaxBasic(subTurn:SubTurn,player,Max=True):
         return minPipDiff
 
 #Running:
-def Full_Run(inputBoard:Board,inputTurn:FastTurn):
+def Full_Run(inputBoard:Board,inputTurn:Turn):
+    fastTurn = FastTurn(inputTurn.player,inputTurn.roll)
     #Takes a input of a FastBoard and a FastTurn and returns the optimal move for the current player to make. 
-    initialTurnSolutions = ReturnTurnSolutions(inputBoard,inputTurn)
+    initialTurnSolutions = ReturnTurnSolutions(inputBoard,fastTurn)
     possiblePipDiffs = []
     for turnSolution in initialTurnSolutions:
         subTurnsList = []
         for roll in Data_rollOptions:
-            instanceSubTurn = SubTurn(turnSolution.Board,turnSolution.MoveSequence,roll,(1 if inputTurn.player == 2 else 2))
+            instanceSubTurn = SubTurn(turnSolution.Board,turnSolution.MoveSequence,roll,(1 if fastTurn.player == 2 else 2))
             subTurnsList.append(instanceSubTurn)
         MaxPipDiffs = []
         for subTurn in subTurnsList:
@@ -91,9 +97,17 @@ def Full_Run(inputBoard:Board,inputTurn:FastTurn):
         possiblePipDiffs.append(turnSolution.expectedPipDiff)
 
     if len(possiblePipDiffs) != 0:
-        maxPipDiff = min(possiblePipDiffs)
-        #Using min function because possible pip differences are calculated for opponents. 
-        indexOfTurn = possiblePipDiffs.index(maxPipDiff)
-        return initialTurnSolutions[indexOfTurn].MoveSequence 
+        if fastTurn.player == 1:
+            maxPipDiff = min(possiblePipDiffs)
+            #Using min function because possible pip differences are calculated for opponents. 
+            indexOfTurn = possiblePipDiffs.index(maxPipDiff)
+            return initialTurnSolutions[indexOfTurn].MoveSequence 
+        else:
+            possiblePipDiffs.reverse()
+            initialTurnSolutions.reverse()
+            maxPipDiff = min(possiblePipDiffs)
+            #Using min function because possible pip differences are calculated for opponents. 
+            indexOfTurn = possiblePipDiffs.index(maxPipDiff)
+            return initialTurnSolutions[indexOfTurn].MoveSequence 
     else:
         return [] 

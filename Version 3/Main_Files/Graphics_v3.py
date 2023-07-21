@@ -288,3 +288,43 @@ def DrawMoveLines(MoveData):
         for move in MoveData:
             arcade.draw_circle_outline(move[0],move[1],30,black,2)
             arcade.draw_line(move[0],move[1],move[2],move[3],black,2)
+
+#Help Drawing Views:
+def DrawSettings(settings):
+
+    arcade.draw_rectangle_filled(650,675,1000,60,board_color)
+    arcade.draw_rectangle_filled(650,600,1000,60,board_color)
+
+    if settings["Agent1"] == "Human":
+        arcade.draw_rectangle_filled(315,675,120,60,button_used)
+    elif settings["Agent1"] == "Random":
+        arcade.draw_rectangle_filled(430,675,120,60,button_used)
+    elif settings["Agent1"] == "PBP":
+        arcade.draw_rectangle_filled(545,675,120,60,button_used)
+    elif settings["Agent1"] == "TS 1":
+        arcade.draw_rectangle_filled(660,675,120,60,button_used)
+    elif settings["Agent1"] == "TS 2":
+        arcade.draw_rectangle_filled(775,675,120,60,button_used)
+    elif settings["Agent1"] == "Network":
+        arcade.draw_rectangle_filled(990,675,320,60,button_used)
+
+    if settings["Agent2"] == "Human":
+        arcade.draw_rectangle_filled(315,600,120,60,button_used)
+    elif settings["Agent2"] == "Random":
+        arcade.draw_rectangle_filled(430,600,120,60,button_used)
+    elif settings["Agent2"] == "PBP":
+        arcade.draw_rectangle_filled(545,600,120,60,button_used)
+    elif settings["Agent2"] == "TS 1":
+        arcade.draw_rectangle_filled(660,600,120,60,button_used)
+    elif settings["Agent2"] == "TS 2":
+        arcade.draw_rectangle_filled(775,600,120,60,button_used)
+    elif settings["Agent2"] == "Network":
+        arcade.draw_rectangle_filled(990,600,320,60,button_used)
+
+    arcade.draw_rectangle_filled(1040,675,200,40,arcade.color.WHITE)
+    arcade.draw_rectangle_filled(1040,600,200,40,arcade.color.WHITE)
+
+
+
+
+

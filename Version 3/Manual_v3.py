@@ -13,7 +13,7 @@ def printBoardInfo(Board:Logic.Board):
     print(f" - Board Info: - ")
     print(f"Positions = {Board.PositionListPoints} // Bar = {Board.PositionListBar} // Off = {Board.PositionListOff}")
 
-def RunGame(AiType1,AiType2):
+def RunGame(AiType1,AiType2,PrintData=False,Silent=False):
 
     Board.setStartPositions()
 
@@ -22,19 +22,31 @@ def RunGame(AiType1,AiType2):
     turnNumber = 1
 
     Turn = Logic.Turn(startingPlayer,"AI",None,First=True)
-    Moves = AI.Main(Board,Turn,AiType2 if Turn.player == 2 else AiType1)
+    if not Silent:
+        Moves = AI.Main(Board,Turn,AiType2 if Turn.player == 2 else AiType1)
+    else:
+        Moves = AI.Silent_Main(Board,Turn,AiType2 if Turn.player == 2 else AiType1)
     Board.makeMoves(Moves,Turn.player)
 
     while not gameOver:
 
         Turn = Logic.Turn(1 if Turn.player == 2 else 2,"AI",None)
         turnNumber = turnNumber + 1
-        Moves = AI.Main(Board,Turn,AiType2 if Turn.player == 2 else AiType1)
+        if not Silent:
+            Moves = AI.Main(Board,Turn,AiType2 if Turn.player == 2 else AiType1)
+        else:
+            Moves = AI.Silent_Main(Board,Turn,AiType2 if Turn.player == 2 else AiType1)
         Board.makeMoves(Moves,Turn.player)
 
         if Board.pip[1 if Turn.player == 2 else 0] == 0:
             gameOver = True
             winner = Turn.player
+    
+    if PrintData:
+        print("/// Results ///")
+        print(f"Winner = player {winner} // Number of Turns = {turnNumber}")
+        print(f"Final Scores: {Board.pip[0]} to {Board.pip[1]}")
+        print("///////////////")
 
 
     return turnNumber, winner
@@ -72,6 +84,8 @@ def TestAIMoveUpdates(Board:Logic.Board,player,roll):
 Board = Logic.Board()
 
 # RunGames("Tree Search I","Tree Search I",1000) 
+if __name__ == "__main__":
+    RunGame("PBP","TS1",True,True)
 
 # player = 1
 # roll = (2,4)
@@ -108,3 +122,36 @@ Board = Logic.Board()
 # print(Turn.current_possible_moves)
 # TurnB.updatePossibleMovesHumanFormat(fatsBoard)
 # print(TurnB.current_possible_moves)
+
+
+# from multiprocessing import Pool, cpu_count
+# import time
+
+# def f(x):
+#     y = x*x
+#     return y
+
+# if __name__ == '__main__':
+
+#     st = time.time()
+
+#     with Pool() as pool:      
+
+#         print(pool.map(f, range(100)))     
+#         print(f"Time = {time.time()-st}")
+
+#     print("//Completed")
+#     print(f"Time = {time.time()-st}")
+
+    
+#     pool_size = cpu_count()
+#     pool = Pool(processes=pool_size,)
+#     startTime1 = time.time()
+#     pool_outputs = pool.map(f, range(5000000))
+#     endTime1 = time.time() 
+#     print(endTime1 - startTime1)
+#     pool.close()
+#     print(endTime1 - startTime1)
+#     endTime1 = time.time()    
+#     print(endTime1 - startTime1)
+#     print(pool_outputs)

@@ -2,7 +2,11 @@ import numpy as np
 import sqlite3, copy, random
 
 from Main_Files.Logic_v3 import Board
-from Main_Files.AI_v3 import FastTurn
+
+class FastTurn:
+    def __init__(self,player,roll) -> None:
+        self.player = player
+        self.roll = roll
 
 class BackgammonNeuralNetwork:
     def __init__(self, weights_bias):
@@ -64,7 +68,7 @@ class BackgammonNeuralNetwork:
         self.bias1 -= learning_rate * np.sum(hidden_layer1_delta, axis=0)
 
 def fromSQLtoList(id): #Return a list of wights and biases 
-    PATH = "Version 3\Data\TestData1.sqlite3"
+    PATH = "Version 3\AI_Agents\\Network_Type1_Data_v3.sqlite3"
 
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()
@@ -103,7 +107,7 @@ def Full_Run(inputBoard: Board, inputTurn:FastTurn,networkIdent):
 #Database Management Code:
 
 def InitializeDataSet():
-    PATH = "Version 3\Data\TestData1.sqlite3"
+    PATH = "Version 3\AI_Agents\\Network_Type1_Data_v3.sqlite3"
 
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()
@@ -129,4 +133,4 @@ def InitializeDataSet():
     connection.commit()
     print("Data Set Initialized")
 
-InitializeDataSet()
+# InitializeDataSet()

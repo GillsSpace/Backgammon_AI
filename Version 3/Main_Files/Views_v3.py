@@ -37,30 +37,25 @@ class MainMenuView(arcade.View):
 
         @Sim_button.event("on_click")
         def on_click_Sim(event):
-            print("Changing view to Simulation")
             self.window.MainBoard.setStartPositions()
             simView = MainSimView(self.backgroundColor)
             self.window.show_view(simView)
         @OnePlayer_button.event("on_click")
         def on_click_OnePlayer(event):
-            print("Settings:", event)
+            pass
         @TwoPlayer_button.event("on_click")
         def on_click_TwoPlayer(event):
-            print("Changing view to 2 Player Start")
             self.window.MainBoard.setStartPositions()
             startView = Start_2P_View(self.backgroundColor)
             self.window.show_view(startView)
         @Settings_button.event("on_click")
         def on_click_Settings(event):
-            print("Changing view to Settings")
             self.window.lastPage = self
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
         @Quit_button.event("on_click")
         def on_click_Quit(event):
-            print("Application Quit")
             arcade.close_window()
-
 
     def on_show_view(self):
         self.manager.enable()
@@ -81,26 +76,102 @@ class SettingsView(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
-        self.v_box = arcade.gui.UIGrid
+        Settings_label = arcade.gui.UILabel(100,625,1100,150,"Settings",font_size=30,align="center",bold=True)
 
         Back_button = arcade.gui.UIFlatButton(15,745,75,40,"Back")
         Quit_button = arcade.gui.UIFlatButton(15,695,75,40,"Quit")
 
-        AIAgent1_label = arcade.gui.UILabel()
+        AIAgent1_label = arcade.gui.UILabel(165,635,100,50,"Agent 1:",font_size=15,text_color=Graphics.black,bold=True)
+        AIAgent2_label = arcade.gui.UILabel(165,560,100,50,"Agent 2:",font_size=15,text_color=Graphics.black,bold=True)
+
+        AIAgent1_Option1_button = arcade.gui.UIFlatButton(265,655,100,40,"Human")
+        AIAgent1_Option2_button = arcade.gui.UIFlatButton(380,655,100,40,"Random")
+        AIAgent1_Option3_button = arcade.gui.UIFlatButton(495,655,100,40,"PBP")
+        AIAgent1_Option4_button = arcade.gui.UIFlatButton(610,655,100,40,"TS 1")
+        AIAgent1_Option5_button = arcade.gui.UIFlatButton(725,655,100,40,"TS 2")
+        AIAgent1_Option6_button = arcade.gui.UIFlatButton(840,655,100,40,"Network:")
+
+        AIAgent2_Option2_button = arcade.gui.UIFlatButton(380,580,100,40,"Random")
+        AIAgent2_Option3_button = arcade.gui.UIFlatButton(495,580,100,40,"PBP")
+        AIAgent2_Option1_button = arcade.gui.UIFlatButton(265,580,100,40,"Human")
+        AIAgent2_Option4_button = arcade.gui.UIFlatButton(610,580,100,40,"TS 1")
+        AIAgent2_Option5_button = arcade.gui.UIFlatButton(725,580,100,40,"TS 2")
+        AIAgent2_Option6_button = arcade.gui.UIFlatButton(840,580,100,40,"Network:")
+
+        NetworkID1 = arcade.gui.UIInputText(955,645,150,40,"V1.0-1.001")
+        NetworkID2 = arcade.gui.UIInputText(955,570,150,40,"V1.0-1.001")
 
         self.manager.add(Back_button)
         self.manager.add(Quit_button)
 
+        self.manager.add(Settings_label)
+        self.manager.add(AIAgent1_label)
+        self.manager.add(AIAgent2_label)
+
+        self.manager.add(AIAgent1_Option1_button)
+        self.manager.add(AIAgent1_Option2_button)
+        self.manager.add(AIAgent1_Option3_button)
+        self.manager.add(AIAgent1_Option4_button)
+        self.manager.add(AIAgent1_Option5_button)
+        self.manager.add(AIAgent1_Option6_button)
+
+        self.manager.add(AIAgent2_Option1_button)
+        self.manager.add(AIAgent2_Option2_button)
+        self.manager.add(AIAgent2_Option3_button)
+        self.manager.add(AIAgent2_Option4_button)
+        self.manager.add(AIAgent2_Option5_button)
+        self.manager.add(AIAgent2_Option6_button)
+
+        self.manager.add(NetworkID1)
+        self.manager.add(NetworkID2)
 
         @Back_button.event("on_click")
-        def on_click_Back(event):
-            print("Changing view to Last Known Page")
+        def on_click_Back(event): 
+            self.window.settings["Network1 ID"] = NetworkID1.text if self.window.settings["Agent1"] == "Network" else None
+            self.window.settings["Network2 ID"] = NetworkID2.text if self.window.settings["Agent2"] == "Network" else None
             self.window.show_view(self.window.lastPage)
-
+            print(f" Current Settings: {self.window.settings}") #DEBUG
         @Quit_button.event("on_click")
         def on_click_Quit(event):
-            print("Application Quit")
             arcade.close_window()
+
+        @AIAgent1_Option1_button.event("on_click")
+        def on_click_Option1(event):
+            self.window.settings["Agent1"] = "Human"
+        @AIAgent1_Option2_button.event("on_click")
+        def on_click_Option2(event):
+            self.window.settings["Agent1"] = "Random"
+        @AIAgent1_Option3_button.event("on_click")
+        def on_click_Option3(event):
+            self.window.settings["Agent1"] = "PBP"
+        @AIAgent1_Option4_button.event("on_click")
+        def on_click_Option4(event):
+            self.window.settings["Agent1"] = "TS 1"
+        @AIAgent1_Option5_button.event("on_click")
+        def on_click_Option5(event):
+            self.window.settings["Agent1"] = "TS 2"
+        @AIAgent1_Option6_button.event("on_click")
+        def on_click_Option6(event):
+            self.window.settings["Agent1"] = "Network"
+
+        @AIAgent2_Option1_button.event("on_click")
+        def on_click_Option1(event):
+            self.window.settings["Agent2"] = "Human"
+        @AIAgent2_Option2_button.event("on_click")
+        def on_click_Option2(event):
+            self.window.settings["Agent2"] = "Random"
+        @AIAgent2_Option3_button.event("on_click")
+        def on_click_Option3(event):
+            self.window.settings["Agent2"] = "PBP"
+        @AIAgent2_Option4_button.event("on_click")
+        def on_click_Option4(event):
+            self.window.settings["Agent2"] = "TS 1"
+        @AIAgent2_Option5_button.event("on_click")
+        def on_click_Option5(event):
+            self.window.settings["Agent2"] = "TS 2"
+        @AIAgent2_Option6_button.event("on_click")
+        def on_click_Option6(event):
+            self.window.settings["Agent2"] = "Network"
 
 
     def on_show_view(self):
@@ -112,6 +183,9 @@ class SettingsView(arcade.View):
 
     def on_draw(self):
         self.clear()
+
+        Graphics.DrawSettings(self.window.settings)
+
         self.manager.draw()
 
 
@@ -147,26 +221,22 @@ class MainSimView(arcade.View):
 
         @Back_button.event("on_click")
         def on_click_Back(event):
-            print("Changing view to MainMenuView")
             mainView = MainMenuView(self.backgroundColor)
             self.window.show_view(mainView)
         @Quit_button.event("on_click")
         def on_click_Quit(event):
-            print("Application Quit")
             arcade.close_window()
         @New_button.event("on_click")
         def on_click_New(event):
             self.window.MainBoard.setStartPositions()
         @Setting_button.event("on_click")
         def on_click_Settings(event):
-            print("Changing view to Settings")
             self.window.lastPage = self
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
 
         @EditBoard_button.event("on_click")
         def on_click_Edit(event):
-            print("Changing view to EditBoardView")
             EditView = EditBoardView(self.backgroundColor)
             self.window.show_view(EditView)
 
@@ -228,12 +298,10 @@ class EditBoardView(arcade.View):
 
         @Done_button.event("on_click")
         def on_click_Done(event):
-            print("Changing view to Simulation")
             simView = MainSimView(self.backgroundColor)
             self.window.show_view(simView)
         @Quit_button.event("on_click")
         def on_click_Quit(event):
-            print("Application Quit")
             arcade.close_window()
 
         @light_button.event("on_click")
@@ -251,7 +319,6 @@ class EditBoardView(arcade.View):
 
         @Edit_button.event("on_click")
         def on_click_Edit(event):
-            print("Changing view to Edit as String View")
             editView = EditAsString_View(self.backgroundColor)
             self.window.show_view(editView)
 
@@ -289,7 +356,6 @@ class EditAsString_View(arcade.View):
 
         @Done_button.event("on_click")
         def on_click_Done(event):
-            print("Changing view to EditBoardView")
 
             stringList = text_input.text.rsplit(sep=", ")
             self.window.MainBoard.positions = [int(num) for num in stringList]
@@ -335,13 +401,11 @@ class Start_2P_View(arcade.View):
 
         @Back_button.event("on_click")
         def on_click_back(event):
-            print("Changing view to Main Menu")
             mainmenuView = MainMenuView(self.backgroundColor)
             self.window.show_view(mainmenuView)
 
         @Quit_button.event("on_click")
         def on_click_Quit(event):
-            print("Application Quit")
             arcade.close_window()
 
         @Roll_button.event("on_click")
@@ -362,7 +426,6 @@ class Start_2P_View(arcade.View):
 
         @Settings_button.event("on_click")
         def on_click_Settings(event):
-            print("Changing view to Settings")
             self.window.lastPage = self
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
@@ -399,18 +462,15 @@ class P1_Turn_2P_View(arcade.View):
 
         @Exit_button.event("on_click")
         def on_click_exit(event):
-            print("Changing view to Main Menu")
             mainmenuView = MainMenuView(self.backgroundColor)
             self.window.show_view(mainmenuView)
 
         @Quit_button.event("on_click")
         def on_click_Quit(event):
-            print("Application Quit")
             arcade.close_window()
 
         @Settings_button.event("on_click")
         def on_click_Settings(event):
-            print("Changing view to Settings")
             self.window.lastPage = self
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
@@ -449,18 +509,15 @@ class P2_Turn_2P_View(arcade.View):
 
         @Exit_button.event("on_click")
         def on_click_exit(event):
-            print("Changing view to Main Menu")
             mainmenuView = MainMenuView(self.backgroundColor)
             self.window.show_view(mainmenuView)
 
         @Quit_button.event("on_click")
         def on_click_Quit(event):
-            print("Application Quit")
             arcade.close_window()
 
         @Settings_button.event("on_click")
         def on_click_Settings(event):
-            print("Changing view to Settings")
             self.window.lastPage = self
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)

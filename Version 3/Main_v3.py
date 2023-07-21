@@ -6,9 +6,6 @@ import Main_Files.Logic_v3 as Logic
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
 BACKGROUND_COLOR = 13, 47, 69
-GAME_SETTINGS = {"Type":"0P",
-                 "AI Agent 1": "Random",
-                 "AI Agent 2": "Random"}
 
 class MainWindow(arcade.Window):
 
@@ -16,7 +13,7 @@ class MainWindow(arcade.Window):
         super().__init__(width, height, title)
         arcade.set_background_color(BACKGROUND_COLOR)
 
-        self.settings = {"Agent1":"Human","Agent2":"Human","1P Inputs Rolls":False}
+        self.settings = {"Agent1":"Human","Agent2":"Human","Network1 ID":None,"Network2 ID":None,"1P Inputs Rolls":False}
         self.lastPage = None
         self.MainBoard = Logic.Board()
         self.MainTurn = None
