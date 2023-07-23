@@ -38,6 +38,8 @@ class MainMenuView(arcade.View):
         @Sim_button.event("on_click")
         def on_click_Sim(event):
             self.window.MainBoard.setStartPositions()
+            self.window.settings["Agent1"] = "TS 1"
+            self.window.settings["Agent2"] = "TS 1"
             simView = MainSimView(self.backgroundColor)
             self.window.show_view(simView)
         @OnePlayer_button.event("on_click")
@@ -271,7 +273,7 @@ class EditBoardView(arcade.View):
         light_button = arcade.gui.UITextureButton(1010,510,75,75,Graphics.lightPiece_icon,Graphics.lightPiece_icon2,Graphics.lightPiece_icon3)
         dark_button = arcade.gui.UITextureButton(1010,420,75,75,Graphics.darkPiece_icon,Graphics.darkPiece_icon2,Graphics.darkPiece_icon3)
         delete_button = arcade.gui.UITextureButton(1010,330,75,75,Graphics.delete_icon,Graphics.delete_icon2,Graphics.delete_icon3)
-        restart_button = arcade.gui.UITextureButton(1010,240,75,75,Graphics.restart_icon,Graphics.restart_icon2,Graphics.restart_icon3)
+        restart_button = arcade.gui.UITextureButton(1010,240,75,75,Graphics.restart_icon,Graphics.restart_icon2,Graphics.restart_icon3,)
 
         Edit_button = arcade.gui.UIFlatButton(1010,15,175,40,"Edit as String")
 
@@ -307,12 +309,21 @@ class EditBoardView(arcade.View):
         @light_button.event("on_click")
         def on_click_light(event):
             self.tool = "Light"
+            light_button.texture = Graphics.lightPiece_icon3
+            dark_button.texture = Graphics.darkPiece_icon
+            delete_button.texture = Graphics.delete_icon
         @dark_button.event("on_click")
         def on_click_dark(event):
             self.tool = "Dark"
+            light_button.texture = Graphics.lightPiece_icon
+            dark_button.texture = Graphics.darkPiece_icon3
+            delete_button.texture = Graphics.delete_icon
         @delete_button.event("on_click")
-        def on_click_light(event):
+        def on_click_delete(event):
             self.tool = "Delete"
+            light_button.texture = Graphics.lightPiece_icon
+            dark_button.texture = Graphics.darkPiece_icon
+            delete_button.texture = Graphics.delete_icon3
         @restart_button.event("on_click")
         def on_click_light(event):
             self.window.MainBoard.positions = [0] * 28 
@@ -328,6 +339,103 @@ class EditBoardView(arcade.View):
 
     def on_hide_view(self):
         self.manager.disable()
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+        position = None
+        if (216 < x < 276) and ( 484 < y < 766):
+            position = 0
+        if (276 < x < 336) and ( 484 < y < 766):
+            position = 1
+        if (336 < x < 396) and ( 484 < y < 766):
+            position = 2
+        if (396 < x < 456) and ( 484 < y < 766):
+            position = 3
+        if (456 < x < 516) and ( 484 < y < 766):
+            position = 4
+        if (516 < x < 576) and ( 484 < y < 766):
+            position = 5
+        if (216 < x < 276) and ( 44 < y < 316 ):
+            position = 23
+        if (276 < x < 336) and ( 44 < y < 316 ):
+            position = 22
+        if (336 < x < 396) and ( 44 < y < 316 ):
+            position = 21
+        if (396 < x < 456) and ( 44 < y < 316 ):
+            position = 20
+        if (456 < x < 516) and ( 44 < y < 316 ):
+            position = 19
+        if (516 < x < 576) and ( 44 < y < 316 ):
+            position = 18
+        if (624 < x < 684) and ( 484 < y < 766):
+            position = 6
+        if (684 < x < 744) and ( 484 < y < 766):
+            position = 7
+        if (744 < x < 804) and ( 484 < y < 766):
+            position = 8
+        if (804 < x < 864) and ( 484 < y < 766):
+            position = 9
+        if (864 < x < 924) and ( 484 < y < 766):
+            position = 10
+        if (924 < x < 984) and ( 484 < y < 766):
+            position = 11
+        if (624 < x < 684) and ( 44 < y < 316 ):
+            position = 17
+        if (684 < x < 744) and ( 44 < y < 316 ):
+            position = 16
+        if (744 < x < 804) and ( 44 < y < 316 ):
+            position = 15
+        if (804 < x < 864) and ( 44 < y < 316 ):
+            position = 14
+        if (864 < x < 924) and ( 44 < y < 316 ):
+            position = 13
+        if (924 < x < 984) and ( 44 < y < 316 ):
+            position = 12
+        if (120 < x < 180) and ( 450 < y < 750 ):
+            position = 27
+        if (120 < x < 180) and ( 50 < y < 350 ):
+            position = 26
+        
+        
+
+        if position == 24:
+            if self.tool == "Light":
+                self.window.MainBoard.positions[position] += 1
+            elif self.tool == "Dark":
+                self.window.MainBoard.positions[position] += -1
+            elif self.tool == "Delete":
+                self.window.MainBoard.positions[position] = 0
+        elif position == 25:
+            if self.tool == "Light":
+                self.window.MainBoard.positions[position] += 1
+            elif self.tool == "Dark":
+                self.window.MainBoard.positions[position] += -1
+            elif self.tool == "Delete":
+                self.window.MainBoard.positions[position] = 0
+        elif position == 26:
+            if self.tool == "Light":
+                self.window.MainBoard.positions[position] += 1
+            elif self.tool == "Dark":
+                if self.window.MainBoard.positions[position] > 0:
+                    self.window.MainBoard.positions[position] += -1 
+            elif self.tool == "Delete":
+                self.window.MainBoard.positions[position] = 0
+        elif position == 27:
+            if self.tool == "Light":
+                if self.window.MainBoard.positions[position] > 0:
+                    self.window.MainBoard.positions[position] += -1 
+            elif self.tool == "Dark":
+                self.window.MainBoard.positions[position] += 1
+            elif self.tool == "Delete":
+                self.window.MainBoard.positions[position] = 0
+        elif position != None:
+            if self.tool == "Light":
+                self.window.MainBoard.positions[position] += 1
+            elif self.tool == "Dark":
+                self.window.MainBoard.positions[position] += -1
+            elif self.tool == "Delete":
+                self.window.MainBoard.positions[position] = 0
+
+
 
     def on_draw(self):
         self.clear()
@@ -362,7 +470,6 @@ class EditAsString_View(arcade.View):
 
             editView = EditBoardView(self.backgroundColor)
             self.window.show_view(editView)
-
 
     def on_show_view(self):
         self.manager.enable()

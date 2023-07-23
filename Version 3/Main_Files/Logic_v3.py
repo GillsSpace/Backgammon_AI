@@ -25,7 +25,7 @@ def rollDice():
 class Board:
     def __init__(self, PositionList=None) -> None:
         self.positions = [-2,0,0,0,0,5,0,3,0,0,0,-5,5,0,0,0,-3,0,-5,0,0,0,0,2,0,0,0,0] if PositionList == None else PositionList
-        # index 0  to 23 represents number of checkers on points - negative for player one, positive for player 2
+        # index 0  to 23 represents number of checkers on points - negative for player one(light), positive for player 2(dark)
         # index 24 to 25 represents number of checkers on the bar - index 24 for P1, index 25 for P2
         # index 26 to 27 represents number of checkers off - index 26 for P1, index 27 for P2
         self.pip = [167,167] 
