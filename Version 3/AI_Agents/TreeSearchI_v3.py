@@ -44,14 +44,13 @@ class SubTurn:
 def ReturnTurnSolutions(inputBoard:Board,inputTurn:FastTurn):
     turnSolutions = []
     playerTurnSequences = inputBoard.returnMoveSequences(inputTurn.player,inputTurn.roll)
-    print(f"PlayerTurnSequences used as base for instance Turn solution = {playerTurnSequences}")
     for moveSequence in playerTurnSequences:
         instanceTurnSolution = TurnSolution(inputBoard,moveSequence)
         instanceTurnSolution.Board.makeMoves(moveSequence,inputTurn.player)
         turnSolutions.append(instanceTurnSolution)
     return turnSolutions
 
-def PipMinMaxBasic(subTurn:SubTurn,player,Max=True): 
+def PipMinMaxBasic(subTurn:SubTurn,player,Max=True):
     #From an input of a SubTurn, returns either the maximum or minimum pip difference that can be generated in the courses of the subTurn
 
     pipList = []
@@ -63,11 +62,11 @@ def PipMinMaxBasic(subTurn:SubTurn,player,Max=True):
         algoBoard.updatePip()
         pipDiff = (algoBoard.pip[1] - algoBoard.pip[0]) if player == 1 else (algoBoard.pip[0] - algoBoard.pip[1])
         pipList.append(pipDiff)
-    
+
     if len(pipList) == 0:
         pipDiff = (subTurn.Board.pip[1] - subTurn.Board.pip[0]) if player == 1 else (subTurn.Board.pip[0] - subTurn.Board.pip[1])
         return pipDiff
-    
+
     maxPipDiff = max(pipList)
     minPipDiff = min(pipList)
 
@@ -79,7 +78,7 @@ def PipMinMaxBasic(subTurn:SubTurn,player,Max=True):
 #Running:
 def Full_Run(inputBoard:Board,inputTurn:Turn):
     fastTurn = FastTurn(inputTurn.player,inputTurn.roll)
-    #Takes a input of a FastBoard and a FastTurn and returns the optimal move for the current player to make. 
+    #Takes a input of a FastBoard and a FastTurn and returns the optimal move for the current player to make.
     initialTurnSolutions = ReturnTurnSolutions(inputBoard,fastTurn)
     possiblePipDiffs = []
     for turnSolution in initialTurnSolutions:
@@ -100,18 +99,18 @@ def Full_Run(inputBoard:Board,inputTurn:Turn):
     if len(possiblePipDiffs) != 0:
         if fastTurn.player == 1:
             maxPipDiff = min(possiblePipDiffs)
-            #Using min function because possible pip differences are calculated for opponents. 
+            #Using min function because possible pip differences are calculated for opponents.
             indexOfTurn = possiblePipDiffs.index(maxPipDiff)
-            return initialTurnSolutions[indexOfTurn].MoveSequence 
+            return initialTurnSolutions[indexOfTurn].MoveSequence
         else:
             possiblePipDiffs.reverse()
             initialTurnSolutions.reverse()
             maxPipDiff = min(possiblePipDiffs)
-            #Using min function because possible pip differences are calculated for opponents. 
+            #Using min function because possible pip differences are calculated for opponents.
             indexOfTurn = possiblePipDiffs.index(maxPipDiff)
-            return initialTurnSolutions[indexOfTurn].MoveSequence 
+            return initialTurnSolutions[indexOfTurn].MoveSequence
     else:
-        return [] 
+        return []
 
 
 def Helper(args):
@@ -132,7 +131,7 @@ def Helper(args):
 
 def Full_Run_MultiProcess(inputBoard:Board,inputTurn:Turn):
     fastTurn = FastTurn(inputTurn.player,inputTurn.roll)
-    #Takes a input of a FastBoard and a FastTurn and returns the optimal move for the current player to make. 
+    #Takes a input of a FastBoard and a FastTurn and returns the optimal move for the current player to make.
     initialTurnSolutions = ReturnTurnSolutions(inputBoard,fastTurn)
     possiblePipDiffs = []
 
@@ -144,15 +143,15 @@ def Full_Run_MultiProcess(inputBoard:Board,inputTurn:Turn):
     if len(possiblePipDiffs) != 0:
         if fastTurn.player == 1:
             maxPipDiff = min(possiblePipDiffs)
-            #Using min function because possible pip differences are calculated for opponents. 
+            #Using min function because possible pip differences are calculated for opponents.
             indexOfTurn = possiblePipDiffs.index(maxPipDiff)
-            return initialTurnSolutions[indexOfTurn].MoveSequence 
+            return initialTurnSolutions[indexOfTurn].MoveSequence
         else:
             possiblePipDiffs.reverse()
             initialTurnSolutions.reverse()
             maxPipDiff = min(possiblePipDiffs)
-            #Using min function because possible pip differences are calculated for opponents. 
+            #Using min function because possible pip differences are calculated for opponents.
             indexOfTurn = possiblePipDiffs.index(maxPipDiff)
-            return initialTurnSolutions[indexOfTurn].MoveSequence 
+            return initialTurnSolutions[indexOfTurn].MoveSequence
     else:
-        return [] 
+        return []
