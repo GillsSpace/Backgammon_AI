@@ -1,7 +1,8 @@
-import arcade, random
+import arcade, random, time
 import arcade.gui
 import Main_Files.Graphics_v3 as Graphics
 import Main_Files.Logic_v3 as Logic
+import Main_Files.AI_v3 as AI
 
 #Main Views:
 class MainMenuView(arcade.View):
@@ -209,7 +210,13 @@ class MainSimView(arcade.View):
         RunRandomTurn_button = arcade.gui.UIFlatButton(1010,695,175,40,"Run Turn")
         RunSetTurn_button = arcade.gui.UIFlatButton(1010,645,175,40,"Run Set Turn")
         EditBoard_button = arcade.gui.UIFlatButton(1010,595,175,40,"Edit Board")
-        
+
+        nextPlayer_label = arcade.gui.UILabel(1010,545,175,40,"Next Player",align="center",font_size=16)
+        self.nextPlayerDark_button = arcade.gui.UITextureButton(1055,515,40,40,Graphics.darkPiece_icon,Graphics.darkPiece_icon2,Graphics.darkPiece_icon3)
+        self.nextPlayerLight_button = arcade.gui.UITextureButton(1105,515,40,40,Graphics.lightPiece_icon,Graphics.lightPiece_icon2,Graphics.lightPiece_icon3)
+
+        setRoll_label = arcade.gui.UILabel(1010,300,175,40,"Next Set Roll",align="center",font_size=16)
+        setRoll_input = arcade.gui.UIInputText(1085,260,175,40,"6,6",font_size=16)
 
         self.manager.add(Back_button)
         self.manager.add(Quit_button)
@@ -220,6 +227,13 @@ class MainSimView(arcade.View):
         self.manager.add(RunRandomTurn_button)
         self.manager.add(RunSetTurn_button)
         self.manager.add(EditBoard_button)
+
+        self.manager.add(nextPlayer_label)
+        self.manager.add(self.nextPlayerDark_button)
+        self.manager.add(self.nextPlayerLight_button)
+
+        self.manager.add(setRoll_label)
+        self.manager.add(setRoll_input)
 
         @Back_button.event("on_click")
         def on_click_Back(event):
@@ -237,11 +251,110 @@ class MainSimView(arcade.View):
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
 
+        @RunGame_button.event("on_click")
+        def on_click_run(event):
+            self.window.nextPlayer = self.window.nextPlayer if self.window.nextPlayer != 0 else random.randint(1,2)
+            game_over = False
+            while not game_over:
+                if self.window.nextPlayer == 1:
+                    if self.window.settings["Agent1"] == "Human":
+                        pass
+                    else:
+                        self.window.MainTurn = Logic.Turn(self.window.nextPlayer,self.window.settings["Agent1"],First=(self.window.nextPlayer == 0))
+                        self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
+                        Moves = AI.Main(self.window.MainBoard,self.window.MainTurn,self.window.settings["Agent1"],self.window.settings["Network1 ID"])
+                        self.window.MainBoard.makeMoves(Moves,1,True)
+                        if self.window.MainBoard.pip[0] == 0:
+                            messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Game Over: \nPlayer 1 Wins! Please Select 'New Game' to start a new game."),callback=None,buttons=["Ok"])
+                            self.manager.add(messageBox)
+                            game_over = True
+                        self.window.nextPlayer = 2
+                else:
+                    if self.window.settings["Agent2"] == "Human":
+                        pass
+                    else:
+                        self.window.MainTurn = Logic.Turn(self.window.nextPlayer,self.window.settings["Agent2"],First=(self.window.nextPlayer == 0))
+                        self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
+                        Moves = AI.Main(self.window.MainBoard,self.window.MainTurn,self.window.settings["Agent2"],self.window.settings["Network2 ID"])
+                        self.window.MainBoard.makeMoves(Moves,2,True)
+                        if self.window.MainBoard.pip[1] == 0:
+                            messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Game Over: \nPlayer 2 Wins! Please Select 'New Game' to start a new game."),callback=None,buttons=["Ok"])
+                            self.manager.add(messageBox)
+                            game_over = True
+                        self.window.nextPlayer = 1
+
+        @RunRandomTurn_button.event("on_click")
+        def on_click_run(event):
+            player = self.window.nextPlayer if self.window.nextPlayer != 0 else random.randint(1,2)
+            if player == 1:
+                if self.window.settings["Agent1"] == "Human":
+                    pass
+                else:
+                    self.window.MainTurn = Logic.Turn(player,self.window.settings["Agent1"],First=(self.window.nextPlayer == 0))
+                    self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
+                    Moves = AI.Main(self.window.MainBoard,self.window.MainTurn,self.window.settings["Agent1"],self.window.settings["Network1 ID"])
+                    self.window.MainBoard.makeMoves(Moves,1,True)
+                    if self.window.MainBoard.pip[0] == 0:
+                        messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Game Over: \nPlayer 1 Wins! Please Select 'New Game' to start a new game."),callback=None,buttons=["Ok"])
+                        self.manager.add(messageBox)
+                    self.window.nextPlayer = 2
+            else:
+                if self.window.settings["Agent2"] == "Human":
+                    pass
+                else:
+                    self.window.MainTurn = Logic.Turn(player,self.window.settings["Agent2"],First=(self.window.nextPlayer == 0))
+                    self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
+                    Moves = AI.Main(self.window.MainBoard,self.window.MainTurn,self.window.settings["Agent2"],self.window.settings["Network2 ID"])
+                    self.window.MainBoard.makeMoves(Moves,2,True)
+                    if self.window.MainBoard.pip[1] == 0:
+                        messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Game Over: \nPlayer 2 Wins! Please Select 'New Game' to start a new game."),callback=None,buttons=["Ok"])
+                        self.manager.add(messageBox)
+                    self.window.nextPlayer = 1     
+
+        @RunSetTurn_button.event("on_click")
+        def on_click_run(event):
+
+            set_roll_string = setRoll_input.text.rsplit(sep=",")
+            set_roll = [int(num) for num in set_roll_string]
+
+            player = self.window.nextPlayer if self.window.nextPlayer != 0 else random.randint(1,2)
+            if player == 1:
+                if self.window.settings["Agent1"] == "Human":
+                    pass
+                else:
+                    self.window.MainTurn = Logic.Turn(player,self.window.settings["Agent1"],First=(self.window.nextPlayer == 0),roll=set_roll)
+                    self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
+                    Moves = AI.Main(self.window.MainBoard,self.window.MainTurn,self.window.settings["Agent1"],self.window.settings["Network1 ID"])
+                    self.window.MainBoard.makeMoves(Moves,1,True)
+                    if self.window.MainBoard.pip[0] == 0:
+                        messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Game Over: \nPlayer 1 Wins! Please Select 'New Game' to start a new game."),callback=None,buttons=["Ok"])
+                        self.manager.add(messageBox)
+                    self.window.nextPlayer = 2
+            else:
+                if self.window.settings["Agent2"] == "Human":
+                    pass
+                else:
+                    self.window.MainTurn = Logic.Turn(player,self.window.settings["Agent2"],First=(self.window.nextPlayer == 0),roll=set_roll)
+                    self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
+                    Moves = AI.Main(self.window.MainBoard,self.window.MainTurn,self.window.settings["Agent2"],self.window.settings["Network2 ID"])
+                    self.window.MainBoard.makeMoves(Moves,2,True)
+                    if self.window.MainBoard.pip[1] == 0:
+                        messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Game Over: \nPlayer 2 Wins! Please Select 'New Game' to start a new game."),callback=None,buttons=["Ok"])
+                        self.manager.add(messageBox)
+                    self.window.nextPlayer = 1
+
         @EditBoard_button.event("on_click")
         def on_click_Edit(event):
             EditView = EditBoardView(self.backgroundColor)
             self.window.show_view(EditView)
 
+        @self.nextPlayerDark_button.event("on_click")
+        def on_click_Dark(event):
+            self.window.nextPlayer = 1 if self.window.nextPlayer != 1 else 0
+
+        @self.nextPlayerLight_button.event("on_click")
+        def on_click_Light(event):
+            self.window.nextPlayer = 2 if self.window.nextPlayer != 2 else 0
 
     def on_show_view(self):
         self.manager.enable()
@@ -253,10 +366,27 @@ class MainSimView(arcade.View):
     def on_draw(self):
         self.clear()
 
-        self.manager.draw()
-
+        if self.window.nextPlayer == 1:
+            self.nextPlayerDark_button.texture = Graphics.darkPiece_icon3
+            self.nextPlayerLight_button.texture = Graphics.lightPiece_icon
+        elif self.window.nextPlayer == 2:
+            self.nextPlayerLight_button.texture = Graphics.lightPiece_icon3
+            self.nextPlayerDark_button.texture = Graphics.darkPiece_icon
+        else:
+            self.nextPlayerDark_button.texture = Graphics.darkPiece_icon
+            self.nextPlayerLight_button.texture = Graphics.lightPiece_icon
+        
         Graphics.drawBoard()
         Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
+
+        Graphics.DrawSimMain()
+
+        if self.window.MainBoard.MoveLineData != None:
+            Graphics.DrawMoveLines(self.window.MainBoard.MoveLineData)
+        if self.window.MainTurn != None:
+            Graphics.drawDice(self.window.MainTurn.roll[0],self.window.MainTurn.roll[1],self.window.MainTurn.unused_dice)
+
+        self.manager.draw()
 class EditBoardView(arcade.View):
     def __init__(self,backgroundColor):
         super().__init__()
@@ -300,8 +430,12 @@ class EditBoardView(arcade.View):
 
         @Done_button.event("on_click")
         def on_click_Done(event):
-            simView = MainSimView(self.backgroundColor)
-            self.window.show_view(simView)
+            if Logic.isLegalBoard(self.window.MainBoard.positions):
+                simView = MainSimView(self.backgroundColor)
+                self.window.show_view(simView)
+            else:
+                messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Error: \nThis in not a legal Backgammon board. Please Provide a legal board."),callback=None,buttons=["Ok"])
+                self.manager.add(messageBox)
         @Quit_button.event("on_click")
         def on_click_Quit(event):
             arcade.close_window()
@@ -394,24 +528,20 @@ class EditBoardView(arcade.View):
             position = 27
         if (120 < x < 180) and ( 50 < y < 350 ):
             position = 26
-        
-        
+        if (505 < x < 555) and ( 350 < y < 450 ):
+            position = 24
+        if (645 < x < 695) and ( 350 < y < 450 ):
+            position = 25
 
         if position == 24:
             if self.tool == "Light":
-                self.window.MainBoard.positions[position] += 1
+                if self.window.MainBoard.positions[position] > 0:
+                    self.window.MainBoard.positions[position] += -1 
             elif self.tool == "Dark":
-                self.window.MainBoard.positions[position] += -1
+                self.window.MainBoard.positions[position] += 1
             elif self.tool == "Delete":
                 self.window.MainBoard.positions[position] = 0
         elif position == 25:
-            if self.tool == "Light":
-                self.window.MainBoard.positions[position] += 1
-            elif self.tool == "Dark":
-                self.window.MainBoard.positions[position] += -1
-            elif self.tool == "Delete":
-                self.window.MainBoard.positions[position] = 0
-        elif position == 26:
             if self.tool == "Light":
                 self.window.MainBoard.positions[position] += 1
             elif self.tool == "Dark":
@@ -420,6 +550,14 @@ class EditBoardView(arcade.View):
             elif self.tool == "Delete":
                 self.window.MainBoard.positions[position] = 0
         elif position == 27:
+            if self.tool == "Light":
+                self.window.MainBoard.positions[position] += 1
+            elif self.tool == "Dark":
+                if self.window.MainBoard.positions[position] > 0:
+                    self.window.MainBoard.positions[position] += -1 
+            elif self.tool == "Delete":
+                self.window.MainBoard.positions[position] = 0
+        elif position == 26:
             if self.tool == "Light":
                 if self.window.MainBoard.positions[position] > 0:
                     self.window.MainBoard.positions[position] += -1 
@@ -435,15 +573,13 @@ class EditBoardView(arcade.View):
             elif self.tool == "Delete":
                 self.window.MainBoard.positions[position] = 0
 
-
-
     def on_draw(self):
         self.clear()
 
-        self.manager.draw()
-
         Graphics.drawBoard()
         Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
+        Graphics.DrawBarBoxes()
+        self.manager.draw()
 class EditAsString_View(arcade.View):
 
     def __init__(self,backgroundColor):
@@ -596,7 +732,7 @@ class P1_Turn_2P_View(arcade.View):
         Graphics.drawBoard()
         Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
         Graphics.drawDice(self.window.MainTurn.roll[0],self.window.MainTurn.roll[1],self.window.MainTurn.unused_dice)
-        arcade.draw_rectangle_filled(601,401,12,762,Graphics.checkerColor1)
+        arcade.draw_rectangle_filled(601,401,12,762,Graphics.darkCheckerColor)
 class P2_Turn_2P_View(arcade.View):
 
     def __init__(self,backgroundColor):
@@ -643,7 +779,7 @@ class P2_Turn_2P_View(arcade.View):
         Graphics.drawBoard()
         Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
         Graphics.drawDice(self.window.MainTurn.roll[0],self.window.MainTurn.roll[1],self.window.MainTurn.unused_dice)
-        arcade.draw_rectangle_filled(601,401,12,762,Graphics.checkerColor2)
+        arcade.draw_rectangle_filled(601,401,12,762,Graphics.lightCheckerColor)
 class P1_PreTurn_2P_View(arcade.View):
 
     def __init__(self,backgroundColor):

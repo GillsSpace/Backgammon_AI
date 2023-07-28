@@ -4,6 +4,7 @@ from Main_Files.Logic_v3 import Board,Turn
 import time
 
 from AI_Agents.TreeSearchI_v3 import Full_Run as TreeSearchI_Full_Run
+from AI_Agents.TreeSearchI_v3 import Full_Run_MultiProcess
 from AI_Agents.Network_Type1_v3 import Full_Run as Network_Type1_Full_Run
 from AI_Agents.Pick_Best_Pip_v3 import Full_Run as PBP_Full_Run
 
@@ -49,8 +50,13 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
         et = time.time()
         print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
-    elif AI_player == "Network_Type1":
-        pass
+    elif AI_player == "Network":
+        print(f"Running TS1 MP; Roll = {Main_Turn.roll}")
+        st = time.time()
+        Moves = Full_Run_MultiProcess(Main_Board,Main_Turn)
+        et = time.time()
+        print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
+        return Moves
 
 def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
     AI_player = aiType
@@ -63,5 +69,5 @@ def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
     elif AI_player == "PBP":
         Moves = pickBestPip(Main_Board,Main_Turn)
         return Moves
-    elif AI_player == "Network_Type1":
+    elif AI_player == "Network":
         pass

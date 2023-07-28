@@ -1,4 +1,4 @@
-import copy
+import copy, multiprocessing
 from Main_Files.Logic_v3 import Board,Turn
 
 
@@ -44,6 +44,7 @@ class SubTurn:
 def ReturnTurnSolutions(inputBoard:Board,inputTurn:FastTurn):
     turnSolutions = []
     playerTurnSequences = inputBoard.returnMoveSequences(inputTurn.player,inputTurn.roll)
+    print(f"PlayerTurnSequences used as base for instance Turn solution = {playerTurnSequences}")
     for moveSequence in playerTurnSequences:
         instanceTurnSolution = TurnSolution(inputBoard,moveSequence)
         instanceTurnSolution.Board.makeMoves(moveSequence,inputTurn.player)
@@ -95,6 +96,50 @@ def Full_Run(inputBoard:Board,inputTurn:Turn):
                 MaxPipDiffs.append(subTurn.largestPipDiff)
         turnSolution.expectedPipDiff = average(MaxPipDiffs)
         possiblePipDiffs.append(turnSolution.expectedPipDiff)
+
+    if len(possiblePipDiffs) != 0:
+        if fastTurn.player == 1:
+            maxPipDiff = min(possiblePipDiffs)
+            #Using min function because possible pip differences are calculated for opponents. 
+            indexOfTurn = possiblePipDiffs.index(maxPipDiff)
+            return initialTurnSolutions[indexOfTurn].MoveSequence 
+        else:
+            possiblePipDiffs.reverse()
+            initialTurnSolutions.reverse()
+            maxPipDiff = min(possiblePipDiffs)
+            #Using min function because possible pip differences are calculated for opponents. 
+            indexOfTurn = possiblePipDiffs.index(maxPipDiff)
+            return initialTurnSolutions[indexOfTurn].MoveSequence 
+    else:
+        return [] 
+
+
+def Helper(args):
+    turnSolution, player = args
+    subTurnsList = []
+    for roll in Data_rollOptions:
+        instanceSubTurn = SubTurn(turnSolution.Board,turnSolution.MoveSequence,roll,(1 if player == 2 else 2))
+        subTurnsList.append(instanceSubTurn)
+    MaxPipDiffs = []
+    for subTurn in subTurnsList:
+        subTurn.largestPipDiff = PipMinMaxBasic(subTurn,subTurn.Player)
+        MaxPipDiffs.append(subTurn.largestPipDiff)
+        if subTurn.Roll[0] != subTurn.Roll[1]:
+            #accounts fot weighted average of non-double rolls, appends the value twice:
+            MaxPipDiffs.append(subTurn.largestPipDiff)
+    turnSolution.expectedPipDiff = average(MaxPipDiffs)
+    return turnSolution.expectedPipDiff
+
+def Full_Run_MultiProcess(inputBoard:Board,inputTurn:Turn):
+    fastTurn = FastTurn(inputTurn.player,inputTurn.roll)
+    #Takes a input of a FastBoard and a FastTurn and returns the optimal move for the current player to make. 
+    initialTurnSolutions = ReturnTurnSolutions(inputBoard,fastTurn)
+    possiblePipDiffs = []
+
+    args = [(initialTurnSolution, fastTurn.player) for initialTurnSolution in initialTurnSolutions]
+
+    with multiprocessing.Pool() as pool:
+        possiblePipDiffs = pool.map(Helper,args)
 
     if len(possiblePipDiffs) != 0:
         if fastTurn.player == 1:

@@ -51,8 +51,8 @@ Master_Location_Dict = {1:(247,755),2:(307,755),3:(367,755),4:(427,755),5:(487,7
 button_default = arcade.color.ALMOND
 button_excited = arcade.color.AERO_BLUE
 button_used = arcade.color.CHARCOAL
-checkerColor1 = arcade.color.SIENNA
-checkerColor2 = arcade.color.SKY_BLUE
+darkCheckerColor = arcade.color.SIENNA
+lightCheckerColor = arcade.color.SKY_BLUE
 darkTextColor = arcade.color.BLACK
 lightTextColor = arcade.color.AERO_BLUE
 lightTextColor2 = arcade.color.ALMOND
@@ -134,11 +134,11 @@ def drawDice(num1,num2,availableRolls):
     if num2 in tempList:
         U4 = False
         tempList.remove(num2)
-    diceSub(1040,455,num1, board_color if U1 == False else arcade.color.CHARCOAL)
-    diceSub(1110,455,num2, board_color if U2 == False else arcade.color.CHARCOAL)
+    diceSub(1040,445,num1, board_color if U1 == False else arcade.color.CHARCOAL)
+    diceSub(1110,445,num2, board_color if U2 == False else arcade.color.CHARCOAL)
     if num1 == num2:
-        diceSub(1040,515,num1, board_color if U3 == False else arcade.color.CHARCOAL)
-        diceSub(1110,515,num2, board_color if U4 == False else arcade.color.CHARCOAL)
+        diceSub(1040,385,num1, board_color if U3 == False else arcade.color.CHARCOAL)
+        diceSub(1110,385,num2, board_color if U4 == False else arcade.color.CHARCOAL)
 
 #Drawing the Pieces and the Pip:
 def drawPIP(pip):
@@ -154,7 +154,7 @@ def drawPieces(positions,pip):
         listNum = index + 1
         pointNum = positions[index]
         if pointNum != 0: #Set Necessary Variables For Drawn Points
-            color = checkerColor1 if pointNum < 0 else checkerColor2
+            color = darkCheckerColor if pointNum < 0 else lightCheckerColor
             location = listNum
             orientation = 1 if location > 12 else -1
             centerx = Master_Location_Dict[location][0]
@@ -171,10 +171,10 @@ def drawPieces(positions,pip):
                 arcade.draw_circle_filled(centerx,centery+off,30,color)
                 arcade.draw_circle_outline(centerx,centery+off,30,arcade.color.BLACK,2)
     for pc in range(positions[26]):
-        arcade.draw_rectangle_filled(150,341-(20*(pc)),60,20,checkerColor1)
+        arcade.draw_rectangle_filled(150,341-(20*(pc)),60,20,darkCheckerColor)
         arcade.draw_line(120,331-(20*pc),180,331-(20*pc),arcade.color.BLACK,2)
     for pc in range(positions[27]):
-        arcade.draw_rectangle_filled(150,461+(20*(pc)),60,20,checkerColor2)
+        arcade.draw_rectangle_filled(150,461+(20*(pc)),60,20,lightCheckerColor)
         arcade.draw_line(120,471+(20*pc),180,471+(20*pc),arcade.color.BLACK,2)
     if positions[24] != 0 or positions[25] != 0:
         list1 = [1] * positions[24]
@@ -183,7 +183,7 @@ def drawPieces(positions,pip):
         totalDist = 70 * len(barList)
         startDist = totalDist/2
         for pc in range(len(barList)):
-            color = checkerColor1 if barList[pc] == 1 else checkerColor2
+            color = darkCheckerColor if barList[pc] == 1 else lightCheckerColor
             arcade.draw_circle_filled(601,401-startDist+35+(60*pc),30,color)
             arcade.draw_circle_outline(601,401-startDist+35+(60*pc),30,arcade.color.BLACK,2)
 
@@ -281,7 +281,7 @@ def GenerateMoveLineDataFast(Move,Board):
 def DrawMoveLines(MoveData):
     if MoveData == []:
         return
-    elif type(MoveData[1]) == int:
+    elif type(MoveData[1]) == int or type(MoveData[1]) == float:
         arcade.draw_circle_outline(MoveData[0],MoveData[1],30,black,2)
         arcade.draw_line(MoveData[0],MoveData[1],MoveData[2],MoveData[3],black,2)
     else:
@@ -323,8 +323,19 @@ def DrawSettings(settings):
 
     arcade.draw_rectangle_filled(1040,675,200,40,arcade.color.WHITE)
     arcade.draw_rectangle_filled(1040,600,200,40,arcade.color.WHITE)
-
-
+def DrawBarBoxes():
+    arcade.draw_rectangle_filled(530,401,50,100,darkCheckerColor)
+    arcade.draw_rectangle_filled(670,401,50,100,lightCheckerColor)
+    arcade.draw_rectangle_outline(530,401,50,100,black,2)
+    arcade.draw_rectangle_outline(670,401,50,100,black,2)
+    arcade.draw_text("B",505,416,arcade.color.WHITE,20,50,"center",bold=True,multiline=True)
+    arcade.draw_text("A",505,391,arcade.color.WHITE,20,50,"center",bold=True,multiline=True)
+    arcade.draw_text("R",505,366,arcade.color.WHITE,20,50,"center",bold=True,multiline=True)
+    arcade.draw_text("B",645,416,arcade.color.WHITE,20,50,"center",bold=True,multiline=True)
+    arcade.draw_text("A",645,391,arcade.color.WHITE,20,50,"center",bold=True,multiline=True)
+    arcade.draw_text("R",645,366,arcade.color.WHITE,20,50,"center",bold=True,multiline=True)
+def DrawSimMain():
+    arcade.draw_rectangle_filled(1098,285,175,40,board_color)
 
 
 

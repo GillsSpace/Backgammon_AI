@@ -21,11 +21,31 @@ def rollDice():
     num1 = random.randint(1,6)
     num2 = random.randint(1,6)
     return [num1,num2]
+def isLegalBoard(positions):
+    total_light = 0
+    total_dark = 0
+    for position in positions[0:24]:
+        if position == 0:
+            pass
+        elif position < 0:
+            total_dark += (-1 * position)
+        elif position > 0:
+            total_light += position
+    total_dark += positions[24]
+    total_dark += positions[26]
+    total_light += positions[25]
+    total_light += positions[27]
+
+    if (total_light == 15) and (total_dark == 15):
+        return True
+    return False
+def isLegalRoll(roll):
+    pass
 
 class Board:
     def __init__(self, PositionList=None) -> None:
         self.positions = [-2,0,0,0,0,5,0,3,0,0,0,-5,5,0,0,0,-3,0,-5,0,0,0,0,2,0,0,0,0] if PositionList == None else PositionList
-        # index 0  to 23 represents number of checkers on points - negative for player one(light), positive for player 2(dark)
+        # index 0  to 23 represents number of checkers on points - negative for player one(dark), positive for player 2(light)
         # index 24 to 25 represents number of checkers on the bar - index 24 for P1, index 25 for P2
         # index 26 to 27 represents number of checkers off - index 26 for P1, index 27 for P2
         self.pip = [167,167] 
@@ -41,6 +61,7 @@ class Board:
         self.pip = [167,167] 
         self.lastPoints = [1,24]
         self.bearOffStatus = [False,False]
+        self.MoveLineData = None
 
     def updatePip(self): #Creates and updates a self.pip Value: (P1 pip, P2 pip)
         p1_pip = 0
@@ -142,8 +163,8 @@ class Board:
                     break 
                 
     def updateBearOffStatus(self): #Updates the self.bearOffStatus values based on current lastPoints
-        self.bearOffStatus[0] = True if self.lastPoints[0] > 18 else False
-        self.bearOffStatus[1] = True if self.lastPoints[1] < 7 else False
+        self.bearOffStatus[0] = True if (self.bearOffStatus[0]) or (self.lastPoints[0] > 18) else False
+        self.bearOffStatus[1] = True if (self.bearOffStatus[1]) or (self.lastPoints[1] < 7) else False
 
     def returnMovesForDie(self,die,player,isBiggestDieOrSecondMove): #returns all move options a die can be used for in the current board state: [(moveOption1),(moveOption2),ect.]
         moveList = []
@@ -233,6 +254,9 @@ class Board:
                     Sequences = [(firstMove)]
                     return Sequences
                 SecondMoves = algoBoard1.returnMovesForDie(roll[0],player,True)
+                if len(SecondMoves) == 0:
+                    Sequences.append(firstMove)
+                    continue
                 for secondMove in SecondMoves:
                     algoBoard2 = copy.deepcopy(algoBoard1)
                     algoBoard2.makeMove(secondMove,player)
@@ -240,6 +264,9 @@ class Board:
                         Sequences.append((firstMove,secondMove))
                         continue
                     ThirdMoves = algoBoard2.returnMovesForDie(roll[0],player,True)
+                    if len(ThirdMoves) == 0:
+                        Sequences.append([firstMove,secondMove])
+                        continue
                     for thirdMove in ThirdMoves:
                         algoBoard3 = copy.deepcopy(algoBoard2)
                         algoBoard3.makeMove(thirdMove,player)
@@ -247,6 +274,9 @@ class Board:
                             Sequences = [(firstMove,secondMove,thirdMove)]
                             return Sequences
                         ForthMoves = algoBoard3.returnMovesForDie(roll[0],player,True)
+                        if len(ForthMoves) == 0:
+                            Sequences.append([firstMove,secondMove,thirdMove])
+                            continue
                         for forthMove in ForthMoves:
                             algoBoard4 = copy.deepcopy(self)
                             algoBoard4.makeMoves((firstMove,secondMove,thirdMove,forthMove),player)
@@ -272,8 +302,8 @@ class Turn:
             self.sprite_active = []
 
         #prevents Doubles on first Roll
-        if First == True and self.doubles_turn == True: 
-            while (self.roll[0] == self.roll[1]) == True:
+        if First and self.doubles_turn: 
+            while (self.roll[0] == self.roll[1]):
                 self.roll = rollDice()
             self.doubles_turn = False
 
