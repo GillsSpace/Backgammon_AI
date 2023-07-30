@@ -1,4 +1,5 @@
 import arcade, random, time
+from tkinter import Tk
 import arcade.gui
 import Main_Files.Graphics_v3 as Graphics
 import Main_Files.Logic_v3 as Logic
@@ -245,6 +246,7 @@ class MainSimView(arcade.View):
         @New_button.event("on_click")
         def on_click_New(event):
             self.window.MainBoard.setStartPositions()
+            self.window.firstTurn = True
         @Setting_button.event("on_click")
         def on_click_Settings(event):
             self.window.lastPage = self
@@ -310,6 +312,8 @@ class MainSimView(arcade.View):
                         messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Game Over: \nPlayer 2 Wins! Please Select 'New Game' to start a new game."),callback=None,buttons=["Ok"])
                         self.manager.add(messageBox)
                     self.window.nextPlayer = 1     
+            
+            self.window.firstTurn = False
 
         @RunSetTurn_button.event("on_click")
         def on_click_run(event):
@@ -317,12 +321,23 @@ class MainSimView(arcade.View):
             set_roll_string = setRoll_input.text.rsplit(sep=",")
             set_roll = [int(num) for num in set_roll_string]
 
+            if not Logic.isLegalRoll(set_roll):
+                messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Inputted roll not legal. \nPlease input valid roll in form num1,num2 \ne.g. 4,5"),callback=None,buttons=["Ok"])
+                self.manager.add(messageBox)
+                return
+            
+            if set_roll[0] == set_roll[1] and self.window.firstTurn:
+                messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Inputted roll not legal. No Doubles allowed for first move. \nPlease input valid roll in form num1,num2 \ne.g. 4,5"),callback=None,buttons=["Ok"])
+                self.manager.add(messageBox)
+                return
+
+
             player = self.window.nextPlayer if self.window.nextPlayer != 0 else random.randint(1,2)
             if player == 1:
                 if self.window.settings["Agent1"] == "Human":
                     pass
                 else:
-                    self.window.MainTurn = Logic.Turn(player,self.window.settings["Agent1"],First=(self.window.nextPlayer == 0),roll=set_roll)
+                    self.window.MainTurn = Logic.Turn(player,self.window.settings["Agent1"],First=self.window.firstTurn,roll=set_roll)
                     self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
                     Moves = AI.Main(self.window.MainBoard,self.window.MainTurn,self.window.settings["Agent1"],self.window.settings["Network1 ID"])
                     self.window.MainBoard.makeMoves(Moves,1,True)
@@ -334,7 +349,7 @@ class MainSimView(arcade.View):
                 if self.window.settings["Agent2"] == "Human":
                     pass
                 else:
-                    self.window.MainTurn = Logic.Turn(player,self.window.settings["Agent2"],First=(self.window.nextPlayer == 0),roll=set_roll)
+                    self.window.MainTurn = Logic.Turn(player,self.window.settings["Agent2"],First=self.window.firstTurn,roll=set_roll)
                     self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
                     Moves = AI.Main(self.window.MainBoard,self.window.MainTurn,self.window.settings["Agent2"],self.window.settings["Network2 ID"])
                     self.window.MainBoard.makeMoves(Moves,2,True)
@@ -342,6 +357,8 @@ class MainSimView(arcade.View):
                         messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Game Over: \nPlayer 2 Wins! Please Select 'New Game' to start a new game."),callback=None,buttons=["Ok"])
                         self.manager.add(messageBox)
                     self.window.nextPlayer = 1
+            
+            self.window.firstTurn = False
 
         @EditBoard_button.event("on_click")
         def on_click_Edit(event):
@@ -432,6 +449,7 @@ class EditBoardView(arcade.View):
         def on_click_Done(event):
             if Logic.isLegalBoard(self.window.MainBoard.positions):
                 simView = MainSimView(self.backgroundColor)
+                self.window.MainBoard.MoveLineData = None
                 self.window.show_view(simView)
             else:
                 messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Error: \nThis in not a legal Backgammon board. Please Provide a legal board."),callback=None,buttons=["Ok"])
@@ -602,10 +620,20 @@ class EditAsString_View(arcade.View):
         def on_click_Done(event):
 
             stringList = text_input.text.rsplit(sep=", ")
-            self.window.MainBoard.positions = [int(num) for num in stringList]
 
-            editView = EditBoardView(self.backgroundColor)
-            self.window.show_view(editView)
+            try:
+                numList = [int(num) for num in stringList]
+            except:
+                messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Error: \nThis in not a legal Backgammon board string. Please Provide a legal board string."),callback=None,buttons=["Ok"])
+                self.manager.add(messageBox)
+
+            if Logic.isLegalBoard(numList):
+                self.window.MainBoard.positions = numList
+                editView = EditBoardView(self.backgroundColor)
+                self.window.show_view(editView)
+            else:
+                messageBox = arcade.gui.UIMessageBox(width=300,height=150,message_text=("Error: \nThis in not a legal Backgammon board string. Please Provide a legal board string."),callback=None,buttons=["Ok"])
+                self.manager.add(messageBox)
 
     def on_show_view(self):
         self.manager.enable()

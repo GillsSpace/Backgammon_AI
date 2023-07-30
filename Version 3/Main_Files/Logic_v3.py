@@ -40,7 +40,10 @@ def isLegalBoard(positions):
         return True
     return False
 def isLegalRoll(roll):
-    pass
+    if roll[0] in range(1,7) and roll[1] in range(1,7):
+        return True
+    else:
+        return False
 
 class Board:
     def __init__(self, PositionList=None) -> None:

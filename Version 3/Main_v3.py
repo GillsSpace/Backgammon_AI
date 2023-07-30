@@ -18,6 +18,7 @@ class MainWindow(arcade.Window):
         self.MainBoard = Logic.Board()
         self.MainTurn = None
         self.nextPlayer = 0
+        self.firstTurn = True
 
     def setup(self):
         mainmenu_view = Views.MainMenuView(BACKGROUND_COLOR)

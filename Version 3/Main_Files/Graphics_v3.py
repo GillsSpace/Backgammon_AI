@@ -337,5 +337,3 @@ def DrawBarBoxes():
 def DrawSimMain():
     arcade.draw_rectangle_filled(1098,285,175,40,board_color)
 
-
-
