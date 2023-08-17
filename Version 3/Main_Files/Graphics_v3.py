@@ -74,7 +74,14 @@ def drawButtonIcon(icon, centerx, centery, width=75, height=75, excited=False, d
     arcade.draw_rectangle_outline(centerx,centery,width,height,board_border,border)
     arcade.draw_texture_rectangle(centerx,centery,width-25,height-25,icon)
 
-    
+def drawTurnMain(sprites):
+    sprites.draw()
+
+def drawTurnBranch(main_sprite,sub_sprites):
+    main_sprite.draw()
+    sub_sprites.draw()
+
+
 #Drawing The Board:
 def drawBoard():
     arcade.draw_rectangle_outline(601,401,774,774,board_border,12)

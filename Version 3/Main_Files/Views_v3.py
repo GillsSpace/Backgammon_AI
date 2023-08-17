@@ -653,6 +653,7 @@ class EditAsString_View(arcade.View):
 
 #2P Views:
 class Start_2P_View(arcade.View):
+    
     def __init__(self,backgroundColor):
         super().__init__()
         self.backgroundColor = backgroundColor
@@ -694,13 +695,11 @@ class Start_2P_View(arcade.View):
                 player2view = P2_Turn_2P_View(self.backgroundColor)
                 self.window.show_view(player2view)
 
-
         @Settings_button.event("on_click")
         def on_click_Settings(event):
             self.window.lastPage = self
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
-
 
     def on_show_view(self):
         self.manager.enable()
@@ -720,6 +719,8 @@ class P1_Turn_2P_View(arcade.View):
         super().__init__()
         self.backgroundColor = backgroundColor
 
+        self.step = "Main"
+
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
@@ -727,9 +728,12 @@ class P1_Turn_2P_View(arcade.View):
         Quit_button = arcade.gui.UIFlatButton(15,695,75,40,"Quit")
         Settings_button = arcade.gui.UIFlatButton(1010,15,175,40,"Settings")
 
+        Done_button = arcade.gui.UIFlatButton(1010,510,175,40,"Done")
+
         self.manager.add(Exit_button)
         self.manager.add(Quit_button)
         self.manager.add(Settings_button)
+        self.manager.add(Done_button)
 
         @Exit_button.event("on_click")
         def on_click_exit(event):
@@ -745,7 +749,6 @@ class P1_Turn_2P_View(arcade.View):
             self.window.lastPage = self
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
-
 
     def on_show_view(self):
         self.manager.enable()
@@ -761,6 +764,33 @@ class P1_Turn_2P_View(arcade.View):
         Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
         Graphics.drawDice(self.window.MainTurn.roll[0],self.window.MainTurn.roll[1],self.window.MainTurn.unused_dice)
         arcade.draw_rectangle_filled(601,401,12,762,Graphics.darkCheckerColor)
+
+        Graphics.drawTurnMain(self.window.MainTurn.sprites_move_start) if self.step == "Main" else Graphics.drawTurnBranch(self.window.MainTurn.sprite_active,self.window.MainTurn.sprites_move_end)
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+        if self.step == "Main":
+            clicked_sprite = arcade.get_sprites_at_point((x,y),self.window.MainTurn.sprites_move_start)
+            if clicked_sprite != []:
+                self.window.MainTurn.sprite_active = clicked_sprite[0]
+                self.window.MainTurn.sprites_move_end = Graphics.createMoveEndSprites(self.window.MainTurn.sprite_active,self.window.MainBoard)
+                self.step = "Branch"
+        
+        elif self.step == "Branch":
+            self.step = "Main"
+            #When a possible sub-move sprite is clicked:
+            clicked_sprite = arcade.get_sprites_at_point((x,y),self.window.MainTurn.sprites_move_end)
+            if clicked_sprite != []:
+                self.window.MainBoard.makeMove((self.window.MainTurn.sprite_active.move[0],clicked_sprite[0].pos),1)
+                if self.window.MainBoard.pip[0] == 0:
+                    pass
+                    #TO DO: add game over logic here
+                roll = Logic.fromMoveToDie(self.window.MainTurn.sprite_active.move[0],clicked_sprite[0].pos,self.window.MainTurn.unused_dice,1)
+                self.window.MainTurn.unused_dice.remove(roll)
+                if len(self.window.MainTurn.unused_dice) > 0:
+                    self.window.MainTurn.updatePossibleMovesHumanFormat(self.window.MainBoard)
+                    self.window.MainTurn.formSpriteList(self.window.MainBoard)
+                else:
+                    self.window.MainTurn.sprites_move_start = arcade.SpriteList()
 class P2_Turn_2P_View(arcade.View):
 
     def __init__(self,backgroundColor):
@@ -770,13 +800,18 @@ class P2_Turn_2P_View(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
+        self.step = "Main"
+
         Exit_button = arcade.gui.UIFlatButton(15,745,75,40,"Exit")
         Quit_button = arcade.gui.UIFlatButton(15,695,75,40,"Quit")
         Settings_button = arcade.gui.UIFlatButton(1010,15,175,40,"Settings")
 
+        Done_button = arcade.gui.UIFlatButton(1010,510,175,40,"Done")
+
         self.manager.add(Exit_button)
         self.manager.add(Quit_button)
         self.manager.add(Settings_button)
+        self.manager.add(Done_button)
 
         @Exit_button.event("on_click")
         def on_click_exit(event):
@@ -793,7 +828,6 @@ class P2_Turn_2P_View(arcade.View):
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
 
-
     def on_show_view(self):
         self.manager.enable()
         arcade.set_background_color(self.backgroundColor)
@@ -808,6 +842,33 @@ class P2_Turn_2P_View(arcade.View):
         Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
         Graphics.drawDice(self.window.MainTurn.roll[0],self.window.MainTurn.roll[1],self.window.MainTurn.unused_dice)
         arcade.draw_rectangle_filled(601,401,12,762,Graphics.lightCheckerColor)
+
+        Graphics.drawTurnMain(self.window.MainTurn.sprites_move_start) if self.step == "Main" else Graphics.drawTurnBranch(self.window.MainTurn.sprite_active,self.window.MainTurn.sprites_move_end)
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+        if self.step == "Main":
+            clicked_sprite = arcade.get_sprites_at_point((x,y),self.window.MainTurn.sprites_move_start)
+            if clicked_sprite != []:
+                self.window.MainTurn.sprite_active = clicked_sprite[0]
+                self.window.MainTurn.sprites_move_end = Graphics.createMoveEndSprites(self.window.MainTurn.sprite_active,self.window.MainBoard)
+                self.step = "Branch"
+        
+        elif self.step == "Branch":
+            self.step = "Main"
+            #When a possible sub-move sprite is clicked:
+            clicked_sprite = arcade.get_sprites_at_point((x,y),self.window.MainTurn.sprites_move_end)
+            if clicked_sprite != []:
+                self.window.MainBoard.makeMove((self.window.MainTurn.sprite_active.move[0],clicked_sprite[0].pos),2)
+                if self.window.MainBoard.pip[0] == 0:
+                    pass
+                    #TO DO: add game over logic here
+                roll = Logic.fromMoveToDie(self.window.MainTurn.sprite_active.move[0],clicked_sprite[0].pos,self.window.MainTurn.unused_dice,2)
+                self.window.MainTurn.unused_dice.remove(roll)
+                if len(self.window.MainTurn.unused_dice) > 0:
+                    self.window.MainTurn.updatePossibleMovesHumanFormat(self.window.MainBoard)
+                    self.window.MainTurn.formSpriteList(self.window.MainBoard)
+                else:
+                    self.window.MainTurn.sprites_move_start = arcade.SpriteList()
 class P1_PreTurn_2P_View(arcade.View):
 
     def __init__(self,backgroundColor):
@@ -868,7 +929,6 @@ class GameOver_2P_View(arcade.View):
         Back_button = arcade.gui.UIFlatButton(25,725,100,50,"Back")
 
         self.manager.add(Back_button)
-
 
     def on_show_view(self):
         self.manager.enable()

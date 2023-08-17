@@ -1,5 +1,6 @@
 import random, itertools, time, copy, arcade
 from typing import Optional, Tuple
+import numpy as np
 
 import Main_Files.Logic_v3 as Logic
 import Main_Files.AI_v3 as AI
@@ -83,75 +84,20 @@ def TestAIMoveUpdates(Board:Logic.Board,player,roll):
 
 Board = Logic.Board()
 
+np.set_printoptions(linewidth=250, threshold=10)
+
+network = Network_Type1.BackgammonNeuralNetwork(Network_Type1.fromSQLtoList("1.01"))
+
+inputs = (np.array(Board.positions))
+
+print(network.forward(inputs))
+
+
 # RunGames("Tree Search I","Tree Search I",1000) 
-if __name__ == "__main__":
-    RunGame("PBP","TS1",True,True)
+# if __name__ == "__main__":
+#     RunGame("PBP","TS1",True,True)
 
-# player = 1
-# roll = (2,4)
+### Database Management ###
 
-# # Board = TreeSearchI.FastBoard()
-# Board = Logic.Board()
-# Board.setStartPositions()
-# # Board.PositionListPoints = [[2,2,2,2,2,2,2],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[1,1,1,1,1,1]] #DEBUG
+# Network_Type1.InitializeDataSet()
 
-# game_settings = {"1P Inputs":"Generated","Sim Delay":5,"AI Lines":True,"Display AI Info":True,"AI Player":"Tree Search I"}  
-# Turn = Logic.Turn(player,"AI",game_settings,False,roll)
-
-# print(Board.PositionListPoints)
-
-# fatsBoard = AI.from_Board_to_FastBoard(Board)
-# # fastTurn = TreeSearchI.FastTurn(1,(2,2))
-# print(fatsBoard.positions)
-
-# # print("")
-# # print("Sequence Generation:")
-# # print(fatsBoard.returnMoveSequences(player,roll))
-
-# # Moves = AI.Main(Board,Turn,"Tree Search I")
-# # Board.updateWithMoves(Moves,player)
-# # print(Board.PositionListPoints)
-
-# # moves = TreeSearchI.Full_Run(fatsBoard,fastTurn)
-# # print(moves)
-
-# dieData = Board.calcMovesForDie(5,1,True,True)
-# print(dieData)
-# Turn.updatePossibleMoves(Board)
-# TurnB = Logic.FullTurn(player,"Human",roll)
-# print(Turn.current_possible_moves)
-# TurnB.updatePossibleMovesHumanFormat(fatsBoard)
-# print(TurnB.current_possible_moves)
-
-
-# from multiprocessing import Pool, cpu_count
-# import time
-
-# def f(x):
-#     y = x*x
-#     return y
-
-# if __name__ == '__main__':
-
-#     st = time.time()
-
-#     with Pool() as pool:      
-
-#         print(pool.map(f, range(100)))     
-#         print(f"Time = {time.time()-st}")
-
-#     print("//Completed")
-#     print(f"Time = {time.time()-st}")
-
-    
-#     pool_size = cpu_count()
-#     pool = Pool(processes=pool_size,)
-#     startTime1 = time.time()
-#     pool_outputs = pool.map(f, range(5000000))
-#     endTime1 = time.time() 
-#     print(endTime1 - startTime1)
-#     pool.close()
-#     print(endTime1 - startTime1)
-#     endTime1 = time.time()    
-#     print(endTime1 - startTime1)
-#     print(pool_outputs)

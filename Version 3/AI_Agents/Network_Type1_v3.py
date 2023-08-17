@@ -10,18 +10,13 @@ class FastTurn:
 
 class BackgammonNeuralNetwork:
     def __init__(self, weights_bias):
-        # Set up network architecture
-        self.input_size = 28
-        self.hidden_size = 32
-        self.output_size = 1
-        
         # Initialize weights and biases from the provided list
-        self.weights1 = np.array(weights_bias[:self.input_size*self.hidden_size]).reshape(self.input_size, self.hidden_size)
-        self.bias1 = np.array(weights_bias[self.input_size*self.hidden_size:(self.input_size*self.hidden_size)+self.hidden_size])
-        self.weights2 = np.array(weights_bias[(self.input_size*self.hidden_size)+self.hidden_size:(self.input_size*self.hidden_size)+(self.hidden_size*self.hidden_size)+self.hidden_size]).reshape(self.hidden_size, self.hidden_size)
-        self.bias2 = np.array(weights_bias[(self.input_size*self.hidden_size)+(self.hidden_size*self.hidden_size)+self.hidden_size:(self.input_size*self.hidden_size)+(self.hidden_size*self.hidden_size)+(2*self.hidden_size)])
-        self.weights3 = np.array(weights_bias[(self.input_size*self.hidden_size)+(self.hidden_size*self.hidden_size)+(2*self.hidden_size):]).reshape(self.hidden_size, self.output_size)
-        self.bias3 = np.array(weights_bias[(self.input_size*self.hidden_size)+(self.hidden_size*self.hidden_size)+(2*self.hidden_size)+self.output_size:])
+        self.weights1 = np.array(weights_bias[    :896 ]).reshape(32, 28)
+        self.bias1    = np.array(weights_bias[896 :928 ])
+        self.weights2 = np.array(weights_bias[928 :1952]).reshape(32, 32)
+        self.bias2    = np.array(weights_bias[1952:1984])
+        self.weights3 = np.array(weights_bias[1984:2016]).reshape(1 , 32)
+        self.bias3    = np.array(weights_bias[2016])
     
     def relu(self, x):
         return np.maximum(0, x)
@@ -30,16 +25,16 @@ class BackgammonNeuralNetwork:
         return np.where(x > 0, 1, 0)
     
     def sigmoid(self, x):
-        return 1 / (1 + np.exp(-x))
+        return 1 / (1 + np.exp((x/-10)))
     
     def d_sigmoid(self, x):
         return self.sigmoid(x) * (1 - self.sigmoid(x))
     
     def forward(self, inputs):
-        hidden_layer1_output = self.relu(np.dot(inputs, self.weights1) + self.bias1)
-        hidden_layer2_output = self.relu(np.dot(hidden_layer1_output, self.weights2) + self.bias2)
-        output = self.sigmoid(np.dot(hidden_layer2_output, self.weights3) + self.bias3)
-        return output
+        hidden_layer1_output = self.relu(np.dot(self.weights1, inputs) + self.bias1)
+        hidden_layer2_output = self.relu(np.dot(self.weights2, hidden_layer1_output) + self.bias2)
+        output = self.sigmoid(np.dot(self.weights3, hidden_layer2_output) + self.bias3)
+        return output[0]
     
     def backpropagation(self, inputs, targets, learning_rate):
         # Forward pass
@@ -67,6 +62,7 @@ class BackgammonNeuralNetwork:
         self.weights1 -= learning_rate * np.dot(inputs.T, hidden_layer1_delta)
         self.bias1 -= learning_rate * np.sum(hidden_layer1_delta, axis=0)
 
+
 def fromSQLtoList(id): #Return a list of wights and biases 
     PATH = "Version 3\AI_Agents\\Network_Type1_Data_v3.sqlite3"
 
@@ -92,14 +88,15 @@ def Full_Run(inputBoard: Board, inputTurn:FastTurn,networkIdent):
     moveValues = []
     for moveSet in moves:
         testBoard = copy.deepcopy(inputBoard)
-        testBoard.makeMoves(moveSet)
+        testBoard.makeMoves(moveSet,inputTurn.player)
         output = network.forward(testBoard.positions)
         moveValues.append(output)
 
     print(moveValues) #DEBUG
 
     maxValue = max(moveValues)
-    finalMoveSelection = moves[maxValue]
+    indexOfMove = moveValues.index(maxValue)
+    finalMoveSelection = moves[indexOfMove]
 
     return finalMoveSelection
 
@@ -122,7 +119,8 @@ def InitializeDataSet():
         id = (101 + i) / 100
         dataSet1 = []
         for i in range(2017):
-            num = random.randint(-10,10)
+            num = round(random.random(),3)
+            num = -1 * num if random.randint(1,2) == 1 else num
             dataSet1.append(num)
         values = " ".join(str(num) for num in dataSet1)
 
@@ -132,5 +130,3 @@ def InitializeDataSet():
 
     connection.commit()
     print("Data Set Initialized")
-
-# InitializeDataSet()
