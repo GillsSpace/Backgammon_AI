@@ -40,8 +40,8 @@ class MainMenuView(arcade.View):
         @Sim_button.event("on_click")
         def on_click_Sim(event):
             self.window.MainBoard.setStartPositions()
-            self.window.settings["Agent1"] = "TS 1"
-            self.window.settings["Agent2"] = "TS 1"
+            self.window.settings["Agent1"] = "TS 1" if self.window.settings["Agent1"] == "Human" else self.window.settings["Agent1"]
+            self.window.settings["Agent2"] = "TS 1" if self.window.settings["Agent2"] == "Human" else self.window.settings["Agent2"]
             simView = MainSimView(self.backgroundColor)
             self.window.show_view(simView)
         @OnePlayer_button.event("on_click")
@@ -102,8 +102,8 @@ class SettingsView(arcade.View):
         AIAgent2_Option5_button = arcade.gui.UIFlatButton(725,580,100,40,"TS 2")
         AIAgent2_Option6_button = arcade.gui.UIFlatButton(840,580,100,40,"Network:")
 
-        NetworkID1 = arcade.gui.UIInputText(955,645,150,40,"V1.0-1.001")
-        NetworkID2 = arcade.gui.UIInputText(955,570,150,40,"V1.0-1.001")
+        NetworkID1 = arcade.gui.UIInputText(955,645,150,40,self.window.settings["Network1 ID"])
+        NetworkID2 = arcade.gui.UIInputText(955,570,150,40,self.window.settings["Network2 ID"])
 
         self.manager.add(Back_button)
         self.manager.add(Quit_button)

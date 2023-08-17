@@ -92,7 +92,8 @@ def Full_Run(inputBoard: Board, inputTurn:FastTurn,networkIdent):
         output = network.forward(testBoard.positions)
         moveValues.append(output)
 
-    print(moveValues) #DEBUG
+    if len(moveValues) == 0:
+        return []
 
     maxValue = max(moveValues)
     indexOfMove = moveValues.index(maxValue)

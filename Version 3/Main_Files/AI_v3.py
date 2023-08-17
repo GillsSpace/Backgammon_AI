@@ -52,7 +52,10 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
     elif AI_player == "Network":
         print(f"Running Network Selection, ID = {networkIdent}; Roll = {Main_Turn.roll}")
         st = time.time()
-        Moves = Network_Type1_Full_Run(Main_Board,Main_Turn,networkIdent)
+        if networkIdent[0:5] == "V1.0-":
+            Moves = Network_Type1_Full_Run(Main_Board,Main_Turn,networkIdent[5:])
+        else:
+            print("Error: Network Ident Not Valid")
         et = time.time()
         print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
