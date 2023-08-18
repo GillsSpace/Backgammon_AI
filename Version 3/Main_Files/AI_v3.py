@@ -26,7 +26,7 @@ def treeSearchI(ActiveBoard:Board, ActiveTurn:Turn):
     return TreeSearchI_Full_Run(ActiveBoard,ActiveTurn)
 
 #Main Function - Called 
-def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
+def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None,tableName=None):
     AI_player = aiType
     if AI_player == "Random":
         print(f"Running Random Move Selection; Roll = {Main_Turn.roll}")
@@ -53,14 +53,14 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
         print(f"Running Network Selection, ID = {networkIdent}; Roll = {Main_Turn.roll}")
         st = time.time()
         if networkIdent[0:5] == "V1.0-":
-            Moves = Network_Type1_Full_Run(Main_Board,Main_Turn,networkIdent[5:])
+            Moves = Network_Type1_Full_Run(Main_Board,Main_Turn,networkIdent[5:],tableName)
         else:
             print("Error: Network Ident Not Valid")
         et = time.time()
         print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
 
-def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
+def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None,tableName=None):
     AI_player = aiType
     if AI_player == "Random":
         Moves = randomMove(Main_Board,Main_Turn)
@@ -72,4 +72,8 @@ def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
         Moves = pickBestPip(Main_Board,Main_Turn)
         return Moves
     elif AI_player == "Network":
-        pass
+        if networkIdent[0:5] == "V1.0-":
+            Moves = Network_Type1_Full_Run(Main_Board,Main_Turn,networkIdent[5:],tableName)
+        else:
+            print("Error: Network Ident Not Valid")
+        return Moves

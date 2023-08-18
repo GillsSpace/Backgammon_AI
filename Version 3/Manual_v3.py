@@ -1,5 +1,4 @@
 import random, itertools, time, copy, arcade
-from typing import Optional, Tuple
 import numpy as np
 
 import Main_Files.Logic_v3 as Logic
@@ -91,6 +90,7 @@ network = Network_Type1.BackgammonNeuralNetwork(Network_Type1.fromSQLtoList("1.0
 inputs = (np.array(Board.positions))
 
 print(network.forward(inputs))
+
 
 
 # RunGames("Tree Search I","Tree Search I",1000) 

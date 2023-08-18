@@ -31,6 +31,7 @@ class BackgammonNeuralNetwork:
         return self.sigmoid(x) * (1 - self.sigmoid(x))
     
     def forward(self, inputs):
+        """returns the estimated value of a position for player 1 following a move by player 1"""
         hidden_layer1_output = self.relu(np.dot(self.weights1, inputs) + self.bias1)
         hidden_layer2_output = self.relu(np.dot(self.weights2, hidden_layer1_output) + self.bias2)
         output = self.sigmoid(np.dot(self.weights3, hidden_layer2_output) + self.bias3)
@@ -63,13 +64,17 @@ class BackgammonNeuralNetwork:
         self.bias1 -= learning_rate * np.sum(hidden_layer1_delta, axis=0)
 
 
-def fromSQLtoList(id): #Return a list of wights and biases 
+def fromSQLtoList(id,tableName="Network_Values_1"): #Return a list of wights and biases 
     PATH = "Version 3\AI_Agents\\Network_Type1_Data_v3.sqlite3"
 
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()
 
-    result = cursor.execute("SELECT data FROM Network_Values_1 WHERE id = ?",(id,),)
+    if tableName == "Network_Values_1":
+        result = cursor.execute("SELECT data FROM Network_Values_1 WHERE id = ?",(id,),)
+    elif tableName == "Network_Values_Tournament":
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(id,),)
+
     data = str(result.fetchall()[0][0])
     data = data.rsplit()
 
@@ -79,8 +84,9 @@ def fromSQLtoList(id): #Return a list of wights and biases
 
     return list
 
-def Full_Run(inputBoard: Board, inputTurn:FastTurn,networkIdent):
-    wb = fromSQLtoList(networkIdent)
+def Full_Run(inputBoard: Board, inputTurn:FastTurn,networkIdent,tableName=None):
+    tableName = "Network_Values_1" if tableName == None else tableName
+    wb = fromSQLtoList(networkIdent,tableName)
     network = BackgammonNeuralNetwork(wb)
 
     moves = inputBoard.returnMoveSequences(inputTurn.player,inputTurn.roll)
@@ -90,6 +96,7 @@ def Full_Run(inputBoard: Board, inputTurn:FastTurn,networkIdent):
         testBoard = copy.deepcopy(inputBoard)
         testBoard.makeMoves(moveSet,inputTurn.player)
         output = network.forward(testBoard.positions)
+        output = -1 * output if inputTurn.player == 2 else output
         moveValues.append(output)
 
     if len(moveValues) == 0:
@@ -131,3 +138,4 @@ def InitializeDataSet():
 
     connection.commit()
     print("Data Set Initialized")
+

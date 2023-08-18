@@ -131,8 +131,8 @@ class SettingsView(arcade.View):
 
         @Back_button.event("on_click")
         def on_click_Back(event): 
-            self.window.settings["Network1 ID"] = NetworkID1.text if self.window.settings["Agent1"] == "Network" else None
-            self.window.settings["Network2 ID"] = NetworkID2.text if self.window.settings["Agent2"] == "Network" else None
+            self.window.settings["Network1 ID"] = NetworkID1.text 
+            self.window.settings["Network2 ID"] = NetworkID2.text 
             self.window.show_view(self.window.lastPage)
             print(f" Current Settings: {self.window.settings}") #DEBUG
         @Quit_button.event("on_click")
