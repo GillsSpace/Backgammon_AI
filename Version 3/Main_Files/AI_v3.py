@@ -26,7 +26,7 @@ def treeSearchI(ActiveBoard:Board, ActiveTurn:Turn):
     return TreeSearchI_Full_Run(ActiveBoard,ActiveTurn)
 
 #Main Function - Called 
-def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None,tableName=None):
+def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
     AI_player = aiType
     if AI_player == "Random":
         print(f"Running Random Move Selection; Roll = {Main_Turn.roll}")
@@ -53,14 +53,17 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None,tableName=None
         print(f"Running Network Selection, ID = {networkIdent}; Roll = {Main_Turn.roll}")
         st = time.time()
         if networkIdent[0:5] == "V1.0-":
-            Moves = Network_Type1_Full_Run(Main_Board,Main_Turn,networkIdent[5:],tableName)
+            Moves = Network_Type1_Full_Run(Main_Board,Main_Turn,networkIdent)
+        elif networkIdent[0:5] == "V2.0-":
+            Moves = []
         else:
-            print("Error: Network Ident Not Valid")
+            print("Error: Network Ident Not Valid (Type)")
+            Moves = []
         et = time.time()
         print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
 
-def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None,tableName=None):
+def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
     AI_player = aiType
     if AI_player == "Random":
         Moves = randomMove(Main_Board,Main_Turn)
@@ -73,7 +76,10 @@ def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None,tableNa
         return Moves
     elif AI_player == "Network":
         if networkIdent[0:5] == "V1.0-":
-            Moves = Network_Type1_Full_Run(Main_Board,Main_Turn,networkIdent[5:],tableName)
+            Moves = Network_Type1_Full_Run(Main_Board,Main_Turn,networkIdent)
+        elif networkIdent[0:5] == "V2.0-":
+            Moves = []
         else:
-            print("Error: Network Ident Not Valid")
+            print("Error: Network Ident Not Valid (Type)")
+            Moves = []
         return Moves

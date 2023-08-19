@@ -55,8 +55,8 @@ def runTournament(rounds,learningRate=0.01,matchLength=1,reInitialize=True):
         while len(roundIn) > 1:
             i = 0
             while i < len(roundIn):
-                NetworkIdent1 = f"V1.0-W{roundIn[i]}"
-                NetworkIdent2 = f"V1.0-W{roundIn[i+1]}"
+                NetworkIdent1 = f"V1.0-NVT-W{roundIn[i]}"
+                NetworkIdent2 = f"V1.0-NVT-W{roundIn[i+1]}"
                 matchWinner, matchLooser = runMatch(NetworkIdent1,NetworkIdent2,matchLength)
                 roundOut.append(roundIn[i] if matchLooser == 1 else roundIn[i+1])
                 i = i + 2
@@ -68,6 +68,7 @@ def runTournament(rounds,learningRate=0.01,matchLength=1,reInitialize=True):
 
         roundWinnerIdent = f"V1.0-W{roundIn[0]}"
         print(f"Round {roundT+1} Complete. Network {roundWinnerIdent} Finished First.")
+        print("    Updated = ",end="")
 
         result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(roundWinnerIdent[5:],),)
         data = str(result.fetchall()[0][0])
@@ -92,8 +93,10 @@ def runTournament(rounds,learningRate=0.01,matchLength=1,reInitialize=True):
                 values = " ".join(str(num) for num in newData)
             cursor.execute("UPDATE Network_Values_Tournament SET data = ? WHERE id = ?",(values,ident))
             connection.commit()
+            print(f"{network+1}-",end="")
         
         etR = time.time()
+        print()
         print(f"Round {roundT+1} Updates Complete. Round Time = {etR - stR}")
 
     et = time.time()
@@ -115,7 +118,6 @@ def runMatch(ident1,ident2,length):
     #If tied after "length" games, play tie-breaker:
     return runGame(ident1,ident2)
 
-
 def runGame(ident1,ident2):
     """Helper Function for runTournament. returns winner, looser of a singe game between networks "ident1" and "ident2". """
     Board = Logic.Board()
@@ -125,12 +127,12 @@ def runGame(ident1,ident2):
     gameOver = False
 
     Turn = Logic.Turn(startingPlayer,"AI",None,First=True)
-    Moves = AI.Silent_Main(Board,Turn,"Network",ident2 if Turn.player == 2 else ident1,"Network_Values_Tournament")
+    Moves = AI.Silent_Main(Board,Turn,"Network",ident2 if Turn.player == 2 else ident1)
     Board.makeMoves(Moves,Turn.player)
 
     while not gameOver:
         Turn = Logic.Turn(1 if Turn.player == 2 else 2,"AI",None)
-        Moves = AI.Silent_Main(Board,Turn,"Network",ident2 if Turn.player == 2 else ident1,"Network_Values_Tournament")
+        Moves = AI.Silent_Main(Board,Turn,"Network",ident2 if Turn.player == 2 else ident1)
         Board.makeMoves(Moves,Turn.player)
 
         if Board.pip[1 if Turn.player == 2 else 0] == 0:
@@ -140,4 +142,4 @@ def runGame(ident1,ident2):
     
     return winner, looser
 
-runTournament(2000,0.05,7,True)
+runTournament(1,0.05,1)

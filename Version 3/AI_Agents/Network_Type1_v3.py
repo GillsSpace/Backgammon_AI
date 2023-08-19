@@ -64,7 +64,7 @@ class BackgammonNeuralNetwork:
         self.bias1 -= learning_rate * np.sum(hidden_layer1_delta, axis=0)
 
 
-def fromSQLtoList(id,tableName="Network_Values_1"): #Return a list of wights and biases 
+def fromSQLtoList(id,tableName): #Return a list of wights and biases 
     PATH = "Version 3\AI_Agents\\Network_Type1_Data_v3.sqlite3"
 
     connection = sqlite3.connect(PATH)
@@ -84,9 +84,19 @@ def fromSQLtoList(id,tableName="Network_Values_1"): #Return a list of wights and
 
     return list
 
-def Full_Run(inputBoard: Board, inputTurn:FastTurn,networkIdent,tableName=None):
-    tableName = "Network_Values_1" if tableName == None else tableName
-    wb = fromSQLtoList(networkIdent,tableName)
+def Full_Run(inputBoard: Board, inputTurn:FastTurn, networkIdent):
+
+    #Determine Table Name:
+    if networkIdent[5:9] == "NV1-":
+        tableName = "Network_Values_1"
+    elif networkIdent[5:9] == "NVT-":
+        tableName = "Network_Values_Tournament"
+    else:
+        print("Error: Network Ident Not Valid (Table)")
+        return []
+
+    wb = fromSQLtoList(networkIdent[9:],tableName)
+
     network = BackgammonNeuralNetwork(wb)
 
     moves = inputBoard.returnMoveSequences(inputTurn.player,inputTurn.roll)
