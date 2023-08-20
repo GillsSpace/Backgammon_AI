@@ -4,44 +4,24 @@ import copy
 import arcade.gui
 
 #Load images & sounds:
-try:
-    gear_icon = arcade.load_texture("..\Images\gear_icon.png")
-    exit_icon = arcade.load_texture("..\Images\exit_icon.png")
-    quit_icon = arcade.load_texture("..\Images\quit_icon.png")
+gear_icon = arcade.load_texture("Version 3\Images\gear_icon.png")
+exit_icon = arcade.load_texture("Version 3\Images\exit_icon.png")
+quit_icon = arcade.load_texture("Version 3\Images\quit_icon.png")
 
-    delete_icon = arcade.load_texture("..\Images\delete_icon.png")
-    darkPiece_icon = arcade.load_texture("..\Images\darkPiece.png")
-    lightPiece_icon = arcade.load_texture("..\Images\lightPiece.png")
-    restart_icon = arcade.load_texture("..\Images\\restart_icon.png")
+delete_icon = arcade.load_texture("Version 3\Images\delete_icon.png")
+darkPiece_icon = arcade.load_texture("Version 3\Images\darkPiece.png")
+lightPiece_icon = arcade.load_texture("Version 3\Images\lightPiece.png")
+restart_icon = arcade.load_texture("Version 3\Images\\restart_icon.png")
 
-    delete_icon2 = arcade.load_texture("..\Images\delete_icon2.png")
-    darkPiece_icon2 = arcade.load_texture("..\Images\darkPiece2.png")
-    lightPiece_icon2 = arcade.load_texture("..\Images\lightPiece2.png")
-    restart_icon2 = arcade.load_texture("..\Images\\restart_icon2.png")
+delete_icon2 = arcade.load_texture("Version 3\Images\delete_icon2.png")
+darkPiece_icon2 = arcade.load_texture("Version 3\Images\darkPiece2.png")
+lightPiece_icon2 = arcade.load_texture("Version 3\Images\lightPiece2.png")
+restart_icon2 = arcade.load_texture("Version 3\Images\\restart_icon2.png")
 
-    delete_icon3 = arcade.load_texture("..\Images\delete_icon3.png")
-    darkPiece_icon3 = arcade.load_texture("..\Images\darkPiece3.png")
-    lightPiece_icon3 = arcade.load_texture("..\Images\lightPiece3.png")
-    restart_icon3 = arcade.load_texture("..\Images\\restart_icon3.png")
-except:
-    gear_icon = arcade.load_texture("Images\gear_icon.png")
-    exit_icon = arcade.load_texture("Images\exit_icon.png")
-    quit_icon = arcade.load_texture("Images\quit_icon.png")
-
-    delete_icon = arcade.load_texture("Images\delete_icon.png")
-    darkPiece_icon = arcade.load_texture("Images\darkPiece.png")
-    lightPiece_icon = arcade.load_texture("Images\lightPiece.png")
-    restart_icon = arcade.load_texture("Images\\restart_icon.png")
-
-    delete_icon2 = arcade.load_texture("Images\delete_icon2.png")
-    darkPiece_icon2 = arcade.load_texture("Images\darkPiece2.png")
-    lightPiece_icon2 = arcade.load_texture("Images\lightPiece2.png")
-    restart_icon2 = arcade.load_texture("Images\\restart_icon2.png")
-
-    delete_icon3 = arcade.load_texture("Images\delete_icon3.png")
-    darkPiece_icon3 = arcade.load_texture("Images\darkPiece3.png")
-    lightPiece_icon3 = arcade.load_texture("Images\lightPiece3.png")
-    restart_icon3 = arcade.load_texture("Images\\restart_icon3.png")
+delete_icon3 = arcade.load_texture("Version 3\Images\delete_icon3.png")
+darkPiece_icon3 = arcade.load_texture("Version 3\Images\darkPiece3.png")
+lightPiece_icon3 = arcade.load_texture("Version 3\Images\lightPiece3.png")
+restart_icon3 = arcade.load_texture("Version 3\Images\\restart_icon3.png")
 
 
 #Data:
