@@ -91,9 +91,6 @@ inputs = (np.array(Board.positions))
 
 print(network.forward(inputs))
 
-
-
-# RunGames("Tree Search I","Tree Search I",1000) 
 # if __name__ == "__main__":
 #     RunGame("PBP","TS1",True,True)
 

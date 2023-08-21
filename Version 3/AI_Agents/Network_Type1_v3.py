@@ -75,8 +75,11 @@ def fromSQLtoList(id,tableName): #Return a list of wights and biases
     elif tableName == "Network_Values_Tournament":
         result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(id,),)
 
-    data = str(result.fetchall()[0][0])
-    data = data.rsplit()
+    try:
+        data = str(result.fetchall()[0][0])
+        data = data.rsplit()
+    except:
+        return []
 
     list = []
     for num in data:
