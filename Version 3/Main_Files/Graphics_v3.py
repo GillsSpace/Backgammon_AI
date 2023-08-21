@@ -3,6 +3,11 @@ import arcade
 import copy
 import arcade.gui
 
+import os
+import pathlib
+PATH = pathlib.Path(__file__).parent.parent.parent
+os.chdir(PATH)
+
 #Load images & sounds:
 gear_icon = arcade.load_texture("Version 3\Images\gear_icon.png")
 exit_icon = arcade.load_texture("Version 3\Images\exit_icon.png")
