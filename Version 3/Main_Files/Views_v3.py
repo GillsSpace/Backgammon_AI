@@ -888,9 +888,40 @@ class P1_PreTurn_2P_View(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
-        Back_button = arcade.gui.UIFlatButton(25,725,100,50,"Back")
+        Exit_button = arcade.gui.UIFlatButton(15,745,75,40,"Exit")
+        Quit_button = arcade.gui.UIFlatButton(15,695,75,40,"Quit")
+        Settings_button = arcade.gui.UIFlatButton(1010,15,175,40,"Settings")
 
-        self.manager.add(Back_button)
+        Roll_button = arcade.gui.UIFlatButton(1010,400,175,40,"Roll")
+
+        self.manager.add(Exit_button)
+        self.manager.add(Quit_button)
+        self.manager.add(Settings_button)
+        self.manager.add(Roll_button)
+
+        @Exit_button.event("on_click")
+        def on_click_exit(event):
+            mainmenuView = MainMenuView(self.backgroundColor)
+            self.window.show_view(mainmenuView)
+
+        @Quit_button.event("on_click")
+        def on_click_Quit(event):
+            arcade.close_window()
+
+        @Settings_button.event("on_click")
+        def on_click_Settings(event):
+            self.window.lastPage = self
+            settingsView = SettingsView(self.backgroundColor)
+            self.window.show_view(settingsView)
+
+        @Roll_button.event("on_click")
+        def on_click_roll(event):
+            self.window.MainTurn = Logic.Turn(1,"Human",First=False)
+            self.window.MainTurn.updatePossibleMovesHumanFormat(self.window.MainBoard)
+            self.window.MainTurn.formSpriteList(self.window.MainBoard)
+
+            nextPlayerView = P1_Turn_2P_View(self.backgroundColor)
+            self.window.show_view(nextPlayerView)
 
     def on_show_view(self):
         self.manager.enable()
@@ -903,8 +934,8 @@ class P1_PreTurn_2P_View(arcade.View):
         self.clear()
         self.manager.draw()
         Graphics.drawBoard()
-        Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
         arcade.draw_rectangle_filled(601,401,12,762,Graphics.darkCheckerColor)
+        Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
 class P2_PreTurn_2P_View(arcade.View):
 
     def __init__(self,backgroundColor):
@@ -914,9 +945,40 @@ class P2_PreTurn_2P_View(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
-        Back_button = arcade.gui.UIFlatButton(25,725,100,50,"Back")
+        Exit_button = arcade.gui.UIFlatButton(15,745,75,40,"Exit")
+        Quit_button = arcade.gui.UIFlatButton(15,695,75,40,"Quit")
+        Settings_button = arcade.gui.UIFlatButton(1010,15,175,40,"Settings")
 
-        self.manager.add(Back_button)
+        Roll_button = arcade.gui.UIFlatButton(1010,400,175,40,"Roll")
+
+        self.manager.add(Exit_button)
+        self.manager.add(Quit_button)
+        self.manager.add(Settings_button)
+        self.manager.add(Roll_button)
+
+        @Exit_button.event("on_click")
+        def on_click_exit(event):
+            mainmenuView = MainMenuView(self.backgroundColor)
+            self.window.show_view(mainmenuView)
+
+        @Quit_button.event("on_click")
+        def on_click_Quit(event):
+            arcade.close_window()
+
+        @Settings_button.event("on_click")
+        def on_click_Settings(event):
+            self.window.lastPage = self
+            settingsView = SettingsView(self.backgroundColor)
+            self.window.show_view(settingsView)
+
+        @Roll_button.event("on_click")
+        def on_click_roll(event):
+            self.window.MainTurn = Logic.Turn(2,"Human",First=False)
+            self.window.MainTurn.updatePossibleMovesHumanFormat(self.window.MainBoard)
+            self.window.MainTurn.formSpriteList(self.window.MainBoard)
+
+            nextPlayerView = P2_Turn_2P_View(self.backgroundColor)
+            self.window.show_view(nextPlayerView)
 
     def on_show_view(self):
         self.manager.enable()
@@ -929,8 +991,8 @@ class P2_PreTurn_2P_View(arcade.View):
         self.clear()
         self.manager.draw()
         Graphics.drawBoard()
-        Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
         arcade.draw_rectangle_filled(601,401,12,762,Graphics.lightCheckerColor)
+        Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
 class GameOver_2P_View(arcade.View):
 
     def __init__(self,backgroundColor):

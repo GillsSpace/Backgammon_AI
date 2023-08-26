@@ -240,6 +240,6 @@ def runGame(ident1,ident2):
     return winner, looser
 
 def learningRate(round):
-    return ((np.e ** (round/-500)) / 2)
+    return 0.25 * ((-1/(1+np.e ** (-round/2000))) + 1.05)
 
 runTournament(1000,7,True)
