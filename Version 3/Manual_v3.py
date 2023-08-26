@@ -78,23 +78,17 @@ def TestAIMoveUpdates(Board:Logic.Board,player,roll):
     Turn.updatePossibleMovesAI(Board,player)
     print(f"PossibleMoves = {Turn.current_possible_moves}")
 
+Board = Logic.Board()
 
 ##### Current Test Code #####
 
-Board = Logic.Board()
 
-np.set_printoptions(linewidth=250, threshold=10)
+print("Hello",end=" ",flush=True)
+time.sleep(5)
+print("World")
 
-network = Network_Type1.BackgammonNeuralNetwork(Network_Type1.fromSQLtoList("1.01"))
-
-inputs = (np.array(Board.positions))
-
-print(network.forward(inputs))
 
 # if __name__ == "__main__":
 #     RunGame("PBP","TS1",True,True)
 
-### Database Management ###
-
-# Network_Type1.InitializeDataSet()
 

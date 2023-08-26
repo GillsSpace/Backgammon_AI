@@ -750,6 +750,11 @@ class P1_Turn_2P_View(arcade.View):
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
 
+        @Done_button.event("on_click")
+        def on_click_done(event):
+            nextPlayerView = P2_PreTurn_2P_View(self.backgroundColor)
+            self.window.show_view(nextPlayerView)
+
     def on_show_view(self):
         self.manager.enable()
         arcade.set_background_color(self.backgroundColor)
@@ -828,6 +833,11 @@ class P2_Turn_2P_View(arcade.View):
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
 
+        @Done_button.event("on_click")
+        def on_click_done(event):
+            nextPlayerView = P1_PreTurn_2P_View(self.backgroundColor)
+            self.window.show_view(nextPlayerView)
+
     def on_show_view(self):
         self.manager.enable()
         arcade.set_background_color(self.backgroundColor)
@@ -882,7 +892,6 @@ class P1_PreTurn_2P_View(arcade.View):
 
         self.manager.add(Back_button)
 
-
     def on_show_view(self):
         self.manager.enable()
         arcade.set_background_color(self.backgroundColor)
@@ -893,6 +902,9 @@ class P1_PreTurn_2P_View(arcade.View):
     def on_draw(self):
         self.clear()
         self.manager.draw()
+        Graphics.drawBoard()
+        Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
+        arcade.draw_rectangle_filled(601,401,12,762,Graphics.darkCheckerColor)
 class P2_PreTurn_2P_View(arcade.View):
 
     def __init__(self,backgroundColor):
@@ -906,7 +918,6 @@ class P2_PreTurn_2P_View(arcade.View):
 
         self.manager.add(Back_button)
 
-
     def on_show_view(self):
         self.manager.enable()
         arcade.set_background_color(self.backgroundColor)
@@ -917,6 +928,9 @@ class P2_PreTurn_2P_View(arcade.View):
     def on_draw(self):
         self.clear()
         self.manager.draw()
+        Graphics.drawBoard()
+        Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
+        arcade.draw_rectangle_filled(601,401,12,762,Graphics.lightCheckerColor)
 class GameOver_2P_View(arcade.View):
 
     def __init__(self,backgroundColor):

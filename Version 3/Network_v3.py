@@ -13,7 +13,7 @@ import AI_Agents.Network_Type1_v3 as Network_Type1
 
 ### Tournament ###
 
-def runTournament(rounds,learningRate=0.01,matchLength=1,reInitialize=True):
+def runTournament(rounds,matchLength=1,reInitialize=True):
     print(f"Beginning Tournament... ")
     st = time.time()
 
@@ -45,13 +45,32 @@ def runTournament(rounds,learningRate=0.01,matchLength=1,reInitialize=True):
         connection.commit()
         print("Data Set Initialized")
 
-    for roundT in range(rounds):
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",("Rounds",),)
+        totalRounds = int(str(result.fetchall()[0][0]))
+
+        if totalRounds >= rounds:
+            print(f"This data has already completed {rounds} rounds. It has currently trained {totalRounds} rounds.")
+            return
+
+        roundsToGo = rounds - totalRounds
+
+    for roundIteration in range(roundsToGo):
         stR = time.time()
-        print(f"Starting Round {roundT + 1}.")
+
+        #Finding Current Round:
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",("Rounds",),)
+        netRounds = int(str(result.fetchall()[0][0]))
+        roundLearningRate = learningRate(netRounds)
+        cursor.execute("UPDATE Network_Values_Tournament SET data = ? WHERE id = ?",(netRounds+1,"Rounds"))
+        print(f"Starting Round {netRounds+1}.")
 
         roundIn = [i for i in range(1,65)]
         roundOut = []
 
+        semifinalist = []
+        finalists = []
+
+        #Running Bracket Games:
         while len(roundIn) > 1:
             i = 0
             while i < len(roundIn):
@@ -63,41 +82,119 @@ def runTournament(rounds,learningRate=0.01,matchLength=1,reInitialize=True):
 
             for outNetwork in roundOut:
                 roundIn.remove(outNetwork)
+            if len(roundIn) == 2:
+                finalists = copy.deepcopy(roundIn)
+                semifinalist = copy.deepcopy(roundOut)
             roundOut = []
             print(f"    Stage Ended. Current Competitors = {roundIn}")
 
+        #Gets 1st, 2nd, and 3rd place idents:
         roundWinnerIdent = f"V1.0-W{roundIn[0]}"
-        print(f"Round {roundT+1} Complete. Network {roundWinnerIdent} Finished First.")
+        finalists.remove(roundIn[0])
+        roundSecondIdent = f"V1.0-W{finalists[0]}"
+        roundThird1Ident = f"V1.0-W{semifinalist[0]}"
+        roundThird2Ident = f"V1.0-W{semifinalist[1]}"
+
+
+        #Print Tournament Results
+        print(f"Round {netRounds+1} Complete. Network {roundWinnerIdent} Finished First. 2nd = {roundSecondIdent}. 3rd = {roundThird1Ident} & {roundThird2Ident}. Current Learning Rate = {roundLearningRate}")
         print("    Updated = ",end="")
 
+        #Retrieving winning networks' data
         result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(roundWinnerIdent[5:],),)
-        data = str(result.fetchall()[0][0])
+        data1 = str(result.fetchall()[0][0])
+
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(roundSecondIdent[5:],),)
+        data2 = str(result.fetchall()[0][0])
+        data2 = data2.rsplit()
+        data2 = [float(num) for num in data2]
+
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(roundThird1Ident[5:],),)
+        data31 = str(result.fetchall()[0][0])
+        data31 = data31.rsplit()
+        data31 = [float(num) for num in data31]
+
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(roundThird2Ident[5:],),)
+        data32 = str(result.fetchall()[0][0])
+        data32 = data32.rsplit()
+        data32 = [float(num) for num in data32]
         
-        if (roundT+1) % 100 == 0:
-            ident = f"A{roundT+1}"
-            cursor.execute("INSERT INTO Network_Values_Tournament VALUES (?, ?)",(ident,data))
+        #Archiving every 100th network:
+        if (netRounds) % 100 == 0:
+            ident = f"A{netRounds+1}"
+            cursor.execute("INSERT INTO Network_Values_Tournament VALUES (?, ?)",(ident,data1))
 
-        data = data.rsplit()
-        data = [float(num) for num in data]
+        data1 = data1.rsplit()
+        data1 = [float(num) for num in data1]
 
-        for network in range(64):
-            ident = f"W{network+1}"
-            if ident == roundWinnerIdent[5:]:
-                continue
+        #Updating Networks Data
 
-            newData = []
-            for num in data:
-                diff = ((random.random() * 2) - 1) * learningRate
-                endNum = round(num + diff, 4)
-                newData.append(endNum)
+        for network in range(1,65):
+
+            values = None
+            ident = f"W{network}"
+
+            if network == 1 or network == 2:
+                dataSet = []
+                for i in range(2017):
+                    num = round(random.random(),4)
+                    num = -1 * num if random.randint(1,2) == 1 else num
+                    dataSet.append(num)
+                values = " ".join(str(num) for num in dataSet)
+
+            elif network == 3:
+                values = " ".join(str(num) for num in data1)
+
+            elif network <= 32:
+                newData = []
+                for num in data1:
+                    diff = ((random.random() * 2) - 1) * roundLearningRate
+                    endNum = round(num + diff, 4)
+                    newData.append(endNum)
                 values = " ".join(str(num) for num in newData)
+
+            elif network == 33:
+                values = " ".join(str(num) for num in data2)
+
+            elif network <= 48:
+                newData = []
+                for num in data2:
+                    diff = ((random.random() * 2) - 1) * roundLearningRate
+                    endNum = round(num + diff, 4)
+                    newData.append(endNum)
+                values = " ".join(str(num) for num in newData)
+
+            elif network == 49:
+                values = " ".join(str(num) for num in data31)
+
+            elif network <= 56:
+                newData = []
+                for num in data31:
+                    diff = ((random.random() * 2) - 1) * roundLearningRate
+                    endNum = round(num + diff, 4)
+                    newData.append(endNum)
+                values = " ".join(str(num) for num in newData)
+
+            elif network == 57:
+                values = " ".join(str(num) for num in data32)
+
+            elif network <= 64:
+                newData = []
+                for num in data32:
+                    diff = ((random.random() * 2) - 1) * roundLearningRate
+                    endNum = round(num + diff, 4)
+                    newData.append(endNum)
+                values = " ".join(str(num) for num in newData)
+
             cursor.execute("UPDATE Network_Values_Tournament SET data = ? WHERE id = ?",(values,ident))
             connection.commit()
-            print(f"{network+1}-",end="")
+            print(f"{network}",end=" ",flush=True)
         
+        connection.commit()
+
         etR = time.time()
         print()
-        print(f"Round {roundT+1} Updates Complete. Round Time = {etR - stR}")
+        print(f"Round {netRounds+1} Updates Complete. Round Time = {etR - stR}")
 
     et = time.time()
     print(f"Tournament Complete: Duration = {et - st}")
@@ -142,4 +239,7 @@ def runGame(ident1,ident2):
     
     return winner, looser
 
-runTournament(1,0.05,1)
+def learningRate(round):
+    return ((np.e ** (round/-500)) / 2)
+
+runTournament(1000,7,True)
