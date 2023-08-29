@@ -13,7 +13,7 @@ import AI_Agents.Network_Type1_v3 as Network_Type1
 
 ### Tournament ###
 
-def runTournament(rounds,matchLength=1,reInitialize=True):
+def runTournament(rounds,matchLength,runNumber,reInitialize=False):
     print(f"Beginning Tournament... ")
     st = time.time()
 
@@ -45,14 +45,14 @@ def runTournament(rounds,matchLength=1,reInitialize=True):
         connection.commit()
         print("Data Set Initialized")
 
-        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",("Rounds",),)
-        totalRounds = int(str(result.fetchall()[0][0]))
+    result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",("Rounds",),)
+    totalRounds = int(str(result.fetchall()[0][0]))
 
-        if totalRounds >= rounds:
-            print(f"This data has already completed {rounds} rounds. It has currently trained {totalRounds} rounds.")
-            return
+    if totalRounds >= rounds:
+        print(f"This data has already completed {rounds} rounds. It has currently trained {totalRounds} rounds.")
+        return
 
-        roundsToGo = rounds - totalRounds
+    roundsToGo = rounds - totalRounds
 
     for roundIteration in range(roundsToGo):
         stR = time.time()
@@ -60,9 +60,10 @@ def runTournament(rounds,matchLength=1,reInitialize=True):
         #Finding Current Round:
         result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",("Rounds",),)
         netRounds = int(str(result.fetchall()[0][0]))
-        roundLearningRate = learningRate(netRounds)
-        cursor.execute("UPDATE Network_Values_Tournament SET data = ? WHERE id = ?",(netRounds+1,"Rounds"))
-        print(f"Starting Round {netRounds+1}.")
+        thisRound = netRounds + 1
+        roundLearningRate = learningRate(thisRound)
+        cursor.execute("UPDATE Network_Values_Tournament SET data = ? WHERE id = ?",(thisRound,"Rounds"))
+        print(f"Starting Round {thisRound}.")
 
         roundIn = [i for i in range(1,65)]
         roundOut = []
@@ -97,7 +98,7 @@ def runTournament(rounds,matchLength=1,reInitialize=True):
 
 
         #Print Tournament Results
-        print(f"Round {netRounds+1} Complete. Network {roundWinnerIdent} Finished First. 2nd = {roundSecondIdent}. 3rd = {roundThird1Ident} & {roundThird2Ident}. Current Learning Rate = {roundLearningRate}")
+        print(f"Round {thisRound} Complete. Network {roundWinnerIdent} Finished First. 2nd = {roundSecondIdent}. 3rd = {roundThird1Ident} & {roundThird2Ident}. Current Learning Rate = {roundLearningRate}")
         print("    Updated = ",end="")
 
         #Retrieving winning networks' data
@@ -120,8 +121,8 @@ def runTournament(rounds,matchLength=1,reInitialize=True):
         data32 = [float(num) for num in data32]
         
         #Archiving every 100th network:
-        if (netRounds) % 100 == 0:
-            ident = f"A{netRounds+1}"
+        if (thisRound) % 100 == 0 or thisRound == 1:
+            ident = f"A{thisRound}"
             cursor.execute("INSERT INTO Network_Values_Tournament VALUES (?, ?)",(ident,data1))
 
         data1 = data1.rsplit()
@@ -194,7 +195,7 @@ def runTournament(rounds,matchLength=1,reInitialize=True):
 
         etR = time.time()
         print()
-        print(f"Round {netRounds+1} Updates Complete. Round Time = {etR - stR}")
+        print(f"Round {thisRound} Updates Complete. Round Time = {etR - stR}")
 
     et = time.time()
     print(f"Tournament Complete: Duration = {et - st}")
@@ -242,4 +243,4 @@ def runGame(ident1,ident2):
 def learningRate(round):
     return 0.25 * ((-1/(1+np.e ** (-round/2000))) + 1.05)
 
-runTournament(1000,7,True)
+runTournament(1000,21,1,True)

@@ -35,7 +35,7 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
         et = time.time()
         print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
-    elif AI_player in ["Tree Search I","TS 1"]:
+    elif AI_player in ["Tree Search I","TS 1","TS1"]:
         print(f"Running Tree Search I; Roll = {Main_Turn.roll}")
         st = time.time()
         Moves = treeSearchI(Main_Board,Main_Turn)
@@ -68,7 +68,7 @@ def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
     if AI_player == "Random":
         Moves = randomMove(Main_Board,Main_Turn)
         return Moves
-    elif AI_player in ["Tree Search I","TS 1"]:
+    elif AI_player in ["Tree Search I","TS 1","TS1"]:
         Moves = treeSearchI(Main_Board,Main_Turn)
         return Moves
     elif AI_player == "PBP":

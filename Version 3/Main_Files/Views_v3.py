@@ -766,10 +766,9 @@ class P1_Turn_2P_View(arcade.View):
         self.clear()
         self.manager.draw()
         Graphics.drawBoard()
+        arcade.draw_rectangle_filled(601,401,12,762,Graphics.darkCheckerColor)
         Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
         Graphics.drawDice(self.window.MainTurn.roll[0],self.window.MainTurn.roll[1],self.window.MainTurn.unused_dice)
-        arcade.draw_rectangle_filled(601,401,12,762,Graphics.darkCheckerColor)
-
         Graphics.drawTurnMain(self.window.MainTurn.sprites_move_start) if self.step == "Main" else Graphics.drawTurnBranch(self.window.MainTurn.sprite_active,self.window.MainTurn.sprites_move_end)
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
@@ -849,10 +848,9 @@ class P2_Turn_2P_View(arcade.View):
         self.clear()
         self.manager.draw()
         Graphics.drawBoard()
+        arcade.draw_rectangle_filled(601,401,12,762,Graphics.lightCheckerColor)
         Graphics.drawPieces(self.window.MainBoard.positions,self.window.MainBoard.pip)
         Graphics.drawDice(self.window.MainTurn.roll[0],self.window.MainTurn.roll[1],self.window.MainTurn.unused_dice)
-        arcade.draw_rectangle_filled(601,401,12,762,Graphics.lightCheckerColor)
-
         Graphics.drawTurnMain(self.window.MainTurn.sprites_move_start) if self.step == "Main" else Graphics.drawTurnBranch(self.window.MainTurn.sprite_active,self.window.MainTurn.sprites_move_end)
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):

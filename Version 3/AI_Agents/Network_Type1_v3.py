@@ -30,8 +30,20 @@ class BackgammonNeuralNetwork:
     def d_sigmoid(self, x):
         return self.sigmoid(x) * (1 - self.sigmoid(x))
     
-    def forward(self, inputs):
-        """returns the estimated value of a position for player 1 following a move by player 1"""
+    def forward(self, positions, player):
+        """returns the estimated value of a position for player following a move by that player"""
+
+        #Pretends that player 2 is player 1 for equal evaluations. 
+
+        if player == 2:
+            inputs = [-positions[i] for i in range(23,-1,-1)]
+            inputs.append(positions[25])
+            inputs.append(positions[24])
+            inputs.append(positions[27])
+            inputs.append(positions[26])
+        else:
+            inputs = positions
+
         hidden_layer1_output = self.relu(np.dot(self.weights1, inputs) + self.bias1)
         hidden_layer2_output = self.relu(np.dot(self.weights2, hidden_layer1_output) + self.bias2)
         output = self.sigmoid(np.dot(self.weights3, hidden_layer2_output) + self.bias3)
@@ -108,8 +120,7 @@ def Full_Run(inputBoard: Board, inputTurn:FastTurn, networkIdent):
     for moveSet in moves:
         testBoard = copy.deepcopy(inputBoard)
         testBoard.makeMoves(moveSet,inputTurn.player)
-        output = network.forward(testBoard.positions)
-        output = -1 * output if inputTurn.player == 2 else output
+        output = network.forward(testBoard.positions,inputTurn.player)
         moveValues.append(output)
 
     if len(moveValues) == 0:
