@@ -22,11 +22,11 @@ def randomMove(ActiveBoard:Board, ActiveTurn:Turn):
 def pickBestPip(ActiveBoard:Board, ActiveTurn:Turn):
     return PBP_Full_Run(ActiveBoard,ActiveTurn)
 
-def treeSearchI(ActiveBoard:Board, ActiveTurn:Turn):
-    return TreeSearchI_Full_Run(ActiveBoard,ActiveTurn)
+def treeSearchI(ActiveBoard:Board, ActiveTurn:Turn, multiSuppression):
+    return TreeSearchI_Full_Run(ActiveBoard,ActiveTurn,multiSuppression)
 
 #Main Function - Called 
-def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
+def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None,multiSuppression=False):
     AI_player = aiType
     if AI_player == "Random":
         print(f"Running Random Move Selection; Roll = {Main_Turn.roll}")
@@ -38,7 +38,7 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
     elif AI_player in ["Tree Search I","TS 1","TS1"]:
         print(f"Running Tree Search I; Roll = {Main_Turn.roll}")
         st = time.time()
-        Moves = treeSearchI(Main_Board,Main_Turn)
+        Moves = treeSearchI(Main_Board,Main_Turn,multiSuppression)
         et = time.time()
         print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
@@ -63,13 +63,13 @@ def Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
         print(f"Finished Run; Elapsed Time = {et-st}; Final Move Set = {Moves}")
         return Moves
 
-def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None):
+def Silent_Main(Main_Board:Board,Main_Turn:Turn,aiType,networkIdent=None,multiSuppression=False):
     AI_player = aiType
     if AI_player == "Random":
         Moves = randomMove(Main_Board,Main_Turn)
         return Moves
     elif AI_player in ["Tree Search I","TS 1","TS1"]:
-        Moves = treeSearchI(Main_Board,Main_Turn)
+        Moves = treeSearchI(Main_Board,Main_Turn,multiSuppression)
         return Moves
     elif AI_player == "PBP":
         Moves = pickBestPip(Main_Board,Main_Turn)

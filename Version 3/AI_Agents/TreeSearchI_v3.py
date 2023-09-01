@@ -91,13 +91,13 @@ def PipMinMaxBasic(subTurn:SubTurn,player,Max=True):
         return minPipDiff
 
 #Running:
-def Full_Run(inputBoard:Board,inputTurn:Turn):
+def Full_Run(inputBoard:Board,inputTurn:Turn,suppressMultiProcessing=False):
     fastTurn = FastTurn(inputTurn.player,inputTurn.roll)
     #Takes a input of a FastBoard and a FastTurn and returns the optimal move for the current player to make.
     initialTurnSolutions = ReturnTurnSolutions(inputBoard,fastTurn)
     possiblePipDiffs = []
 
-    if len(initialTurnSolutions) < 32:
+    if len(initialTurnSolutions) < 32 or suppressMultiProcessing == True:
         for turnSolution in initialTurnSolutions:
             subTurnsList = []
             for roll in Data_rollOptions:

@@ -243,4 +243,4 @@ def runGame(ident1,ident2):
 def learningRate(round):
     return 0.25 * ((-1/(1+np.e ** (-round/2000))) + 1.05)
 
-runTournament(1000,21,1,True)
+runTournament(1000,21,1,False)
