@@ -144,6 +144,6 @@ Board = Logic.Board()
 
 
 if __name__ == "__main__":
-    RunGamesMulti("Network","PBP",1000,netIdent1="V1.0-NVT-A500",netIdent2="V1.0-NVT-A300")
+    RunGamesMulti("Network","TS1",1000,netIdent1="V1.0-NVT-A1-100",netIdent2="V1.0-NVT-A600")
 
 
