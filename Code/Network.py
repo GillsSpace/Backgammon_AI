@@ -1,23 +1,25 @@
 ### Imports ###
-import arcade, time, copy, sqlite3, random
+import copy
+import random
+import sqlite3
+import time
+
 import numpy as np
 
-import Main_Files.Logic_v3 as Logic
-import Main_Files.AI_v3 as AI
-import Main_Files.Graphics_v3 as Graphics
+import Code.Main_Files.AI as AI
+import Code.Main_Files.Logic as Logic
 
-import AI_Agents.Network_Type1_v3 as Network_Type1
 
 ### Initialize Database ###
 # Network_Type1.InitializeDataSet()
 
 ### Tournament ###
 
-def runTournament(rounds,matchLength,runNumber,reInitialize=False):
+def runTournament(rounds, matchLength, runNumber, reInitialize=False):
     print(f"Beginning Tournament... ")
     st = time.time()
 
-    PATH = "Version 3\AI_Agents\\Network_Type1_Data_v3.sqlite3"
+    PATH = "Code\AI_Agents\\Network_Type1_Data_v3.sqlite3"
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()
 
@@ -29,23 +31,23 @@ def runTournament(rounds,matchLength,runNumber,reInitialize=False):
 
         cursor.execute("CREATE TABLE Network_Values_Tournament (id TEXT, data TEXT)")
 
-        cursor.execute("INSERT INTO Network_Values_Tournament VALUES (?, ?)",("Rounds","0"))
+        cursor.execute("INSERT INTO Network_Values_Tournament VALUES (?, ?)", ("Rounds", "0"))
 
         for i in range(64):
-            id = f"W{i+1}"
+            id = f"W{i + 1}"
             dataSet1 = []
             for i in range(2017):
-                num = round(random.random(),4)
-                num = -1 * num if random.randint(1,2) == 1 else num
+                num = round(random.random(), 4)
+                num = -1 * num if random.randint(1, 2) == 1 else num
                 dataSet1.append(num)
             values = " ".join(str(num) for num in dataSet1)
-            cursor.execute("INSERT INTO Network_Values_Tournament VALUES (?, ?)",(id,values,),)
+            cursor.execute("INSERT INTO Network_Values_Tournament VALUES (?, ?)", (id, values,), )
             i = i + 1
 
         connection.commit()
         print("Data Set Initialized")
 
-    result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",("Rounds",),)
+    result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?", ("Rounds",), )
     totalRounds = int(str(result.fetchall()[0][0]))
 
     if totalRounds >= rounds:
@@ -57,28 +59,28 @@ def runTournament(rounds,matchLength,runNumber,reInitialize=False):
     for roundIteration in range(roundsToGo):
         stR = time.time()
 
-        #Finding Current Round:
-        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",("Rounds",),)
+        # Finding Current Round:
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?", ("Rounds",), )
         netRounds = int(str(result.fetchall()[0][0]))
         thisRound = netRounds + 1
         roundLearningRate = learningRate(thisRound)
-        cursor.execute("UPDATE Network_Values_Tournament SET data = ? WHERE id = ?",(thisRound,"Rounds"))
+        cursor.execute("UPDATE Network_Values_Tournament SET data = ? WHERE id = ?", (thisRound, "Rounds"))
         print(f"Starting Round {thisRound}.")
 
-        roundIn = [i for i in range(1,65)]
+        roundIn = [i for i in range(1, 65)]
         roundOut = []
 
         semifinalist = []
         finalists = []
 
-        #Running Bracket Games:
+        # Running Bracket Games:
         while len(roundIn) > 1:
             i = 0
             while i < len(roundIn):
                 NetworkIdent1 = f"V1.0-NVT-W{roundIn[i]}"
-                NetworkIdent2 = f"V1.0-NVT-W{roundIn[i+1]}"
-                matchWinner, matchLooser = runMatch(NetworkIdent1,NetworkIdent2,matchLength)
-                roundOut.append(roundIn[i] if matchLooser == 1 else roundIn[i+1])
+                NetworkIdent2 = f"V1.0-NVT-W{roundIn[i + 1]}"
+                matchWinner, matchLooser = runMatch(NetworkIdent1, NetworkIdent2, matchLength)
+                roundOut.append(roundIn[i] if matchLooser == 1 else roundIn[i + 1])
                 i = i + 2
 
             for outNetwork in roundOut:
@@ -89,48 +91,48 @@ def runTournament(rounds,matchLength,runNumber,reInitialize=False):
             roundOut = []
             print(f"    Stage Ended. Current Competitors = {roundIn}")
 
-        #Gets 1st, 2nd, and 3rd place idents:
+        # Gets 1st, 2nd, and 3rd place idents:
         roundWinnerIdent = f"V1.0-W{roundIn[0]}"
         finalists.remove(roundIn[0])
         roundSecondIdent = f"V1.0-W{finalists[0]}"
         roundThird1Ident = f"V1.0-W{semifinalist[0]}"
         roundThird2Ident = f"V1.0-W{semifinalist[1]}"
 
+        # Print Tournament Results
+        print(
+            f"Round {thisRound} Complete. Network {roundWinnerIdent} Finished First. 2nd = {roundSecondIdent}. 3rd = {roundThird1Ident} & {roundThird2Ident}. Current Learning Rate = {roundLearningRate}")
+        print("    Updated = ", end="")
 
-        #Print Tournament Results
-        print(f"Round {thisRound} Complete. Network {roundWinnerIdent} Finished First. 2nd = {roundSecondIdent}. 3rd = {roundThird1Ident} & {roundThird2Ident}. Current Learning Rate = {roundLearningRate}")
-        print("    Updated = ",end="")
-
-        #Retrieving winning networks' data
-        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(roundWinnerIdent[5:],),)
+        # Retrieving winning networks' data
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?", (roundWinnerIdent[5:],), )
         data1 = str(result.fetchall()[0][0])
 
-        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(roundSecondIdent[5:],),)
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?", (roundSecondIdent[5:],), )
         data2 = str(result.fetchall()[0][0])
         data2 = data2.rsplit()
         data2 = [float(num) for num in data2]
 
-        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(roundThird1Ident[5:],),)
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?", (roundThird1Ident[5:],), )
         data31 = str(result.fetchall()[0][0])
         data31 = data31.rsplit()
         data31 = [float(num) for num in data31]
 
-        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?",(roundThird2Ident[5:],),)
+        result = cursor.execute("SELECT data FROM Network_Values_Tournament WHERE id = ?", (roundThird2Ident[5:],), )
         data32 = str(result.fetchall()[0][0])
         data32 = data32.rsplit()
         data32 = [float(num) for num in data32]
-        
-        #Archiving every 100th network:
+
+        # Archiving every 100th network:
         if (thisRound) % 100 == 0 or thisRound == 1:
             ident = f"A{runNumber}-{thisRound}"
-            cursor.execute("INSERT INTO Network_Values_Tournament VALUES (?, ?)",(ident,data1))
+            cursor.execute("INSERT INTO Network_Values_Tournament VALUES (?, ?)", (ident, data1))
 
         data1 = data1.rsplit()
         data1 = [float(num) for num in data1]
 
-        #Updating Networks Data
+        # Updating Networks Data
 
-        for network in range(1,65):
+        for network in range(1, 65):
 
             values = None
             ident = f"W{network}"
@@ -138,8 +140,8 @@ def runTournament(rounds,matchLength,runNumber,reInitialize=False):
             if network == 1 or network == 2:
                 dataSet = []
                 for i in range(2017):
-                    num = round(random.random(),4)
-                    num = -1 * num if random.randint(1,2) == 1 else num
+                    num = round(random.random(), 4)
+                    num = -1 * num if random.randint(1, 2) == 1 else num
                     dataSet.append(num)
                 values = " ".join(str(num) for num in dataSet)
 
@@ -187,10 +189,10 @@ def runTournament(rounds,matchLength,runNumber,reInitialize=False):
                     newData.append(endNum)
                 values = " ".join(str(num) for num in newData)
 
-            cursor.execute("UPDATE Network_Values_Tournament SET data = ? WHERE id = ?",(values,ident))
+            cursor.execute("UPDATE Network_Values_Tournament SET data = ? WHERE id = ?", (values, ident))
             connection.commit()
-            print(f"{network}",end=" ",flush=True)
-        
+            print(f"{network}", end=" ", flush=True)
+
         connection.commit()
 
         etR = time.time()
@@ -200,47 +202,51 @@ def runTournament(rounds,matchLength,runNumber,reInitialize=False):
     et = time.time()
     print(f"Tournament Complete: Duration = {et - st}")
 
-def runMatch(ident1,ident2,length):
+
+def runMatch(ident1, ident2, length):
     """Helper Function for runTournament. returns winner, looser of a match of length "length" between networks "ident1" and "ident2"."""
     ident1Wins = 0
     ident2Wins = 0
     for game in range(length):
-        winner, looser = runGame(ident1,ident2)
+        winner, looser = runGame(ident1, ident2)
         ident1Wins = ident1Wins + 1 if winner == 1 else ident1Wins
         ident2Wins = ident2Wins + 1 if winner == 2 else ident2Wins
         if ident1Wins > (length / 2):
-            return 1,2
+            return 1, 2
         elif ident2Wins > (length / 2):
-            return 2,1
-    
-    #If tied after "length" games, play tie-breaker:
-    return runGame(ident1,ident2)
+            return 2, 1
 
-def runGame(ident1,ident2):
+    # If tied after "length" games, play tie-breaker:
+    return runGame(ident1, ident2)
+
+
+def runGame(ident1, ident2):
     """Helper Function for runTournament. returns winner, looser of a singe game between networks "ident1" and "ident2". """
     Board = Logic.Board()
     Board.setStartPositions()
 
-    startingPlayer = random.randint(1,2)
+    startingPlayer = random.randint(1, 2)
     gameOver = False
 
-    Turn = Logic.Turn(startingPlayer,"AI",None,First=True)
-    Moves = AI.Silent_Main(Board,Turn,"Network",ident2 if Turn.player == 2 else ident1)
-    Board.makeMoves(Moves,Turn.player)
+    Turn = Logic.Turn(startingPlayer, "AI", None, First=True)
+    Moves = AI.Silent_Main(Board, Turn, "Network", ident2 if Turn.player == 2 else ident1)
+    Board.makeMoves(Moves, Turn.player)
 
     while not gameOver:
-        Turn = Logic.Turn(1 if Turn.player == 2 else 2,"AI",None)
-        Moves = AI.Silent_Main(Board,Turn,"Network",ident2 if Turn.player == 2 else ident1)
-        Board.makeMoves(Moves,Turn.player)
+        Turn = Logic.Turn(1 if Turn.player == 2 else 2, "AI", None)
+        Moves = AI.Silent_Main(Board, Turn, "Network", ident2 if Turn.player == 2 else ident1)
+        Board.makeMoves(Moves, Turn.player)
 
         if Board.pip[1 if Turn.player == 2 else 0] == 0:
             gameOver = True
             looser = 1 if Turn.player == 2 else 1
             winner = Turn.player
-    
+
     return winner, looser
 
-def learningRate(round):
-    return 0.25 * ((-1/(1+np.e ** (-round/2000))) + 1.05)
 
-runTournament(1000,99,1,False)
+def learningRate(round):
+    return 0.25 * ((-1 / (1 + np.e ** (-round / 2000))) + 1.05)
+
+
+runTournament(1000, 99, 1, False)

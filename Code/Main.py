@@ -1,7 +1,8 @@
 import arcade
 import arcade.gui
-import Main_Files.Views_v3 as Views
-import Main_Files.Logic_v3 as Logic
+
+import Code.Main_Files.Logic as Logic
+import Code.Main_Files.Views as Views
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
@@ -38,8 +39,8 @@ class MainWindow(arcade.Window):
 
 
 def main():
-    mainWindow = MainWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Backgammon")
-    mainWindow.setup()  # Currently Unused
+    main_window = MainWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Backgammon")
+    main_window.setup()  # Currently Unused
     arcade.run()
 
 
