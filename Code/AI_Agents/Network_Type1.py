@@ -81,7 +81,7 @@ class BackgammonNeuralNetwork:
 
 
 def fromSQLtoList(id, tableName):  # Return a list of wights and biases
-    PATH = "Code\AI_Agents\\Network_Type1_Data_v3.sqlite3"
+    PATH = "Code\AI_Agents\\Network_Type1_Data.sqlite3"
 
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()
@@ -140,7 +140,7 @@ def Full_Run(inputBoard: Board, inputTurn: FastTurn, networkIdent):
 # Database Management Code:
 
 def InitializeDataSet():
-    PATH = "Code\AI_Agents\\Network_Type1_Data_v3.sqlite3"
+    PATH = "Code\AI_Agents\\Network_Type1_Data.sqlite3"
 
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()

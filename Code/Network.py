@@ -11,7 +11,7 @@ import Code.Main_Files.Logic as Logic
 
 
 ### Initialize Database ###
-# Network_Type1.InitializeDataSet()
+# Network_Type1.initialize_data_set()
 
 ### Tournament ###
 
@@ -249,4 +249,54 @@ def learningRate(round):
     return 0.25 * ((-1 / (1 + np.e ** (-round / 2000))) + 1.05)
 
 
-runTournament(1000, 99, 1, False)
+def create_data_set():
+    import csv
+
+    positions = []
+    output = []
+
+    # ident1 = "V1.0-NVT-A1-100"
+    # ident2 = "V1.0-NVT-A1-100"
+
+    ident1 = "TS1"
+    ident2 = "TS1"
+
+    board = Logic.Board()
+    board.setStartPositions()
+
+    starting_player = random.randint(1, 2)
+    game_over = False
+
+    turn = Logic.Turn(starting_player, "AI", None, First=True)
+    moves = AI.Silent_Main(board, turn, "TS1", ident2 if turn.player == 2 else ident1,multiSuppression=True)
+    board.makeMoves(moves, turn.player)
+
+    while not game_over:
+        positions.append(copy.deepcopy(board.positions))
+        turn = Logic.Turn(1 if turn.player == 2 else 2, "AI", None)
+        moves = AI.Silent_Main(board, turn, "TS1", ident2 if turn.player == 2 else ident1,multiSuppression=True)
+        board.makeMoves(moves, turn.player)
+
+        if board.pip[1 if turn.player == 2 else 0] == 0:
+            game_over = True
+            output = []
+            if turn.player == 1 and board.positions[27] == 0:
+                output = [1,0,0,0]
+            if turn.player == 1 and board.positions[27] != 0:
+                output = [0,1,0,0]
+            if turn.player == 2 and board.positions[26] != 0:
+                output = [0,0,1,0]
+            if turn.player == 2 and board.positions[26] == 0:
+                output = [0,0,0,1]
+
+    with open('Code/AI_Agents/Data_sets/data_set_1.csv', 'a', newline='') as f:
+        writer = csv.writer(f)
+        for positions in positions:
+            writer.writerow([positions,output])
+
+
+### Run Code ###
+for i in range(1000):
+    create_data_set()
+    print(i)
+# runTournament(1000, 99, 1, False)
