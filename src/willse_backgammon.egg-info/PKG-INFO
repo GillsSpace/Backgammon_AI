@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: willse_backgammon
+Version: 0.0.1
+Summary: This package is a project I have created to learn python as well as the basics of Artificial Intelligence. It is still a Work in Progress.
+Author-email: Wills Erda <willse06@gmail.com>
+Project-URL: Homepage, https://github.com/GillsSpace/Backgammon_AI
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: arcade
+Requires-Dist: numpy
+Requires-Dist: sqlite3
+
+#Welcome
+
+This package is a project I have created to learn python as well as the basics of Artificial Intelligence. It is still a Work in Progress.

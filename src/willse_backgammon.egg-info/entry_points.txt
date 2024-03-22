@@ -1,0 +1,2 @@
+[console_scripts]
+willse_backgammon_run = willse_backgammon.Main:main

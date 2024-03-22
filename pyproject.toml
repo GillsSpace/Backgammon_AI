@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "willse_backgammon"
+version = "0.0.1"
+authors = [
+  { name="Wills Erda", email="willse06@gmail.com" },
+]
+description = "This package is a project I have created to learn python as well as the basics of Artificial Intelligence. It is still a Work in Progress."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "arcade",
+    "numpy",
+    "sqlite3"
+]
+
+[project.urls]
+Homepage = "https://github.com/GillsSpace/Backgammon_AI"
+
+[project.scripts]
+willse_backgammon_run = "willse_backgammon.Main:main"

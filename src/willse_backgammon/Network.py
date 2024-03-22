@@ -249,7 +249,7 @@ def learningRate(round):
     return 0.25 * ((-1 / (1 + np.e ** (-round / 2000))) + 1.05)
 
 
-def create_data_set():
+def create_data_set(game_number):
     import csv
 
     positions = []
@@ -292,11 +292,12 @@ def create_data_set():
     with open('Code/AI_Agents/Data_sets/data_set_1.csv', 'a', newline='') as f:
         writer = csv.writer(f)
         for positions in positions:
-            writer.writerow([positions,output])
+            writer.writerow([game_number,positions,output])
 
+    return output
 
 ### Run Code ###
 for i in range(1000):
-    create_data_set()
-    print(i)
+    outcome = create_data_set(i+1)
+    print(f"Set {i+1} Completed, Outcome = {outcome}")
 # runTournament(1000, 99, 1, False)

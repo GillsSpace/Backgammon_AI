@@ -1,0 +1,3 @@
+arcade
+numpy
+sqlite3
