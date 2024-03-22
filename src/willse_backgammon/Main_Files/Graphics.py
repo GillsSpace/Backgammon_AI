@@ -10,24 +10,24 @@ PATH = pathlib.Path(__file__).parent.parent.parent
 os.chdir(PATH)
 
 # Load images & sounds:
-gear_icon = arcade.load_texture("Code\Images\gear_icon.png")
-exit_icon = arcade.load_texture("Code\Images\exit_icon.png")
-quit_icon = arcade.load_texture("Code\Images\quit_icon.png")
+gear_icon = arcade.load_texture("willse_backgammon\Images\gear_icon.png")
+exit_icon = arcade.load_texture("willse_backgammon\Images\exit_icon.png")
+quit_icon = arcade.load_texture("willse_backgammon\Images\quit_icon.png")
 
-delete_icon = arcade.load_texture("Code\Images\delete_icon.png")
-darkPiece_icon = arcade.load_texture("Code\Images\darkPiece.png")
-lightPiece_icon = arcade.load_texture("Code\Images\lightPiece.png")
-restart_icon = arcade.load_texture("Code\Images\\restart_icon.png")
+delete_icon = arcade.load_texture("willse_backgammon\Images\delete_icon.png")
+darkPiece_icon = arcade.load_texture("willse_backgammon\Images\darkPiece.png")
+lightPiece_icon = arcade.load_texture("willse_backgammon\Images\lightPiece.png")
+restart_icon = arcade.load_texture("willse_backgammon\Images\\restart_icon.png")
 
-delete_icon2 = arcade.load_texture("Code\Images\delete_icon2.png")
-darkPiece_icon2 = arcade.load_texture("Code\Images\darkPiece2.png")
-lightPiece_icon2 = arcade.load_texture("Code\Images\lightPiece2.png")
-restart_icon2 = arcade.load_texture("Code\Images\\restart_icon2.png")
+delete_icon2 = arcade.load_texture("willse_backgammon\Images\delete_icon2.png")
+darkPiece_icon2 = arcade.load_texture("willse_backgammon\Images\darkPiece2.png")
+lightPiece_icon2 = arcade.load_texture("willse_backgammon\Images\lightPiece2.png")
+restart_icon2 = arcade.load_texture("willse_backgammon\Images\\restart_icon2.png")
 
-delete_icon3 = arcade.load_texture("Code\Images\delete_icon3.png")
-darkPiece_icon3 = arcade.load_texture("Code\Images\darkPiece3.png")
-lightPiece_icon3 = arcade.load_texture("Code\Images\lightPiece3.png")
-restart_icon3 = arcade.load_texture("Code\Images\\restart_icon3.png")
+delete_icon3 = arcade.load_texture("willse_backgammon\Images\delete_icon3.png")
+darkPiece_icon3 = arcade.load_texture("willse_backgammon\Images\darkPiece3.png")
+lightPiece_icon3 = arcade.load_texture("willse_backgammon\Images\lightPiece3.png")
+restart_icon3 = arcade.load_texture("willse_backgammon\Images\\restart_icon3.png")
 
 # Data:
 Master_Location_Dict = {1: (247, 755), 2: (307, 755), 3: (367, 755), 4: (427, 755), 5: (487, 755), 6: (547, 755),
@@ -219,7 +219,7 @@ def createMoveStartSprites(possibleMoves, Board, player):  # UPDATE NEEDED
             for pc in range(len(board_bar_list)):
                 doDraw = True if board_bar_list[pc] == player else False
                 if doDraw == True:
-                    tempSprite = arcade.Sprite("Code/Images/Move.png", 0.07)
+                    tempSprite = arcade.Sprite("willse_backgammon/Images/Move.png", 0.07)
                     tempSprite.center_x = 601
                     tempSprite.center_y = 401 - startDist + 35 + (60 * pc)
                     tempSprite.move = move
@@ -227,7 +227,7 @@ def createMoveStartSprites(possibleMoves, Board, player):  # UPDATE NEEDED
         else:
             o = 1 if startPoint > 12 else -1
             pointLength = abs(board_location_list[startPoint - 1])
-            tempSprite = arcade.Sprite("Code/Images/Move.png", 0.07)
+            tempSprite = arcade.Sprite("willse_backgammon/Images/Move.png", 0.07)
             tempSprite.center_x = Master_Location_Dict[startPoint][0]
             tempSprite.center_y = Master_Location_Dict[startPoint][1] + (60 * (pointLength - 1) * o)
             tempSprite.move = move
@@ -244,7 +244,7 @@ def createMoveEndSprites(activeSprite, Board):  # UPDATE NEEDED
     for move in activeSprite.move[1]:
 
         if move == 2002:
-            tempSprite = arcade.Sprite("Code/Images/Submove.png", .07)
+            tempSprite = arcade.Sprite("willse_backgammon/Images/Submove.png", .07)
             tempSprite.center_x = 150
             tempSprite.center_y = 400
             tempSprite.pos = move
@@ -254,7 +254,7 @@ def createMoveEndSprites(activeSprite, Board):  # UPDATE NEEDED
             pointLength = abs(board_location_list[move - 1]) - 1
             if pointLength == -1:
                 pointLength = 0
-            tempSprite = arcade.Sprite("Code/Images/Submove.png", .07)
+            tempSprite = arcade.Sprite("willse_backgammon/Images/Submove.png", .07)
             tempSprite.center_x = Master_Location_Dict[move][0]
             tempSprite.center_y = Master_Location_Dict[move][1] + (60 * pointLength * o)
             tempSprite.pos = move

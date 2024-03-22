@@ -1,6 +1,6 @@
-import Code.Main_Files.AI as AI
-import Code.Main_Files.Graphics as Graphics
-import Code.Main_Files.Logic as Logic
+import Main_Files.AI as AI
+import Main_Files.Graphics as Graphics
+import Main_Files.Logic as Logic
 import arcade
 import arcade.gui
 import random

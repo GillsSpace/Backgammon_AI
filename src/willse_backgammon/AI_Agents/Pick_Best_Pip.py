@@ -1,6 +1,6 @@
 import copy
 
-from Code.Main_Files.Logic import Board, Turn
+from Main_Files.Logic import Board, Turn
 
 
 def Full_Run(ActiveBoard: Board, ActiveTurn: Turn):

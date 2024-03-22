@@ -3,7 +3,7 @@ import random
 import sqlite3
 
 import numpy as np
-from Code.Main_Files.Logic import Board
+from Main_Files.Logic import Board
 
 
 class FastTurn:

@@ -1,10 +1,10 @@
 import random
 import time
 
-from Code.AI_Agents.Network_Type1 import Full_Run as Network_Type1_Full_Run
-from Code.AI_Agents.Pick_Best_Pip import Full_Run as PBP_Full_Run
-from Code.AI_Agents.TreeSearchI import Full_Run as TreeSearchI_Full_Run
-from Code.Main_Files.Logic import Board, Turn
+from AI_Agents.Network_Type1 import Full_Run as Network_Type1_Full_Run
+from AI_Agents.Pick_Best_Pip import Full_Run as PBP_Full_Run
+from AI_Agents.TreeSearchI import Full_Run as TreeSearchI_Full_Run
+from Main_Files.Logic import Board, Turn
 
 
 # Helper Classes:

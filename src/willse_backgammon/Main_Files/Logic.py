@@ -1,7 +1,7 @@
 import copy
 import random
 
-from Code.Main_Files.Graphics import createMoveStartSprites, GenerateMoveLineDataFast
+from Main_Files.Graphics import createMoveStartSprites, GenerateMoveLineDataFast
 
 
 # Helper Functions:

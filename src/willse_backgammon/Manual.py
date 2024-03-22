@@ -2,8 +2,8 @@ import multiprocessing
 import random
 import time
 
-import Code.Main_Files.AI as AI
-import Code.Main_Files.Logic as Logic
+import Main_Files.AI as AI
+import Main_Files.Logic as Logic
 
 
 # Testing Functions:

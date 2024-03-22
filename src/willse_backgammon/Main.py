@@ -1,8 +1,8 @@
 import arcade
 import arcade.gui
 
-import willse_backgammon.Main_Files.Logic as Logic
-import willse_backgammon.Main_Files.Views as Views
+import Main_Files.Logic as Logic
+import Main_Files.Views as Views
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
