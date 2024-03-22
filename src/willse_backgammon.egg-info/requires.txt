@@ -1,3 +1,2 @@
 arcade
 numpy
-sqlite3

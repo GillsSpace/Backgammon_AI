@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "willse_backgammon"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Wills Erda", email="willse06@gmail.com" },
 ]
@@ -19,7 +19,6 @@ classifiers = [
 dependencies = [
     "arcade",
     "numpy",
-    "sqlite3"
 ]
 
 [project.urls]
