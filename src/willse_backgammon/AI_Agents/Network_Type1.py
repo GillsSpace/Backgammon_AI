@@ -1,10 +1,12 @@
 import copy
 import random
 import sqlite3
-
 import numpy as np
-from Main_Files.Logic import Board
 
+try:
+    from Main_Files.Logic import Board
+except:
+    from willse_backgammon.Main_Files.Logic import Board
 
 class FastTurn:
     def __init__(self, player, roll) -> None:

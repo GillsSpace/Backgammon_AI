@@ -1,7 +1,10 @@
 import copy
 import random
 
-from Main_Files.Graphics import createMoveStartSprites, GenerateMoveLineDataFast
+try:
+    from Main_Files.Graphics import createMoveStartSprites, GenerateMoveLineDataFast
+except ModuleNotFoundError:
+    from willse_backgammon.Main_Files.Graphics import createMoveStartSprites, GenerateMoveLineDataFast
 
 
 # Helper Functions:

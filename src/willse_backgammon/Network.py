@@ -6,8 +6,12 @@ import time
 
 import numpy as np
 
-from Main_Files import AI as AI
-from Main_Files import Logic as Logic
+try:
+    from Main_Files import AI as AI
+    from Main_Files import Logic as Logic
+except ModuleNotFoundError:
+    from willse_backgammon.Main_Files import Logic as Logic
+    from willse_backgammon.Main_Files import AI as AI
 
 
 ### Initialize Database ###

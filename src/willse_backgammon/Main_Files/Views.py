@@ -2,10 +2,14 @@ import arcade
 import arcade.gui
 import random
 
-from Main_Files import AI as AI
-from Main_Files import Logic as Logic
-from Main_Files import Graphics as Graphics
-
+try:
+    from Main_Files import AI as AI
+    from Main_Files import Logic as Logic
+    from Main_Files import Graphics as Graphics
+except ModuleNotFoundError:
+    from willse_backgammon.Main_Files import AI as AI
+    from willse_backgammon.Main_Files import Logic as Logic
+    from willse_backgammon.Main_Files import Graphics as Graphics
 
 # Main Views:
 class MainMenuView(arcade.View):

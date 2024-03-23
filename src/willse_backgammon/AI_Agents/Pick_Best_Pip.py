@@ -1,7 +1,9 @@
 import copy
 
-from Main_Files.Logic import Board, Turn
-
+try:
+    from Main_Files.Logic import Board, Turn
+except ModuleNotFoundError:
+    from willse_backgammon.Main_Files.Logic import Board, Turn
 
 def Full_Run(ActiveBoard: Board, ActiveTurn: Turn):
     pipsList = []

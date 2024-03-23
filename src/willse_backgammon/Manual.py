@@ -2,9 +2,12 @@ import multiprocessing
 import random
 import time
 
-from Main_Files import AI as AI
-from Main_Files import Logic as Logic
-
+try:
+    from Main_Files import AI as AI
+    from Main_Files import Logic as Logic
+except ModuleNotFoundError:
+    from willse_backgammon.Main_Files import Logic as Logic
+    from willse_backgammon.Main_Files import AI as AI
 
 # Testing Functions:
 def RunGame(ai_type1, ai_type2, net_ident1=None, netIdent2=None, PrintData=False, Silent=False):

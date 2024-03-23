@@ -1,8 +1,12 @@
 import arcade
 import arcade.gui
 
-from Main_Files import Logic as Logic
-from Main_Files import Views as Views
+try:
+    from Main_Files import Logic as Logic
+    from Main_Files import Views as Views
+except ModuleNotFoundError:
+    from willse_backgammon.Main_Files import Logic as Logic
+    from willse_backgammon.Main_Files import Views as Views
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800

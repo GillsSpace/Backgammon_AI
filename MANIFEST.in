@@ -1,0 +1,5 @@
+# Add all files in src to distributions (necessary for images and databases)
+graft scr
+
+# Might want to use to remove the various pycache files
+# global-exclude *.py[cod] 
