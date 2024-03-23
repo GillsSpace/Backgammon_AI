@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "willse_backgammon"
-version = "0.0.3"
+version = "0.0.4"
 authors = [
   { name="Wills Erda", email="willse06@gmail.com" },
 ]

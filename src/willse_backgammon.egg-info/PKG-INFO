@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: willse_backgammon
-Version: 0.0.3
+Version: 0.0.4
 Summary: This package is a project I have created to learn python as well as the basics of Artificial Intelligence. It is still a Work in Progress.
 Author-email: Wills Erda <willse06@gmail.com>
 Project-URL: Homepage, https://github.com/GillsSpace/Backgammon_AI

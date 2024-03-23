@@ -6,8 +6,8 @@ import time
 
 import numpy as np
 
-import Main_Files.AI as AI
-import Main_Files.Logic as Logic
+from Main_Files import AI as AI
+from Main_Files import Logic as Logic
 
 
 ### Initialize Database ###

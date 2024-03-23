@@ -1,8 +1,8 @@
 import arcade
 import arcade.gui
 
-import Main_Files.Logic as Logic
-import Main_Files.Views as Views
+from Main_Files import Logic as Logic
+from Main_Files import Views as Views
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
