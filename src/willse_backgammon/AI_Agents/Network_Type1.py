@@ -1,12 +1,14 @@
-import copy
-import random
-import sqlite3
+import copy, random, sqlite3, pathlib, os
 import numpy as np
 
 try:
     from Main_Files.Logic import Board
 except:
     from willse_backgammon.Main_Files.Logic import Board
+
+
+PATH = pathlib.Path(__file__).parent.parent.parent
+os.chdir(PATH)
 
 class FastTurn:
     def __init__(self, player, roll) -> None:
@@ -83,7 +85,7 @@ class BackgammonNeuralNetwork:
 
 
 def fromSQLtoList(id, tableName):  # Return a list of wights and biases
-    PATH = "Code\AI_Agents\\Network_Type1_Data.sqlite3"
+    PATH = "willse_backgammon/AI_Agents/Data_Sets/Network_Type1_Data.db"
 
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()
@@ -142,7 +144,7 @@ def Full_Run(inputBoard: Board, inputTurn: FastTurn, networkIdent):
 # Database Management Code:
 
 def InitializeDataSet():
-    PATH = "Code\AI_Agents\\Network_Type1_Data.sqlite3"
+    PATH = "willse_backgammon\AI_Agents\\Network_Type1_Data.sqlite3"
 
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()

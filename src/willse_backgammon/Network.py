@@ -23,7 +23,7 @@ def runTournament(rounds, matchLength, runNumber, reInitialize=False):
     print(f"Beginning Tournament... ")
     st = time.time()
 
-    PATH = "Code\AI_Agents\\Network_Type1_Data_v3.sqlite3"
+    PATH = "willse_backgammon\AI_Agents\\Network_Type1_Data_v3.sqlite3"
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()
 
@@ -293,7 +293,7 @@ def create_data_set(game_number):
             if turn.player == 2 and board.positions[26] == 0:
                 output = [0,0,0,1]
 
-    with open('Code/AI_Agents/Data_sets/data_set_1.csv', 'a', newline='') as f:
+    with open('willse_backgammon/AI_Agents/Data_sets/data_set_1.csv', 'a', newline='') as f:
         writer = csv.writer(f)
         for positions in positions:
             writer.writerow([game_number,positions,output])

@@ -12,12 +12,12 @@ src/willse_backgammon.egg-info/entry_points.txt
 src/willse_backgammon.egg-info/requires.txt
 src/willse_backgammon.egg-info/top_level.txt
 src/willse_backgammon/AI_Agents/Network_Type1.py
-src/willse_backgammon/AI_Agents/Network_Type1_Data.sqlite3
 src/willse_backgammon/AI_Agents/Network_Type2.py
-src/willse_backgammon/AI_Agents/Network_Type2_Data.db
 src/willse_backgammon/AI_Agents/Pick_Best_Pip.py
 src/willse_backgammon/AI_Agents/TreeSearchI.py
 src/willse_backgammon/AI_Agents/__init__.py
+src/willse_backgammon/AI_Agents/Data_Sets/Network_Type1_Data.db
+src/willse_backgammon/AI_Agents/Data_Sets/Network_Type2_Data.db
 src/willse_backgammon/AI_Agents/Data_Sets/data_set_1.csv
 src/willse_backgammon/AI_Agents/__pycache__/Network_Type1.cpython-310.pyc
 src/willse_backgammon/AI_Agents/__pycache__/Pick_Best_Pip.cpython-310.pyc

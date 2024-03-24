@@ -1,6 +1,8 @@
+import sqlite3, copy, random, pathlib, os
 import numpy as np
-import sqlite3, copy, random
 
+PATH = pathlib.Path(__file__).parent.parent.parent
+os.chdir(PATH)
 
 def relu(x):
     return np.maximum(0, x)
@@ -21,7 +23,7 @@ def d_sigmoid(x):
 class BackgammonNeuralNetwork:
     def __init__(self, id, new=False, size=(28, 32, 32, 4)):
         self.id = id
-        self.location = "Network_Type2_Data.db"
+        self.location = "willse_backgammon\AI_Agents\Data_Sets\\Network_Type2_Data.db"
 
         if new:
             self.data_size = sum(size[i + 1] * (size[i] + 1) for i in range(len(size) - 1))  # Total weights and biases
@@ -66,7 +68,7 @@ class BackgammonNeuralNetwork:
 
 
 def initialize_data_set():
-    connection = sqlite3.connect("Network_Type2_Data.db")
+    connection = sqlite3.connect("willse_backgammon/AI_Agents/Data_Sets/Network_Type2_Data.db") 
     cursor = connection.cursor()
 
     try:
@@ -78,5 +80,5 @@ def initialize_data_set():
     connection.commit()
     print("Data Set Initialized")
 
-# initialize_data_set()  # Reset Database
+initialize_data_set()  # Reset Database
 # test = BackgammonNeuralNetwork("test")
