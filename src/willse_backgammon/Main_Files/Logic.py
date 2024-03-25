@@ -103,8 +103,7 @@ class Board:
         p2_pip += 25 * self.positions[25]
         return (p1_pip, p2_pip)
 
-    def makeMove(self, move, player,
-                 fromMakeMoves=False):  # Updates the board with an inputted move: (start point,end point) // also updates pip, lastPoint, and BearOff
+    def makeMove(self, move, player, fromMakeMoves=False):  # Updates the board with an inputted move: (start point,end point) // also updates pip, lastPoint, and BearOff
         if move[0] == 1001:
             endPointIndex = move[1] - 1
             self.positions[23 + player] -= 1
@@ -151,8 +150,7 @@ class Board:
             self.updateLastOccupiedPoint(player)
             self.updateBearOffStatus()
 
-    def makeMoves(self, moves, player,
-                  updateLineData=False):  # Updates the board with a series of moves: ((move1),(move2),ect.) // also updates pip, lastPoint, and BearOff
+    def makeMoves(self, moves, player, updateLineData=False):  # Updates the board with a series of moves: ((move1),(move2),ect.) // also updates pip, lastPoint, and BearOff
         MoveLineData = []
         if len(moves) > 0 and type(moves[0]) == int:
             self.makeMove(moves, player, True)

@@ -54,7 +54,11 @@ class MainMenuView(arcade.View):
 
         @one_player_button.event("on_click")
         def on_click_OnePlayer(event):
-            pass
+            self.window.MainBoard.setStartPositions()
+            self.window.settings["Agent2"] = "TS 1" if self.window.settings["Agent2"] == "Human" else \
+            self.window.settings["Agent2"]
+            startView = Start_1P_View(self.backgroundColor)
+            self.window.show_view(startView)
 
         @two_player_button.event("on_click")
         def on_click_TwoPlayer(event):
@@ -94,7 +98,7 @@ class SettingsView(arcade.View):
         self.manager.enable()
 
         Settings_label = arcade.gui.UILabel(100, 625, 1100, 150, "Settings", font_size=30, align="center", bold=True)
-        Help_label = arcade.gui.UILabel(100, 0, 1100, 20, "*Agent 1 is used for single player games*", font_size=10, align="center", bold=True)
+        Help_label = arcade.gui.UILabel(100, 0, 1100, 20, "*Agent 2 is used for single player games*", font_size=10, align="center", bold=True)
 
         Back_button = arcade.gui.UIFlatButton(15, 745, 75, 40, "Back")
         Quit_button = arcade.gui.UIFlatButton(15, 695, 75, 40, "Quit")
@@ -728,6 +732,174 @@ class EditAsString_View(arcade.View):
 
 
 # 1P Views:
+class Start_1P_View(arcade.View):
+
+    def __init__(self, backgroundColor):
+        super().__init__()
+        self.backgroundColor = backgroundColor
+
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
+        Back_button = arcade.gui.UIFlatButton(15, 745, 75, 40, "Back")
+        Quit_button = arcade.gui.UIFlatButton(15, 695, 75, 40, "Quit")
+        Roll_button = arcade.gui.UIFlatButton(400, 375, 125, 50, "Roll")
+        Settings_button = arcade.gui.UIFlatButton(700, 375, 125, 50, "Settings")
+
+        self.manager.add(Back_button)
+        self.manager.add(Quit_button)
+        self.manager.add(Roll_button)
+        self.manager.add(Settings_button)
+
+        @Back_button.event("on_click")
+        def on_click_back(event):
+            mainmenuView = MainMenuView(self.backgroundColor)
+            self.window.show_view(mainmenuView)
+
+        @Quit_button.event("on_click")
+        def on_click_Quit(event):
+            arcade.close_window()
+
+        @Roll_button.event("on_click")
+        def on_click_roll(event):
+            firstPlayer = random.randint(1, 2)
+
+            if firstPlayer == 1:    #Human
+                self.window.MainTurn = Logic.Turn(1, "Human", First=True)
+                self.window.MainTurn.updatePossibleMovesHumanFormat(self.window.MainBoard)
+                self.window.MainTurn.formSpriteList(self.window.MainBoard)
+                next_view = Human_1P_View(self.backgroundColor)
+                self.window.show_view(next_view)
+            else:                   #AI
+                self.window.MainTurn = Logic.Turn(2, self.window.settings["Agent2"], First=True)
+                self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
+                Moves = AI.Main(self.window.MainBoard, self.window.MainTurn, self.window.settings["Agent2"], self.window.settings["Network2 ID"])
+                self.window.MainBoard.makeMoves(Moves, 2, True)
+                if self.window.MainBoard.pip[1] == 0:
+                    messageBox = arcade.gui.UIMessageBox(width=300, height=150, message_text=("Game Over: \nAI Wins!"), callback=None, buttons=["Ok"])
+                    self.manager.add(messageBox)
+                self.window.MainTurn = Logic.Turn(1, "Human")
+                self.window.MainTurn.updatePossibleMovesHumanFormat(self.window.MainBoard)
+                self.window.MainTurn.formSpriteList(self.window.MainBoard)
+                next_view = Human_1P_View(self.backgroundColor)
+                self.window.show_view(next_view)
+
+        @Settings_button.event("on_click")
+        def on_click_Settings(event):
+            self.window.lastPage = self
+            settingsView = SettingsView(self.backgroundColor)
+            self.window.show_view(settingsView)
+
+    def on_show_view(self):
+        self.manager.enable()
+        arcade.set_background_color(self.backgroundColor)
+
+    def on_hide_view(self):
+        self.manager.disable()
+
+    def on_draw(self):
+        self.clear()
+        Graphics.drawBoard()
+        Graphics.drawPieces(self.window.MainBoard.positions, self.window.MainBoard.pip)
+        self.manager.draw()
+
+
+class Human_1P_View(arcade.View):
+    
+    def __init__(self, backgroundColor):
+        super().__init__()
+        self.backgroundColor = backgroundColor
+
+        self.step = "Main"
+
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
+        Exit_button = arcade.gui.UIFlatButton(15, 745, 75, 40, "Exit")
+        Quit_button = arcade.gui.UIFlatButton(15, 695, 75, 40, "Quit")
+        Settings_button = arcade.gui.UIFlatButton(1010, 15, 175, 40, "Settings")
+
+        Done_button = arcade.gui.UIFlatButton(1010, 510, 175, 40, "Done")
+
+        self.manager.add(Exit_button)
+        self.manager.add(Quit_button)
+        self.manager.add(Settings_button)
+        self.manager.add(Done_button)
+
+        @Exit_button.event("on_click")
+        def on_click_exit(event):
+            mainmenuView = MainMenuView(self.backgroundColor)
+            self.window.show_view(mainmenuView)
+
+        @Quit_button.event("on_click")
+        def on_click_Quit(event):
+            arcade.close_window()
+
+        @Settings_button.event("on_click")
+        def on_click_Settings(event):
+            self.window.lastPage = self
+            settingsView = SettingsView(self.backgroundColor)
+            self.window.show_view(settingsView)
+
+        @Done_button.event("on_click")
+        def on_click_done(event):
+            self.window.MainTurn = Logic.Turn(2, self.window.settings["Agent2"])
+            self.window.MainTurn.updatePossibleMovesStandardFormat(self.window.MainBoard)
+            Moves = AI.Main(self.window.MainBoard, self.window.MainTurn, self.window.settings["Agent2"], self.window.settings["Network2 ID"])
+            self.window.MainBoard.makeMoves(Moves, 2, True)
+            if self.window.MainBoard.pip[1] == 0:
+                messageBox = arcade.gui.UIMessageBox(width=300, height=150, message_text=("Game Over: \nAI Wins!"), callback=None, buttons=["Ok"])
+                self.manager.add(messageBox)
+            self.window.MainTurn = Logic.Turn(1, "Human")
+            self.window.MainTurn.updatePossibleMovesHumanFormat(self.window.MainBoard)
+            self.window.MainTurn.formSpriteList(self.window.MainBoard)
+
+    def on_show_view(self):
+        self.manager.enable()
+        arcade.set_background_color(self.backgroundColor)
+
+    def on_hide_view(self):
+        self.manager.disable()
+
+    def on_draw(self):
+        self.clear()
+        self.manager.draw()
+        Graphics.drawBoard()
+        arcade.draw_rectangle_filled(601, 401, 12, 762, Graphics.darkCheckerColor)
+        Graphics.drawPieces(self.window.MainBoard.positions, self.window.MainBoard.pip)
+        Graphics.drawDice(self.window.MainTurn.roll[0], self.window.MainTurn.roll[1], self.window.MainTurn.unused_dice)
+        Graphics.drawTurnMain(
+            self.window.MainTurn.sprites_move_start) if self.step == "Main" else Graphics.drawTurnBranch(
+            self.window.MainTurn.sprite_active, self.window.MainTurn.sprites_move_end)
+        if self.window.MainBoard.MoveLineData != None:
+            Graphics.DrawMoveLines(self.window.MainBoard.MoveLineData)
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+        if self.step == "Main":
+            clicked_sprite = arcade.get_sprites_at_point((x, y), self.window.MainTurn.sprites_move_start)
+            if clicked_sprite != []:
+                self.window.MainTurn.sprite_active = clicked_sprite[0]
+                self.window.MainTurn.sprites_move_end = Graphics.createMoveEndSprites(
+                    self.window.MainTurn.sprite_active, self.window.MainBoard)
+                self.step = "Branch"
+
+        elif self.step == "Branch":
+            self.step = "Main"
+            # When a possible sub-move sprite is clicked:
+            clicked_sprite = arcade.get_sprites_at_point((x, y), self.window.MainTurn.sprites_move_end)
+            if clicked_sprite != []:
+                self.window.MainBoard.makeMove((self.window.MainTurn.sprite_active.move[0], clicked_sprite[0].pos), 1)
+                if self.window.MainBoard.pip[0] == 0:
+                    pass
+                    # TO DO: add game over logic here
+                roll = Logic.fromMoveToDie(self.window.MainTurn.sprite_active.move[0], clicked_sprite[0].pos,
+                                           self.window.MainTurn.unused_dice, 1)
+                self.window.MainTurn.unused_dice.remove(roll)
+                if len(self.window.MainTurn.unused_dice) > 0:
+                    self.window.MainTurn.updatePossibleMovesHumanFormat(self.window.MainBoard)
+                    self.window.MainTurn.formSpriteList(self.window.MainBoard)
+                else:
+                    self.window.MainTurn.sprites_move_start = arcade.SpriteList()
 
 
 # 2P Views:

@@ -115,7 +115,7 @@ def Full_Run(inputBoard: Board, inputTurn: Turn, suppressMultiProcessing=False):
     initialTurnSolutions = ReturnTurnSolutions(inputBoard, fastTurn)
     possiblePipDiffs = []
 
-    if len(initialTurnSolutions) < 32 or suppressMultiProcessing == True:
+    if len(initialTurnSolutions) < 48 or suppressMultiProcessing == True:
         for turnSolution in initialTurnSolutions:
             subTurnsList = []
             for roll in Data_rollOptions:
