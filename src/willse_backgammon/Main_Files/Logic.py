@@ -182,8 +182,7 @@ class Board:
         self.bearOffStatus[0] = True if (self.bearOffStatus[0]) or (self.lastPoints[0] > 18) else False
         self.bearOffStatus[1] = True if (self.bearOffStatus[1]) or (self.lastPoints[1] < 7) else False
 
-    def returnMovesForDie(self, die, player,
-                          isBiggestDieOrSecondMove):  # returns all move options a die can be used for in the current board state: [(moveOption1),(moveOption2),ect.]
+    def returnMovesForDie(self, die, player, isBiggestDieOrSecondMove):  # returns all move options a die can be used for in the current board state: [(moveOption1),(moveOption2),ect.]
         moveList = []
 
         def canMoveTo(point, player):
@@ -231,8 +230,7 @@ class Board:
 
         return moveList
 
-    def returnMoveSequences(self, player,
-                            roll):  # for a given roll returns list of moves sequences that result in unique board States: [((move1),(move2)),((move1),(move2)), ect.]
+    def returnMoveSequences(self, player, roll):  # for a given roll returns list of moves sequences that result in unique board States: [((move1),(move2)),((move1),(move2)), ect.]
         Sequences = []
         EndBoards = []
         if roll[0] != roll[1]:
@@ -333,8 +331,7 @@ class Turn:
         else:
             self.unused_dice = copy.deepcopy(self.roll)
 
-    def updatePossibleMovesHumanFormat(self,
-                                       Board: Board):  # updates self.currentPossibleMoves in Human playerType Format for use by Main Game Loop
+    def updatePossibleMovesHumanFormat(self, Board: Board):  # updates self.currentPossibleMoves in Human playerType Format for use by Main Game Loop
         # Human Format: [(startPoint,[possibleFirstEndPoint, possibleSecondEndPoint]), (1, [3, 5]), (12, [14]), (17, [19]), (19, [21, 23])]
         self.current_possible_moves = []
         if self.doubles_turn == True and len(self.unused_dice) > 0:
@@ -369,8 +366,7 @@ class Turn:
                     workingMovesList.append(move)
                 self.current_possible_moves = workingMovesList
 
-    def updatePossibleMovesStandardFormat(self,
-                                          Board: Board):  # updates self.currentPossibleMoves to full set of unique move sequences for use by AI programs
+    def updatePossibleMovesStandardFormat(self, Board: Board):  # updates self.currentPossibleMoves to full set of unique move sequences for use by AI programs
         self.current_possible_moves = Board.returnMoveSequences(self.player, self.roll)
 
     def formSpriteList(self, Board):  # creates and updates a sprit list for use by Main Game Loop
