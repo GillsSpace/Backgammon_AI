@@ -179,8 +179,8 @@ class Board:
                     break
 
     def updateBearOffStatus(self):  # Updates the self.bearOffStatus values based on current lastPoints
-        self.bearOffStatus[0] = True if (self.bearOffStatus[0]) or (self.lastPoints[0] > 18) else False
-        self.bearOffStatus[1] = True if (self.bearOffStatus[1]) or (self.lastPoints[1] < 7) else False
+        self.bearOffStatus[0] = True if (self.bearOffStatus[0]) or ((self.lastPoints[0] > 18) and (self.positions[24] == 0)) else False
+        self.bearOffStatus[1] = True if (self.bearOffStatus[1]) or ((self.lastPoints[1] < 7) and (self.positions[25] == 0)) else False
 
     def returnMovesForDie(self, die, player, isBiggestDieOrSecondMove):  # returns all move options a die can be used for in the current board state: [(moveOption1),(moveOption2),ect.]
         moveList = []
