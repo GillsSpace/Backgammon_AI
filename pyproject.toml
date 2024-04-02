@@ -19,6 +19,7 @@ classifiers = [
 dependencies = [
     "arcade",
     "numpy",
+    "pandas",
 ]
 
 [project.urls]
