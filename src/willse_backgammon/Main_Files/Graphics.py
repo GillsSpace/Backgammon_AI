@@ -14,7 +14,7 @@ gear_icon = arcade.load_texture("willse_backgammon/Images/gear_icon.png")
 exit_icon = arcade.load_texture("willse_backgammon/Images/exit_icon.png")
 quit_icon = arcade.load_texture("willse_backgammon/Images/quit_icon.png")
 
-delete_icon = arcade.load_texture("willse_backgammon/Images\delete_icon.png")
+delete_icon = arcade.load_texture("willse_backgammon/Images/delete_icon.png")
 darkPiece_icon = arcade.load_texture("willse_backgammon/Images/darkPiece.png")
 lightPiece_icon = arcade.load_texture("willse_backgammon/Images/lightPiece.png")
 restart_icon = arcade.load_texture("willse_backgammon/Images/restart_icon.png")

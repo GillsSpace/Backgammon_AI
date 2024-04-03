@@ -14,7 +14,7 @@ You can install this project using pip:
     
 ## Run Locally
 
-After Intsallation, you can run the main application with the following command from terminal:
+After Installation, you can run the main application with the following command from terminal:
 
 ```bash
   > willse_backgammon_run
@@ -24,7 +24,7 @@ After Intsallation, you can run the main application with the following command 
 ## Features
 
 - Two Player, Single Player, and Simulation Modes
-- Multiple AI modles
-- Currently v0.0.1
+- Multiple AI models
+- Currently v0.0.2
 
 
