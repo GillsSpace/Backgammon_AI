@@ -140,36 +140,10 @@ def TestAIMoveUpdates(Board: Logic.Board, player, roll):
     Turn.updatePossibleMovesAI(Board, player)
     print(f"PossibleMoves = {Turn.current_possible_moves}")
 
-def test():
-    df = pd.read_csv("willse_backgammon/AI_Agents/Data_Sets/data_set_1.csv")
-    data = np.array(df)
-
-    print(df.head()) 
-    print(data.shape)
-    
-    m, n = data.shape
-    np.random.shuffle(data)
-
-    data_dev = data[0:1000].T
-    Y_dev = data_dev[2]
-    Y_dev = Y_dev.strip("][").split(", ")
-    print(Y_dev.shape)
-    X_dev = data_dev[1]
-    print(X_dev.shape)
-    X_dev = X_dev / 255.0
-
-    data_train = data[1000:m].T
-    Y_train = data_train[0]
-    X_train = data_train[1:n]
-    X_train = X_train / 255.0
-
-
-
-
 Board = Logic.Board()
 
 ##### Current Test Code #####
 
 if __name__ == "__main__":
-    test()
+    pass
     # RunGamesMulti("Network", "TS1", 1000, netIdent1="V1.0-NVT-A1-100", netIdent2="V1.0-NVT-A600")
