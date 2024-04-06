@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: willse_backgammon
-Version: 0.0.1
+Version: 0.0.2
 Summary: This package is a project I have created to learn python as well as the basics of Artificial Intelligence. It is still a Work in Progress.
 Author-email: Wills Erda <willse06@gmail.com>
 Project-URL: Homepage, https://github.com/GillsSpace/Backgammon_AI
@@ -11,6 +11,7 @@ Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 Requires-Dist: arcade
 Requires-Dist: numpy
+Requires-Dist: pandas
 
 
 # willse_backgammon
@@ -28,7 +29,7 @@ You can install this project using pip:
     
 ## Run Locally
 
-After Intsallation, you can run the main application with the following command from terminal:
+After Installation, you can run the main application with the following command from terminal:
 
 ```bash
   > willse_backgammon_run
@@ -38,7 +39,7 @@ After Intsallation, you can run the main application with the following command 
 ## Features
 
 - Two Player, Single Player, and Simulation Modes
-- Multiple AI modles
-- Currently v0.0.1
+- Multiple AI models
+- Currently v0.0.2
 
 

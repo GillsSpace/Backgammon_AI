@@ -1,7 +1,7 @@
 
 # willse_backgammon
 
-This project was created my me to practice and improve my python skils and to learn about nureal networks and machine learning. It is very much still a work in progress.
+This project was created my me to practice and improve my python skills and to learn about neral networks and machine learning. It is very much still a work in progress.
 
 
 ## Installation
@@ -14,7 +14,7 @@ You can install this project using pip:
     
 ## Run Locally
 
-After Intsallation, you can run the main application with the following command from terminal:
+After Installation, you can run the main application with the following command from terminal:
 
 ```bash
   > willse_backgammon_run
@@ -24,7 +24,7 @@ After Intsallation, you can run the main application with the following command 
 ## Features
 
 - Two Player, Single Player, and Simulation Modes
-- Multiple AI modles
-- Currently v0.0.1
+- Multiple AI models
+- Currently v0.0.2
 
 
