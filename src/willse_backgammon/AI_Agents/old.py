@@ -197,38 +197,44 @@ class BackgammonNN(nn.Module):
             nn.ReLU(),
             nn.Linear(64,64),
             nn.ReLU(),
-            nn.Linear(64,4),
-            nn.Sigmoid(),
-            nn.Softmax(dim=0)
+            nn.Linear(64,1),
+            nn.Sigmoid()
         )
 
         # Define Traces:
         traces = { param : torch.zeros_like(param) for param in self.forward_pass.parameters()}
         
-        self.last_prediction = None
+        self.last_prediction = [0,0]
 
     def forward(self, x):
         return self.forward_pass(x)
 
+def update_trace(trace, player, new_pred, decay_rate):
+    value = trace[0] if player == 1 else trace[1]
+    value = new_pred + (value*decay_rate)
+    if player == 1:
+        trace[0] = value
+    else:
+        trace[1] = value
+
+    return trace
+
 def chose_move(model:BackgammonNN,base_board:Board,possible_moves,player):
-    print("Choosing a move...")
     moveValues = []
 
-    # Evaluate all posable moves and identify predicted odd of winning:
     for moveSet in possible_moves:
         testBoard = copy.deepcopy(base_board)
         testBoard.makeMoves(moveSet,player)
         output = model.forward(torch.tensor(testBoard.positions,dtype=torch.float32).to(DEVICE))
-        p1_win = output[0] + output[1]
-        p2_win = output[2] + output[3]
-        moveValues.append(p1_win if player == 1 else p2_win)
-        # moveValues.append(output if player == 1 else 1-output)
+        # p1_win = output[0] + output[1]
+        # p2_win = output[2] + output[3]
+        # moveValues.append(p1_win if player == 1 else p2_win)
 
-    # If no possible moves return empty move and valuation for current board (same as next board):
+        moveValues.append(output if player == 1 else 1-output)
+
     if len(moveValues) == 0:
-        return [], model.forward(torch.tensor(base_board.positions,dtype=torch.float32).to(DEVICE))
+        return [], None
 
-    # Select move using greedy algorithm:
     maxValue = max(moveValues)
     indexOfMove = moveValues.index(maxValue)
     finalMoveSelection = possible_moves[indexOfMove]
@@ -251,15 +257,14 @@ def train(model: BackgammonNN,loss_fn,optimizer,discount_rate=1):
 
     # Generate and make moves
     moves, pred = chose_move(model,board,turn.current_possible_moves,current_player)
+    model.last_prediction[turn.player-1] = pred
 
     print_backgammon_board(board.positions)
-    print(f"Player: {current_player} // Move: {moves}")
-    print(f"Valuation: {pred}")
+    print(f"Player: {current_player} // Move: {moves} // Valuation: {pred}")
     print("")
 
     board.makeMoves(moves,current_player)
     current_player = 2 if current_player == 1 else 1
-    model.last_prediction = torch.clone(pred)
 
     # Initialize second turn
     turn = Turn(current_player,"AI",First=True)
@@ -268,41 +273,41 @@ def train(model: BackgammonNN,loss_fn,optimizer,discount_rate=1):
     # Generate and make moves
     moves, pred = chose_move(model,board,turn.current_possible_moves,current_player)
 
+    model.last_prediction[turn.player-1] = pred
+
     print_backgammon_board(board.positions)
-    print(f"Player: {current_player} // Move: {moves}")
-    print(f"Valuation: {pred}")
+    print(f"Player: {current_player} // Move: {moves} // Valuation: {pred}")
     print("")
 
     board.makeMoves(moves,current_player)
     current_player = 2 if current_player == 1 else 1
-    model.last_prediction = torch.clone(pred)
 
     while not game_over:
 
         #Update Model:
         other_player = 2 if current_player == 1 else 1
 
-        # print(f"target: {model.last_prediction[other_player-1]}")
-        # print(f"Value: { model.last_prediction[current_player-1]}")
+        print(f"target: {model.last_prediction[other_player-1]}")
+        print(f"Value: { model.last_prediction[current_player-1]}")
 
-        # td_error = (discount_rate)*(model.last_prediction[other_player-1]) - model.last_prediction[current_player-1]
+        td_error = (discount_rate)*(model.last_prediction[other_player-1]) - model.last_prediction[current_player-1]
 
-        # print(td_error)
-        # print(td_error.requires_grad)
+        print(td_error)
+        print(td_error.requires_grad)
 
-        # for param in model.parameters():
-        #     print(param)
-        #     print(param.grad)
+        for param in model.parameters():
+            print(param)
+            print(param.grad)
 
-        # td_error.backward(retain_graph=True)
+        td_error.backward(retain_graph=True)
 
-        # # optimizer = torch.optim.SGD(model.parameters(),lr=0.001)
-        # # optimizer.zero_grad()
+        # optimizer = torch.optim.SGD(model.parameters(),lr=0.001)
+        # optimizer.zero_grad()
 
-        # print(td_error)
-        # for param in model.parameters():
-        #     print(param)
-        #     print(param.grad)
+        print(td_error)
+        for param in model.parameters():
+            print(param)
+            print(param.grad)
 
         
 
@@ -313,34 +318,14 @@ def train(model: BackgammonNN,loss_fn,optimizer,discount_rate=1):
         # Generate and make moves
         moves, pred = chose_move(model,board,turn.current_possible_moves,current_player)
 
-        print((moves,pred))
 
-        loss:torch.Tensor = loss_fn(model.last_prediction,torch.clone(pred).detach())
 
-        print(loss)
+        model.last_prediction[turn.player-1] = pred
 
-        loss.backward()
-        
-
-        for param in model.parameters():
-            print(param)
-            print(param.grad)
-            print(param.shape)
-
-        optimizer.step()
 
         print_backgammon_board(board.positions)
-        print(f"Player: {current_player} // Move: {moves}")
-        print(f"Valuation: {pred}")
-        print(f"Previous Valuation: {model.last_prediction}")
-        print(f"Loss: {loss}")
-        for param in model.parameters():
-            print(param)
-            print(param.grad)
-            print(param.shape)
+        print(f"Player: {current_player} // Move: {moves} // Valuation: {pred}")
         print("")
-
-        optimizer.zero_grad()
 
         board.makeMoves(moves,current_player)
 
@@ -348,14 +333,7 @@ def train(model: BackgammonNN,loss_fn,optimizer,discount_rate=1):
         game_over = True if board.pip[current_player-1] == 0 else False
         current_player = 2 if current_player == 1 else 1
 
-        model.last_prediction = torch.clone(pred)
-
 def main():
-
-    torch.manual_seed(143728)
-    random.seed(143728)
-
-    torch.autograd.set_detect_anomaly(True)
     
     # Creates a temporary log file for debugging
     import sys
@@ -363,6 +341,4 @@ def main():
 
     # Initialize the neural network
     model = BackgammonNN().to(DEVICE)
-    loss_fn = nn.MSELoss()
-    optimizer = torch.optim.SGD(model.parameters(),0.001)
-    train(model,loss_fn,optimizer)
+    train(model,None,None)
