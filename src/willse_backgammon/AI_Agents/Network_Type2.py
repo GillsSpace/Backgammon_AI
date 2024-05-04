@@ -13,7 +13,8 @@ try:
 except:
     from willse_backgammon.Main_Files.Logic import Board,Turn
 
-DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+DEVICE = "cpu"
+# DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
 #Creating Network:
 class BackgammonNN(nn.Module):
@@ -30,9 +31,8 @@ class BackgammonNN(nn.Module):
             nn.Sigmoid()
         )
 
-        # Define Traces:
+        # Define Traces and Last Prediction:
         self.traces = {name: torch.zeros_like(param) for name, param in self.named_parameters()}
-        
         self.last_prediction = None
 
     def forward(self, x):
@@ -68,3 +68,10 @@ class BackgammonNN(nn.Module):
     # Before calling this function, ensure that backward() has been called on the loss
         for (name, param), trace in zip(self.named_parameters(), self.traces.values()):
             trace.data = param.grad.data + lambda_ * trace.data.to(DEVICE)
+
+        # for (name, param) in self.named_parameters():
+        #     trace.data[name] = param.grad.data + lambda_ * trace.data[name].to(DEVICE)
+        
+    def episode_reset(self):
+        self.traces = {name: torch.zeros_like(param) for name, param in self.named_parameters()}
+        self.last_prediction = None

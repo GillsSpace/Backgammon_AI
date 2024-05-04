@@ -188,11 +188,19 @@ def print_backgammon_board(positions):
     print(f"|----|----+----+----+----+----+----|----|----+----+----+----+----+----|----|")
     print(f"|    | 24   23   22   21   20   19 |    | 18   17   16   15   14   13 |    |")
 
-def train(model:BackgammonNN, loss_fn, optimizer, lambda_=0.8, alpha=0.01):
+def single_training_game_verbose(model:BackgammonNN, lambda_=0.8, alpha=0.01):
 
     #Debugging info:
     player_symbols = ["X","0"]
     print(f"Starting Training Run...")
+    print("Initial Parameters")
+    for name, param in model.named_parameters():
+        print(f"Name: {name}")
+        print(f"     Param: {param}")
+
+    initial_params = {name:torch.clone(param) for name,param in model.named_parameters()}
+
+    model.episode_reset()
 
     # Initialize board and game variables:
     board = Board()
@@ -216,7 +224,173 @@ def train(model:BackgammonNN, loss_fn, optimizer, lambda_=0.8, alpha=0.01):
     print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
     print(f"Valuation:          {current_prediction}")
     print(f"Previous Valuation: {model.last_prediction}")
+
+    print("------------------------------------------------------------------------------------------")
+
+    board.makeMoves(chosen_moves,current_player)
+    current_player = 2 if current_player == 1 else 1
+    model.last_prediction = current_prediction
+
+    while not game_over:
+
+        print("------------------------------------------------------------------------------------------")
+        print("Starting Turn...")
+        print(f"Player: {current_player} ({player_symbols[current_player-1]})")
+        print_backgammon_board(board.positions)
+
+        # Initialize turn
+        turn = Turn(current_player,"AI")
+        turn.updatePossibleMovesStandardFormat(board)
+
+        # Generate and prediction:
+        chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
+
+        td_error = (current_prediction.detach() - model.last_prediction)
+
+        td_error.backward()
+        model.update_eligibility_traces(lambda_)
+
+        for name, param in model.named_parameters():
+            trace = model.traces[name]
+            param.data += alpha * td_error * trace.data
+
+        # Debug Info:
+        print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
+        print(f"Valuation:          {current_prediction}")
+        print(f"Previous Valuation: {model.last_prediction}")
+        print(f"TD_error:           {td_error}")
+
+        print("------------------------------------------------------------------------------------------")
+
+        board.makeMoves(chosen_moves,current_player)
+
+        # Checks if game is over and transitions to new turn
+        game_over = True if board.pip[current_player-1] == 0 else False
+        current_player = 2 if current_player == 1 else 1
+
+        model.last_prediction = current_prediction
+        model.zero_grad()
+
+    print("------------------------------------------------------------------------------------------")
+    print("------------------------------------------------------------------------------------------")
+    print("Final Update:")
+    print(f"Winner = {1 if current_player == 2 else 2}")
+    print("Final Board:")
+    print_backgammon_board(board.positions)
+
+    reward = torch.zeros(1).to(DEVICE) if current_player == 1 else torch.ones(1).to(DEVICE)
+    td_error = (reward.detach() - model.last_prediction)
+
+    td_error.backward()
+    model.update_eligibility_traces(lambda_)
+
+    for name, param in model.named_parameters():
+        trace = model.traces[name]
+        param.data += alpha * td_error * trace.data
+
+    print(f"Reward:             {reward}")
+    print(f"Previous Valuation: {model.last_prediction}")
     print(f"TD_error:           {td_error}")
+
+    print("Final Parameters")
+    for name, param in model.named_parameters():
+        print(f"Name: {name}")
+        print(f"     Param: {param}")
+
+    delta_params = {name:initial_params.get(name) - param_i for name,param_i in model.named_parameters()}
+
+    print("Change in Parameters")
+    for name, param in delta_params.items():
+        print(f"Name: {name}")
+        print(f"     Delta: {param}")
+
+    print("------------------------------------------------------------------------------------------")
+    
+def single_training_game_subprocess(model:BackgammonNN, lambda_=0.8, alpha=0.01):
+
+    # Resets trace and previous prediction variables:
+    model.episode_reset()
+    
+    # Initialize board and game variables:
+    board = Board()
+    board.setStartPositions()
+    current_player = random.randint(1,2)
+    game_over = False
+
+    # Initialize first turn
+    turn = Turn(current_player,"AI",First=True)
+    turn.updatePossibleMovesStandardFormat(board)
+
+    # Generate and make moves
+    chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
+    board.makeMoves(chosen_moves,current_player)
+
+    # Transitions to next state and player:
+    current_player = 2 if current_player == 1 else 1
+    model.last_prediction = current_prediction
+
+    while not game_over:
+        # Initialize turn
+        turn = Turn(current_player,"AI")
+        turn.updatePossibleMovesStandardFormat(board)
+
+        # Generates move and prediction:
+        chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
+
+        # Calculates error and eligibility traces:
+        td_error = (current_prediction.detach() - model.last_prediction)
+        td_error.backward()
+        model.update_eligibility_traces(lambda_)
+
+        # Updates parameters:
+        for name, param in model.named_parameters():
+            trace = model.traces[name]
+            param.data += alpha * td_error * trace.data
+
+        # Makes a move, checks if game is over, and transitions to new turn:
+        board.makeMoves(chosen_moves,current_player)
+        game_over = True if board.pip[current_player-1] == 0 else False
+        current_player = 2 if current_player == 1 else 1
+        model.last_prediction = current_prediction
+        model.zero_grad()
+
+    # Performs final update using actual reward:
+    reward = torch.zeros(1).to(DEVICE) if current_player == 1 else torch.ones(1).to(DEVICE) # current_player = loser
+    td_error = reward.detach() - model.last_prediction
+    td_error.backward()
+    model.update_eligibility_traces(lambda_)
+
+    for name, param in model.named_parameters():
+        trace = model.traces[name]
+        param.data += alpha * td_error * trace.data
+
+def single_exhibition_game_verbose(model:BackgammonNN):
+
+    player_symbols = ["X","0"]
+    print(f"Starting Exhibition Game...")
+
+    # Initialize board and game variables:
+    board = Board()
+    board.setStartPositions()
+    current_player = random.randint(1,2)
+    game_over = False
+
+    print("------------------------------------------------------------------------------------------")
+    print("Starting Turn...")
+    print(f"Player: {current_player} ({player_symbols[current_player-1]})")
+    print_backgammon_board(board.positions)
+
+    # Initialize first turn
+    turn = Turn(current_player,"AI",First=True)
+    turn.updatePossibleMovesStandardFormat(board)
+
+    # Generate and make moves
+    chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
+
+    # Debug Info:
+    print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
+    print(f"Valuation:          {current_prediction}")
+    print(f"Previous Valuation: {model.last_prediction}")
 
     print("------------------------------------------------------------------------------------------")
 
@@ -242,15 +416,6 @@ def train(model:BackgammonNN, loss_fn, optimizer, lambda_=0.8, alpha=0.01):
 
         td_error = current_prediction - model.last_prediction
 
-        model.zero_grad()
-        model.last_prediction.backward()
-
-        model.update_eligibility_traces(lambda_)
-
-        for name, param in model.named_parameters():
-            trace = model.traces[name]
-            param.data += alpha * td_error * trace.data
-
         # Debug Info:
         print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
         print(f"Valuation:          {current_prediction}")
@@ -268,21 +433,22 @@ def train(model:BackgammonNN, loss_fn, optimizer, lambda_=0.8, alpha=0.01):
         model.last_prediction = to_be_next_prediction
 
     print("------------------------------------------------------------------------------------------")
+    print("------------------------------------------------------------------------------------------")
+
+    winner = 1 if current_player == 2 else 2
+
     print("Final Update:")
-    print(f"Winner = {1 if current_player == 2 else 2}")
+    print(f"Winner = {winner}")
     print("Final Board:")
     print_backgammon_board(board.positions)
 
-    reward = torch.zeros(0) if current_player == 2 else torch.ones(0)
+    reward = torch.zeros(1).to(DEVICE) if winner == 2 else torch.ones(1).to(DEVICE)
     td_error = reward - model.last_prediction
 
-    model.zero_grad()
-    model.last_prediction.backward()
-
-    print(f"Reward: [{1 if current_player == 2 else 0}]")
+    print(f"Reward:             {reward}")
     print(f"Previous Valuation: {model.last_prediction}")
 
-    
+    return winner
 
 def main():
 
@@ -297,10 +463,23 @@ def main():
 
     # Initialize the neural network
     model = BackgammonNN().to(DEVICE)
-    loss_fn = nn.MSELoss()
-    optimizer = torch.optim.SGD(model.parameters(),0.001)
-    train(model,loss_fn,optimizer)
+
+    st = time.time()
+
+    single_training_game_verbose(model,0.7,0.1)
+
+    for k in range(1):
+        for i in range(10):
+            print(f"Starting Game {(k*100)+(i+1)}...")
+            single_training_game_subprocess(model,0.7,0.1)
+
+        single_training_game_verbose(model,0.7,0.1)
+
+    et = time.time()
+
+    print(f"Total elapsed time: {et-st}")
 
 if __name__ == "__main__":
-    DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+    DEVICE = "cpu"
+    # DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
     main()
