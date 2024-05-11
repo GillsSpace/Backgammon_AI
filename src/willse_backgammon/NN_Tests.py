@@ -139,18 +139,18 @@ def print_backgammon_board(positions):
     ja = "  O " if positions[14] > 2 else "  X " if positions[14] < -2 else "    "
     jb = "  O " if positions[13] > 2 else "  X " if positions[13] < -2 else "    "
     jc = "  O " if positions[12] > 2 else "  X " if positions[12] < -2 else "    "
-    k1 = "  O " if positions[23] > 1 else "  X " if positions[23] < -2 else "    "
-    k2 = "  O " if positions[22] > 1 else "  X " if positions[22] < -2 else "    "
-    k3 = "  O " if positions[21] > 1 else "  X " if positions[21] < -2 else "    "
-    k4 = "  O " if positions[20] > 1 else "  X " if positions[20] < -2 else "    "
-    k5 = "  O " if positions[19] > 1 else "  X " if positions[19] < -2 else "    "
-    k6 = "  O " if positions[18] > 1 else "  X " if positions[18] < -2 else "    "
-    k7 = "  O " if positions[17] > 1 else "  X " if positions[17] < -2 else "    "
-    k8 = "  O " if positions[16] > 1 else "  X " if positions[16] < -2 else "    "
-    k9 = "  O " if positions[15] > 1 else "  X " if positions[15] < -2 else "    "
-    ka = "  O " if positions[14] > 1 else "  X " if positions[14] < -2 else "    "
-    kb = "  O " if positions[13] > 1 else "  X " if positions[13] < -2 else "    "
-    kc = "  O " if positions[12] > 1 else "  X " if positions[12] < -2 else "    "
+    k1 = "  O " if positions[23] > 1 else "  X " if positions[23] < -1 else "    "
+    k2 = "  O " if positions[22] > 1 else "  X " if positions[22] < -1 else "    "
+    k3 = "  O " if positions[21] > 1 else "  X " if positions[21] < -1 else "    "
+    k4 = "  O " if positions[20] > 1 else "  X " if positions[20] < -1 else "    "
+    k5 = "  O " if positions[19] > 1 else "  X " if positions[19] < -1 else "    "
+    k6 = "  O " if positions[18] > 1 else "  X " if positions[18] < -1 else "    "
+    k7 = "  O " if positions[17] > 1 else "  X " if positions[17] < -1 else "    "
+    k8 = "  O " if positions[16] > 1 else "  X " if positions[16] < -1 else "    "
+    k9 = "  O " if positions[15] > 1 else "  X " if positions[15] < -1 else "    "
+    ka = "  O " if positions[14] > 1 else "  X " if positions[14] < -1 else "    "
+    kb = "  O " if positions[13] > 1 else "  X " if positions[13] < -1 else "    "
+    kc = "  O " if positions[12] > 1 else "  X " if positions[12] < -1 else "    "
     l1 = "  O " if positions[23] > 0 else "  X " if positions[23] < 0 else "    "
     l2 = "  O " if positions[22] > 0 else "  X " if positions[22] < 0 else "    "
     l3 = "  O " if positions[21] > 0 else "  X " if positions[21] < 0 else "    "
@@ -175,13 +175,13 @@ def print_backgammon_board(positions):
     print(f"|{z4}|{a1} {a2} {a3} {a4} {a5} {a6}|    |{a7} {a8} {a9} {aa} {ab} {ac}|    |")
     print(f"|    |{b1} {b2} {b3} {b4} {b5} {b6}|    |{b7} {b8} {b9} {ba} {bb} {bc}|    |")
     print(f"|    |{c1} {c2} {c3} {c4} {c5} {c6}|    |{c7} {c8} {c9} {ca} {cb} {cc}|    |")
-    print(f"|    |{d1} {d2} {d3} {d4} {d5} {d6}|    |{d7} {d8} {d9} {da} {db} {dc}|    |")
+    print(f"|    |{d1} {d2} {d3} {d4} {d5} {d6}| O  |{d7} {d8} {d9} {da} {db} {dc}|    |")
     print(f"|    |{e1} {e2} {e3} {e4} {e5} {e6}|{z2}|{e7} {e8} {e9} {ea} {eb} {ec}|    |")
     print(f"|    |{f1} {f2} {f3} {f4} {f5} {f6}|    |{f7} {f8} {f9} {fa} {fb} {fc}|    |")
     print(f"|----|                             |    |                             |----|")
     print(f"|    |{g1} {g2} {g3} {g4} {g5} {g6}|    |{g7} {g8} {g9} {ga} {gb} {gc}|    |")
     print(f"|    |{h1} {h2} {h3} {h4} {h5} {h6}|{z1}|{h7} {h8} {h9} {ha} {hb} {hc}|    |")
-    print(f"|    |{i1} {i2} {i3} {i4} {i5} {i6}|    |{i7} {i8} {i9} {ia} {ib} {ic}|    |")
+    print(f"|    |{i1} {i2} {i3} {i4} {i5} {i6}| X  |{i7} {i8} {i9} {ia} {ib} {ic}|    |")
     print(f"|    |{j1} {j2} {j3} {j4} {j5} {j6}|    |{j7} {j8} {j9} {ja} {jb} {jc}|    |")
     print(f"|    |{k1} {k2} {k3} {k4} {k5} {k6}|    |{k7} {k8} {k9} {ka} {kb} {kc}|    |")
     print(f"|{z3}|{l1} {l2} {l3} {l4} {l5} {l6}|    |{l7} {l8} {l9} {la} {lb} {lc}|    |")
@@ -196,7 +196,7 @@ def single_training_game_verbose(model:BackgammonNN, lambda_=0.8, alpha=0.01):
     print("Initial Parameters")
     for name, param in model.named_parameters():
         print(f"Name: {name}")
-        print(f"     Param: {param}")
+        print(param)
 
     initial_params = {name:torch.clone(param) for name,param in model.named_parameters()}
 
@@ -218,7 +218,7 @@ def single_training_game_verbose(model:BackgammonNN, lambda_=0.8, alpha=0.01):
     turn.updatePossibleMovesStandardFormat(board)
 
     # Generate and make moves
-    chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
+    chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
 
     # Debug Info:
     print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
@@ -243,16 +243,16 @@ def single_training_game_verbose(model:BackgammonNN, lambda_=0.8, alpha=0.01):
         turn.updatePossibleMovesStandardFormat(board)
 
         # Generate and prediction:
-        chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
+        chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
 
-        td_error = (current_prediction.detach() - model.last_prediction)
+        td_error:torch.Tensor = (current_prediction.detach() - model.last_prediction)
 
         td_error.backward()
         model.update_eligibility_traces(lambda_)
 
         for name, param in model.named_parameters():
             trace = model.traces[name]
-            param.data += alpha * td_error * trace.data
+            param.data -= alpha * td_error * trace.data
 
         # Debug Info:
         print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
@@ -279,14 +279,14 @@ def single_training_game_verbose(model:BackgammonNN, lambda_=0.8, alpha=0.01):
     print_backgammon_board(board.positions)
 
     reward = torch.zeros(1).to(DEVICE) if current_player == 1 else torch.ones(1).to(DEVICE)
-    td_error = (reward.detach() - model.last_prediction)
+    td_error:torch.Tensor = (reward.detach() - model.last_prediction)
 
     td_error.backward()
     model.update_eligibility_traces(lambda_)
 
     for name, param in model.named_parameters():
         trace = model.traces[name]
-        param.data += alpha * td_error * trace.data
+        param.data -= alpha * td_error * trace.data
 
     print(f"Reward:             {reward}")
     print(f"Previous Valuation: {model.last_prediction}")
@@ -295,14 +295,14 @@ def single_training_game_verbose(model:BackgammonNN, lambda_=0.8, alpha=0.01):
     print("Final Parameters")
     for name, param in model.named_parameters():
         print(f"Name: {name}")
-        print(f"     Param: {param}")
+        print(param)
 
     delta_params = {name:initial_params.get(name) - param_i for name,param_i in model.named_parameters()}
 
     print("Change in Parameters")
     for name, param in delta_params.items():
         print(f"Name: {name}")
-        print(f"     Delta: {param}")
+        print(param)
 
     print("------------------------------------------------------------------------------------------")
     
@@ -385,7 +385,7 @@ def single_exhibition_game_verbose(model:BackgammonNN):
     turn.updatePossibleMovesStandardFormat(board)
 
     # Generate and make moves
-    chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
+    chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
 
     # Debug Info:
     print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
@@ -410,7 +410,7 @@ def single_exhibition_game_verbose(model:BackgammonNN):
         turn.updatePossibleMovesStandardFormat(board)
 
         # Generate and prediction:
-        chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
+        chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
         to_be_next_prediction = torch.clone(current_prediction)
         current_prediction.detach()
 
@@ -459,21 +459,33 @@ def main():
     
     # Creates a temporary log file for debugging
     import sys
-    sys.stdout = open('willse_backgammon/AI_Agents/Data_Sets/output.txt','wt')
+    sys.stdout = open('willse_backgammon/AI_Agents/Data_Sets/Logs/output_1.txt','wt')
 
     # Initialize the neural network
     model = BackgammonNN().to(DEVICE)
 
     st = time.time()
 
-    single_training_game_verbose(model,0.7,0.1)
+    print("#############################################")
+    print("#")
+    print(f"#   Simulation Run 001: First Test")
+    print("#")
+    print("#############################################")
 
-    for k in range(1):
-        for i in range(10):
+    single_training_game_verbose(model,0.7,0.001)
+
+    for k in range(5):
+        for i in range(5):
             print(f"Starting Game {(k*100)+(i+1)}...")
-            single_training_game_subprocess(model,0.7,0.1)
+            single_training_game_subprocess(model,0.7,0.001)
 
-        single_training_game_verbose(model,0.7,0.1)
+        print("#############################################")
+        print("#")
+        print(f"#   Test Game: {k+1}")
+        print("#")
+        print("#############################################")
+
+        single_training_game_verbose(model,0.7,0.001)
 
     et = time.time()
 

@@ -43,7 +43,7 @@ class BackgammonNN(nn.Module):
         y = self.forward_pass(X)
         return y
     
-    def chose_move(self,base_board:Board,possible_moves,player):
+    def chose_move(self,base_board:Board,possible_moves,player,verbose=False):
         moveValues = []
 
         # Evaluate all posable moves and identify predicted odd of winning:
@@ -52,6 +52,9 @@ class BackgammonNN(nn.Module):
             testBoard.makeMoves(moveSet,player)
             output = self.forward_on_board(testBoard,2 if player == 1 else 1)
             moveValues.append(output if player == 1 else 1-output)
+
+            if verbose:
+                print(f"Move Option: {moveSet} ----> {output[0]}")
 
         # If no possible moves return empty move and valuation for current board (same as next board):
         if len(moveValues) == 0:
