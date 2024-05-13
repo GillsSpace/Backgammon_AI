@@ -10,10 +10,12 @@ try:
     from Main_Files import AI as AI
     from Main_Files.Logic import Board, Turn
     from AI_Agents.Network_Type2 import BackgammonNN
+    from Manual import RunGames
 except ModuleNotFoundError:
     from willse_backgammon.Main_Files.Logic import Board, Turn
     from willse_backgammon.Main_Files import AI as AI
     from willse_backgammon.AI_Agents.Network_Type2 import BackgammonNN
+    from willse_backgammon.Manual import RunGames
 
 # Code:
 def print_backgammon_board(positions):
@@ -450,34 +452,43 @@ def single_exhibition_game_verbose(model:BackgammonNN):
 
     return winner
 
-def main():
+def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
 
     torch.manual_seed(143728)
     random.seed(143728)
-
     torch.autograd.set_detect_anomaly(True)
-    
+
     # Creates a temporary log file for debugging
     import sys
-    sys.stdout = open('willse_backgammon/AI_Agents/Data_Sets/Logs/output_1.txt','wt')
+    sys.stdout = open('willse_backgammon/AI_Agents/Data_Sets/Logs/output_temp.txt','wt')
 
-    # Initialize the neural network
+    # Model Id: 00-0000-0000 (Network Version, Flags, Id)
     model = BackgammonNN().to(DEVICE)
+    path = ""
+    net_id = model_id[0:2]
+
+    if net_id == "01":
+        path = "willse_backgammon/AI_Agents/Saved_NNs/" + model_id + ".pt"
+        try: 
+            model.load_state_dict(torch.load(path))
+        except:
+            open(path,"x")
 
     st = time.time()
 
     print("#############################################")
     print("#")
-    print(f"#   Simulation Run 001: First Test")
+    print(f"#   Simulation Run 001: First Loaded Model")
+    print(f"#   Model: {model_id}")
     print("#")
     print("#############################################")
 
-    single_training_game_verbose(model,0.7,0.001)
+    single_training_game_verbose(model,trace_decay_rate,learning_rate)
 
-    for k in range(5):
-        for i in range(5):
+    for k in range(300):
+        for i in range(100):
             print(f"Starting Game {(k*100)+(i+1)}...")
-            single_training_game_subprocess(model,0.7,0.001)
+            single_training_game_subprocess(model,trace_decay_rate,learning_rate)
 
         print("#############################################")
         print("#")
@@ -485,7 +496,11 @@ def main():
         print("#")
         print("#############################################")
 
-        single_training_game_verbose(model,0.7,0.001)
+        single_training_game_verbose(model,trace_decay_rate,learning_rate)
+
+        RunGames("TS1",)
+
+    torch.save(model.state_dict,path)
 
     et = time.time()
 
@@ -494,4 +509,4 @@ def main():
 if __name__ == "__main__":
     DEVICE = "cpu"
     # DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-    main()
+    main("01-0000-0001")
