@@ -460,7 +460,8 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
 
     # Creates a temporary log file for debugging
     import sys
-    sys.stdout = open('willse_backgammon/AI_Agents/Data_Sets/Logs/output_temp.txt','wt')
+    out_path = 'willse_backgammon/AI_Agents/Data_Sets/Logs/output_' + model_id + '.txt'
+    sys.stdout = open(out_path,'wt')
 
     # Model Id: 00-0000-0000 (Network Version, Flags, Id)
     model = BackgammonNN().to(DEVICE)
