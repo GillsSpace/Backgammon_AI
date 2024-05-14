@@ -347,7 +347,7 @@ def single_training_game_subprocess(model:BackgammonNN, lambda_=0.8, alpha=0.01)
         # Updates parameters:
         for name, param in model.named_parameters():
             trace = model.traces[name]
-            param.data += alpha * td_error * trace.data
+            param.data -= alpha * td_error * trace.data
 
         # Makes a move, checks if game is over, and transitions to new turn:
         board.makeMoves(chosen_moves,current_player)
@@ -364,7 +364,7 @@ def single_training_game_subprocess(model:BackgammonNN, lambda_=0.8, alpha=0.01)
 
     for name, param in model.named_parameters():
         trace = model.traces[name]
-        param.data += alpha * td_error * trace.data
+        param.data -= alpha * td_error * trace.data
 
 def single_exhibition_game_verbose(model:BackgammonNN):
 
@@ -473,7 +473,7 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
         try: 
             model.load_state_dict(torch.load(path))
         except:
-            open(path,"x")
+            open(path,"r")
 
     st = time.time()
 
@@ -499,9 +499,7 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
 
         single_training_game_verbose(model,trace_decay_rate,learning_rate)
 
-        RunGames("TS1",)
-
-    torch.save(model.state_dict,path)
+    torch.save(model.state_dict(),path)
 
     et = time.time()
 
