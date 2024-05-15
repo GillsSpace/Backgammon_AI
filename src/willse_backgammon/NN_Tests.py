@@ -486,7 +486,7 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
 
     single_training_game_verbose(model,trace_decay_rate,learning_rate)
 
-    for k in range(300):
+    for k in range(100):
         for i in range(100):
             print(f"Starting Game {(k*100)+(i+1)}...")
             single_training_game_subprocess(model,trace_decay_rate,learning_rate)
@@ -498,8 +498,7 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
         print("#############################################")
 
         single_training_game_verbose(model,trace_decay_rate,learning_rate)
-
-    torch.save(model.state_dict(),path)
+        torch.save(model.state_dict(),path)
 
     et = time.time()
 
