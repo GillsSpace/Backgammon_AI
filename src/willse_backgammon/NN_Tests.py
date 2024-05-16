@@ -366,7 +366,7 @@ def single_training_game_subprocess(model:BackgammonNN, lambda_=0.8, alpha=0.01)
         trace = model.traces[name]
         param.data -= alpha * td_error * trace.data
 
-def single_exhibition_game_verbose(model:BackgammonNN):
+def single_exhibition_game_verbose(model:BackgammonNN,opponent="TS1") -> int:
 
     player_symbols = ["X","0"]
     print(f"Starting Exhibition Game...")
@@ -377,62 +377,110 @@ def single_exhibition_game_verbose(model:BackgammonNN):
     current_player = random.randint(1,2)
     game_over = False
 
-    print("------------------------------------------------------------------------------------------")
-    print("Starting Turn...")
-    print(f"Player: {current_player} ({player_symbols[current_player-1]})")
-    print_backgammon_board(board.positions)
-
-    # Initialize first turn
-    turn = Turn(current_player,"AI",First=True)
-    turn.updatePossibleMovesStandardFormat(board)
-
-    # Generate and make moves
-    chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
-
-    # Debug Info:
-    print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
-    print(f"Valuation:          {current_prediction}")
-    print(f"Previous Valuation: {model.last_prediction}")
-
-    print("------------------------------------------------------------------------------------------")
-
-    board.makeMoves(chosen_moves,current_player)
-    current_player = 2 if current_player == 1 else 1
-    model.last_prediction = current_prediction
-
-    while not game_over:
-
+    if current_player == 1:
         print("------------------------------------------------------------------------------------------")
         print("Starting Turn...")
         print(f"Player: {current_player} ({player_symbols[current_player-1]})")
         print_backgammon_board(board.positions)
 
-        # Initialize turn
-        turn = Turn(current_player,"AI")
+        # Initialize first turn
+        turn = Turn(current_player,"AI",First=True)
         turn.updatePossibleMovesStandardFormat(board)
 
-        # Generate and prediction:
+        # Generate and make moves
         chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
-        to_be_next_prediction = torch.clone(current_prediction)
-        current_prediction.detach()
-
-        td_error = current_prediction - model.last_prediction
 
         # Debug Info:
         print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
         print(f"Valuation:          {current_prediction}")
         print(f"Previous Valuation: {model.last_prediction}")
-        print(f"TD_error:           {td_error}")
 
         print("------------------------------------------------------------------------------------------")
 
         board.makeMoves(chosen_moves,current_player)
-
-        # Checks if game is over and transitions to new turn
-        game_over = True if board.pip[current_player-1] == 0 else False
         current_player = 2 if current_player == 1 else 1
+        model.last_prediction = current_prediction
+    else:
+        print("------------------------------------------------------------------------------------------")
+        print("Starting Turn...")
+        print(f"Player: {current_player} ({player_symbols[current_player-1]})")
+        print_backgammon_board(board.positions)
 
-        model.last_prediction = to_be_next_prediction
+        # Initialize first turn
+        turn = Turn(current_player,"AI",First=True)
+        turn.updatePossibleMovesStandardFormat(board)
+
+        # Generate and make moves
+        chosen_moves = AI.Main(board,turn,"TS1")
+        _, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
+
+        # Debug Info:
+        print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
+
+        print("------------------------------------------------------------------------------------------")
+
+        board.makeMoves(chosen_moves,current_player)
+        current_player = 2 if current_player == 1 else 1
+        model.last_prediction = current_prediction
+
+    while not game_over:
+
+        if current_player == 1:
+            print("------------------------------------------------------------------------------------------")
+            print("Starting Turn...")
+            print(f"Player: {current_player} ({player_symbols[current_player-1]})")
+            print_backgammon_board(board.positions)
+
+            # Initialize turn
+            turn = Turn(current_player,"AI")
+            turn.updatePossibleMovesStandardFormat(board)
+
+            # Generate and prediction:
+            chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
+            to_be_next_prediction = torch.clone(current_prediction)
+            current_prediction.detach()
+
+            td_error = current_prediction - model.last_prediction
+
+            # Debug Info:
+            print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
+            print(f"Valuation:          {current_prediction}")
+            print(f"Previous Valuation: {model.last_prediction}")
+            print(f"TD_error:           {td_error}")
+
+            print("------------------------------------------------------------------------------------------")
+
+            board.makeMoves(chosen_moves,current_player)
+
+            # Checks if game is over and transitions to new turn
+            game_over = True if board.pip[current_player-1] == 0 else False
+            current_player = 2 if current_player == 1 else 1
+
+            model.last_prediction = to_be_next_prediction
+        
+        else:
+            print("------------------------------------------------------------------------------------------")
+            print("Starting Turn...")
+            print(f"Player: {current_player} ({player_symbols[current_player-1]})")
+            print_backgammon_board(board.positions)
+
+            # Initialize turn
+            turn = Turn(current_player,"AI")
+            turn.updatePossibleMovesStandardFormat(board)
+
+            # Generate and prediction:
+            chosen_moves = AI.Main(board,turn,"TS1")
+
+            # Debug Info:
+            print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
+
+            print("------------------------------------------------------------------------------------------")
+
+            board.makeMoves(chosen_moves,current_player)
+
+            # Checks if game is over and transitions to new turn
+            game_over = True if board.pip[current_player-1] == 0 else False
+            current_player = 2 if current_player == 1 else 1
 
     print("------------------------------------------------------------------------------------------")
     print("------------------------------------------------------------------------------------------")
@@ -460,7 +508,7 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
 
     # Creates a temporary log file for debugging
     import sys
-    out_path = 'willse_backgammon/AI_Agents/Data_Sets/Logs/output_' + model_id + '.txt'
+    out_path = 'willse_backgammon/AI_Agents/Data_Sets/Logs/output_' + model_id + '-1.txt'
     sys.stdout = open(out_path,'wt')
 
     # Model Id: 00-0000-0000 (Network Version, Flags, Id)
@@ -481,30 +529,32 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
 
     st = time.time()
 
-    print("#############################################")
-    print("#")
-    print(f"#   Simulation Run 002: Second Loaded Model")
-    print(f"#   Model: {model_id}")
-    print(f"#   Trace Decay Rate: {trace_decay_rate}, Learning Rate: {learning_rate}")
-    print(f"#   Notes: trying lower decay rate with higher learning rate")
-    print("#")
-    print("#############################################")
+    # print("#############################################")
+    # print("#")
+    # print(f"#   Simulation Run 002: Second Loaded Model")
+    # print(f"#   Model: {model_id}")
+    # print(f"#   Trace Decay Rate: {trace_decay_rate}, Learning Rate: {learning_rate}")
+    # print(f"#   Notes: trying lower decay rate with higher learning rate")
+    # print("#")
+    # print("#############################################")
 
-    single_training_game_verbose(model,trace_decay_rate,learning_rate)
+    # single_training_game_verbose(model,trace_decay_rate,learning_rate)
 
-    for k in range(200):
-        for i in range(100):
-            print(f"Starting Game {(k*100)+(i+1)}...")
-            single_training_game_subprocess(model,trace_decay_rate,learning_rate)
+    # for k in range(200):
+    #     for i in range(100):
+    #         print(f"Starting Game {(k*100)+(i+1)}...")
+    #         single_training_game_subprocess(model,trace_decay_rate,learning_rate)
 
-        print("#############################################")
-        print("#")
-        print(f"#   Test Game: {k+1}")
-        print("#")
-        print("#############################################")
+    #     print("#############################################")
+    #     print("#")
+    #     print(f"#   Test Game: {k+1}")
+    #     print("#")
+    #     print("#############################################")
 
-        single_training_game_verbose(model,trace_decay_rate,learning_rate)
-        torch.save(model.state_dict(),path)
+    #     single_training_game_verbose(model,trace_decay_rate,learning_rate)
+    #     torch.save(model.state_dict(),path)
+
+    single_exhibition_game_verbose(model)
 
     et = time.time()
 
