@@ -473,20 +473,26 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
         try: 
             model.load_state_dict(torch.load(path))
         except:
-            open(path,"r")
+            try:
+                open(path,"r")
+            except:
+                open(path,"x")
+
 
     st = time.time()
 
     print("#############################################")
     print("#")
-    print(f"#   Simulation Run 001: First Loaded Model")
+    print(f"#   Simulation Run 002: Second Loaded Model")
     print(f"#   Model: {model_id}")
+    print(f"#   Trace Decay Rate: {trace_decay_rate}, Learning Rate: {learning_rate}")
+    print(f"#   Notes: trying lower decay rate with higher learning rate")
     print("#")
     print("#############################################")
 
     single_training_game_verbose(model,trace_decay_rate,learning_rate)
 
-    for k in range(100):
+    for k in range(200):
         for i in range(100):
             print(f"Starting Game {(k*100)+(i+1)}...")
             single_training_game_subprocess(model,trace_decay_rate,learning_rate)
@@ -507,4 +513,4 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
 if __name__ == "__main__":
     DEVICE = "cpu"
     # DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-    main("01-0000-0001")
+    main("01-0000-0002",0.4,0.01)
