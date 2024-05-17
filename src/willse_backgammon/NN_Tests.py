@@ -500,15 +500,18 @@ def single_exhibition_game_verbose(model:BackgammonNN,opponent="TS1") -> int:
 
     return winner
 
-def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
+def train_vs_ts1(model:BackgammonNN, lambda_=0.8, alpha=0.01):
+    pass
 
-    torch.manual_seed(143728)
-    random.seed(143728)
+def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
+
+    torch.manual_seed(seed_num)
+    random.seed(seed_num)
     torch.autograd.set_detect_anomaly(True)
 
     # Creates a temporary log file for debugging
     import sys
-    out_path = 'willse_backgammon/AI_Agents/Data_Sets/Logs/output_' + model_id + '-1.txt'
+    out_path = 'willse_backgammon/AI_Agents/Data_Sets/Logs/output_' + model_id + '.txt'
     sys.stdout = open(out_path,'wt')
 
     # Model Id: 00-0000-0000 (Network Version, Flags, Id)
@@ -529,32 +532,39 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
 
     st = time.time()
 
-    # print("#############################################")
-    # print("#")
-    # print(f"#   Simulation Run 002: Second Loaded Model")
-    # print(f"#   Model: {model_id}")
-    # print(f"#   Trace Decay Rate: {trace_decay_rate}, Learning Rate: {learning_rate}")
-    # print(f"#   Notes: trying lower decay rate with higher learning rate")
-    # print("#")
-    # print("#############################################")
+    print("#############################################")
+    print("#")
+    print(f"#   Simulation Run 004: Param Testing")
+    print(f"#   Model: {model_id} (Seed = {seed_num})")
+    print(f"#   Trace Decay Rate: {trace_decay_rate}, Learning Rate: {learning_rate}")
+    print(f"#   Notes: trying lower decay rate with higher learning rate")
+    print("#")
+    print("#############################################")
 
-    # single_training_game_verbose(model,trace_decay_rate,learning_rate)
+    single_training_game_verbose(model,trace_decay_rate,learning_rate)
 
-    # for k in range(200):
-    #     for i in range(100):
-    #         print(f"Starting Game {(k*100)+(i+1)}...")
-    #         single_training_game_subprocess(model,trace_decay_rate,learning_rate)
+    for k in range(200):
 
-    #     print("#############################################")
-    #     print("#")
-    #     print(f"#   Test Game: {k+1}")
-    #     print("#")
-    #     print("#############################################")
+        for i in range(100):
+            print(f"Starting Game {(k*100)+(i+1)}...")
+            single_training_game_subprocess(model,trace_decay_rate,learning_rate)
 
-    #     single_training_game_verbose(model,trace_decay_rate,learning_rate)
-    #     torch.save(model.state_dict(),path)
+        print("#############################################")
+        print("#")
+        print(f"#   Test Game: {k+1}")
+        print("#")
+        print("#############################################")
+        single_training_game_verbose(model,trace_decay_rate,learning_rate)
 
-    single_exhibition_game_verbose(model)
+        print("#############################################")
+        print("#")
+        print(f"#   Match Game (vs. TS1): {k+1}")
+        print("#")
+        print("#############################################")
+        single_exhibition_game_verbose(model)
+
+        torch.save(model.state_dict(),path)
+
 
     et = time.time()
 
@@ -563,4 +573,4 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001):
 if __name__ == "__main__":
     DEVICE = "cpu"
     # DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-    main("01-0000-0002",0.4,0.01)
+    main("01-0000-0004",0.9,0.01)
