@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 try:
     from Main_Files import AI as AI
     from Main_Files.Logic import Board, Turn
-    from AI_Agents.Network_Type2 import BackgammonNN
+    from AI_Agents.Network_Type2 import BackgammonNN, BackgammonNN_v3
     from Manual import RunGames
 except ModuleNotFoundError:
     from willse_backgammon.Main_Files.Logic import Board, Turn
     from willse_backgammon.Main_Files import AI as AI
-    from willse_backgammon.AI_Agents.Network_Type2 import BackgammonNN
+    from willse_backgammon.AI_Agents.Network_Type2 import BackgammonNN, BackgammonNN_v3
     from willse_backgammon.Manual import RunGames
 
 # Code:
@@ -190,7 +190,7 @@ def print_backgammon_board(positions):
     print(f"|----|----+----+----+----+----+----|----|----+----+----+----+----+----|----|")
     print(f"|    | 24   23   22   21   20   19 |    | 18   17   16   15   14   13 |    |")
 
-def single_training_game_verbose(model:BackgammonNN, lambda_=0.8, alpha=0.01):
+def single_training_game_verbose(model, lambda_=0.8, alpha=0.01):
 
     #Debugging info:
     player_symbols = ["X","0"]
@@ -308,7 +308,7 @@ def single_training_game_verbose(model:BackgammonNN, lambda_=0.8, alpha=0.01):
 
     print("------------------------------------------------------------------------------------------")
     
-def single_training_game_subprocess(model:BackgammonNN, lambda_=0.8, alpha=0.01):
+def single_training_game_subprocess(model, lambda_=0.8, alpha=0.01):
 
     # Resets trace and previous prediction variables:
     model.episode_reset()
@@ -366,7 +366,7 @@ def single_training_game_subprocess(model:BackgammonNN, lambda_=0.8, alpha=0.01)
         trace = model.traces[name]
         param.data -= alpha * td_error * trace.data
 
-def single_exhibition_game_verbose(model:BackgammonNN,opponent="TS1") -> int:
+def single_exhibition_game_verbose(model,opponent="TS1") -> int:
 
     player_symbols = ["X","0"]
     print(f"Starting Exhibition Game...")
@@ -500,7 +500,7 @@ def single_exhibition_game_verbose(model:BackgammonNN,opponent="TS1") -> int:
 
     return winner
 
-def train_vs_ts1(model:BackgammonNN, lambda_=0.8, alpha=0.01):
+def train_vs_ts1(model, lambda_=0.8, alpha=0.01):
     pass
 
 def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
@@ -515,11 +515,20 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
     sys.stdout = open(out_path,'wt')
 
     # Model Id: 00-0000-0000 (Network Version, Flags, Id)
-    model = BackgammonNN().to(DEVICE)
+    model = BackgammonNN_v3().to(DEVICE)
     path = ""
     net_id = model_id[0:2]
 
     if net_id == "01":
+        path = "willse_backgammon/AI_Agents/Saved_NNs/" + model_id + ".pt"
+        try: 
+            model.load_state_dict(torch.load(path))
+        except:
+            try:
+                open(path,"r")
+            except:
+                open(path,"x")
+    if net_id == "03":
         path = "willse_backgammon/AI_Agents/Saved_NNs/" + model_id + ".pt"
         try: 
             model.load_state_dict(torch.load(path))
@@ -534,7 +543,7 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
 
     print("#############################################")
     print("#")
-    print(f"#   Simulation Run 004: Param Testing")
+    print(f"#   Simulation Run 001: Testing new board representation")
     print(f"#   Model: {model_id} (Seed = {seed_num})")
     print(f"#   Trace Decay Rate: {trace_decay_rate}, Learning Rate: {learning_rate}")
     print(f"#   Notes: trying lower decay rate with higher learning rate")
@@ -543,9 +552,9 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
 
     single_training_game_verbose(model,trace_decay_rate,learning_rate)
 
-    for k in range(200):
+    for k in range(10):
 
-        for i in range(100):
+        for i in range(10):
             print(f"Starting Game {(k*100)+(i+1)}...")
             single_training_game_subprocess(model,trace_decay_rate,learning_rate)
 
@@ -573,4 +582,4 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
 if __name__ == "__main__":
     DEVICE = "cpu"
     # DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-    main("01-0000-0004",0.9,0.01)
+    main("03-0000-0001",0.9,0.01)
