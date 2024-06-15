@@ -190,18 +190,18 @@ def print_backgammon_board(positions):
     print(f"|----|----+----+----+----+----+----|----|----+----+----+----+----+----|----|")
     print(f"|    | 24   23   22   21   20   19 |    | 18   17   16   15   14   13 |    |")
 
-def single_training_game_verbose(model, lambda_=0.8, alpha=0.01):
+def single_training_game(model, lambda_=0.8, alpha=0.01, verbose=False) -> int:
 
-    #Debugging info:
-    player_symbols = ["X","0"]
-    print(f"Starting Training Run...")
-    print("Initial Parameters")
-    for name, param in model.named_parameters():
-        print(f"Name: {name}")
-        print(param)
-
-    initial_params = {name:torch.clone(param) for name,param in model.named_parameters()}
-
+    # Debug Info:
+    if verbose:
+        player_symbols = ["X","0"]
+        print(f"Starting Training Run...")
+        print("Initial Parameters")
+        for name, param in model.named_parameters():
+            print(f"Name: {name}")
+            print(param)
+        initial_params = {name:torch.clone(param) for name,param in model.named_parameters()}
+    
     model.episode_reset()
 
     # Initialize board and game variables:
@@ -210,114 +210,12 @@ def single_training_game_verbose(model, lambda_=0.8, alpha=0.01):
     current_player = random.randint(1,2)
     game_over = False
 
-    print("------------------------------------------------------------------------------------------")
-    print("Starting Turn...")
-    print(f"Player: {current_player} ({player_symbols[current_player-1]})")
-    print_backgammon_board(board.positions)
-
-    # Initialize first turn
-    turn = Turn(current_player,"AI",First=True)
-    turn.updatePossibleMovesStandardFormat(board)
-
-    # Generate and make moves
-    chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
-
     # Debug Info:
-    print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
-    print(f"Valuation:          {current_prediction}")
-    print(f"Previous Valuation: {model.last_prediction}")
-
-    print("------------------------------------------------------------------------------------------")
-
-    board.makeMoves(chosen_moves,current_player)
-    current_player = 2 if current_player == 1 else 1
-    model.last_prediction = current_prediction
-
-    while not game_over:
-
+    if verbose:
         print("------------------------------------------------------------------------------------------")
         print("Starting Turn...")
         print(f"Player: {current_player} ({player_symbols[current_player-1]})")
         print_backgammon_board(board.positions)
-
-        # Initialize turn
-        turn = Turn(current_player,"AI")
-        turn.updatePossibleMovesStandardFormat(board)
-
-        # Generate and prediction:
-        chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player,True)
-
-        td_error:torch.Tensor = (current_prediction.detach() - model.last_prediction)
-
-        td_error.backward()
-        model.update_eligibility_traces(lambda_)
-
-        for name, param in model.named_parameters():
-            trace = model.traces[name]
-            param.data -= alpha * td_error * trace.data
-
-        # Debug Info:
-        print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
-        print(f"Valuation:          {current_prediction}")
-        print(f"Previous Valuation: {model.last_prediction}")
-        print(f"TD_error:           {td_error}")
-
-        print("------------------------------------------------------------------------------------------")
-
-        board.makeMoves(chosen_moves,current_player)
-
-        # Checks if game is over and transitions to new turn
-        game_over = True if board.pip[current_player-1] == 0 else False
-        current_player = 2 if current_player == 1 else 1
-
-        model.last_prediction = current_prediction
-        model.zero_grad()
-
-    print("------------------------------------------------------------------------------------------")
-    print("------------------------------------------------------------------------------------------")
-    print("Final Update:")
-    print(f"Winner = {1 if current_player == 2 else 2}")
-    print("Final Board:")
-    print_backgammon_board(board.positions)
-
-    reward = torch.zeros(1).to(DEVICE) if current_player == 1 else torch.ones(1).to(DEVICE)
-    td_error:torch.Tensor = (reward.detach() - model.last_prediction)
-
-    td_error.backward()
-    model.update_eligibility_traces(lambda_)
-
-    for name, param in model.named_parameters():
-        trace = model.traces[name]
-        param.data -= alpha * td_error * trace.data
-
-    print(f"Reward:             {reward}")
-    print(f"Previous Valuation: {model.last_prediction}")
-    print(f"TD_error:           {td_error}")
-
-    print("Final Parameters")
-    for name, param in model.named_parameters():
-        print(f"Name: {name}")
-        print(param)
-
-    delta_params = {name:initial_params.get(name) - param_i for name,param_i in model.named_parameters()}
-
-    print("Change in Parameters")
-    for name, param in delta_params.items():
-        print(f"Name: {name}")
-        print(param)
-
-    print("------------------------------------------------------------------------------------------")
-    
-def single_training_game_subprocess(model, lambda_=0.8, alpha=0.01):
-
-    # Resets trace and previous prediction variables:
-    model.episode_reset()
-    
-    # Initialize board and game variables:
-    board = Board()
-    board.setStartPositions()
-    current_player = random.randint(1,2)
-    game_over = False
 
     # Initialize first turn
     turn = Turn(current_player,"AI",First=True)
@@ -325,13 +223,28 @@ def single_training_game_subprocess(model, lambda_=0.8, alpha=0.01):
 
     # Generate and make moves
     chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
-    board.makeMoves(chosen_moves,current_player)
 
-    # Transitions to next state and player:
+    # Debug Info:
+    if verbose:
+        print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
+        print(f"Valuation:          {current_prediction}")
+        print(f"Previous Valuation: {model.last_prediction}")
+
+        print("------------------------------------------------------------------------------------------")
+
+    board.makeMoves(chosen_moves,current_player)
     current_player = 2 if current_player == 1 else 1
     model.last_prediction = current_prediction
 
     while not game_over:
+
+        # Debug Info:
+        if verbose:
+            print("------------------------------------------------------------------------------------------")
+            print("Starting Turn...")
+            print(f"Player: {current_player} ({player_symbols[current_player-1]})")
+            print_backgammon_board(board.positions)
+
         # Initialize turn
         turn = Turn(current_player,"AI")
         turn.updatePossibleMovesStandardFormat(board)
@@ -344,10 +257,19 @@ def single_training_game_subprocess(model, lambda_=0.8, alpha=0.01):
         td_error.backward()
         model.update_eligibility_traces(lambda_)
 
-        # Updates parameters:
+        # Update parameters:
         for name, param in model.named_parameters():
             trace = model.traces[name]
             param.data -= alpha * td_error * trace.data
+
+        # Debug Info:
+        if verbose:
+            print(f"Roll: {turn.roll} // Move To Play: {chosen_moves}")
+            print(f"Valuation:          {current_prediction}")
+            print(f"Previous Valuation: {model.last_prediction}")
+            print(f"TD_error:           {td_error}")
+
+            print("------------------------------------------------------------------------------------------")
 
         # Makes a move, checks if game is over, and transitions to new turn:
         board.makeMoves(chosen_moves,current_player)
@@ -355,6 +277,15 @@ def single_training_game_subprocess(model, lambda_=0.8, alpha=0.01):
         current_player = 2 if current_player == 1 else 1
         model.last_prediction = current_prediction
         model.zero_grad()
+
+    # Debug Info:
+    if verbose:
+        print("------------------------------------------------------------------------------------------")
+        print("------------------------------------------------------------------------------------------")
+        print("Final Update:")
+        print(f"Winner = {1 if current_player == 2 else 2}")
+        print("Final Board:")
+        print_backgammon_board(board.positions)
 
     # Performs final update using actual reward:
     reward = torch.zeros(1).to(DEVICE) if current_player == 1 else torch.ones(1).to(DEVICE) # current_player = loser
@@ -365,6 +296,28 @@ def single_training_game_subprocess(model, lambda_=0.8, alpha=0.01):
     for name, param in model.named_parameters():
         trace = model.traces[name]
         param.data -= alpha * td_error * trace.data
+
+    # Debug Info:
+    if verbose:
+        print(f"Reward:             {reward}")
+        print(f"Previous Valuation: {model.last_prediction}")
+        print(f"TD_error:           {td_error}")
+
+        print("Final Parameters")
+        for name, param in model.named_parameters():
+            print(f"Name: {name}")
+            print(param)
+
+        delta_params = {name:initial_params.get(name) - param_i for name,param_i in model.named_parameters()}
+
+        print("Change in Parameters")
+        for name, param in delta_params.items():
+            print(f"Name: {name}")
+            print(param)
+
+        print("------------------------------------------------------------------------------------------")
+    
+    return 1 if current_player == 2 else 2
 
 def single_exhibition_game_verbose(model,opponent="TS1") -> int:
 
@@ -541,45 +494,78 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
 
     st = time.time()
 
+    player_1_wins = 0
+    player_2_wins = 0
+    TS1_wins = 0
+    Network_wins = 0
+
     print("#############################################")
     print("#")
-    print(f"#   Simulation Run 001: Testing new board representation")
+    print(f"#   Simulation Run 002: Fixed Min-Max algorithm")
     print(f"#   Model: {model_id} (Seed = {seed_num})")
     print(f"#   Trace Decay Rate: {trace_decay_rate}, Learning Rate: {learning_rate}")
-    print(f"#   Notes: trying lower decay rate with higher learning rate")
+    print(f"#   Notes: run 001 was playing worst moves it evaluated")
     print("#")
     print("#############################################")
 
-    single_training_game_verbose(model,trace_decay_rate,learning_rate)
+    w = single_training_game(model,trace_decay_rate,learning_rate,True)
+    if w == 1:
+        player_1_wins += 1
+    else:
+        player_2_wins += 1
 
-    for k in range(10):
+    for k in range(500):
 
-        for i in range(10):
-            print(f"Starting Game {(k*100)+(i+1)}...")
-            single_training_game_subprocess(model,trace_decay_rate,learning_rate)
+        for i in range(100):
+            print(f"Starting Game {(k*100)+(i+1)}, Elapsed Time = {time.time()-st}")
+            w = single_training_game(model,trace_decay_rate,learning_rate)
+            if w == 1:
+                player_1_wins += 1
+            else:
+                player_2_wins += 1
 
         print("#############################################")
         print("#")
         print(f"#   Test Game: {k+1}")
+        print(f"#   Elapsed Time = {time.time()-st}")
         print("#")
         print("#############################################")
-        single_training_game_verbose(model,trace_decay_rate,learning_rate)
+        w = single_training_game(model,trace_decay_rate,learning_rate,True)
+        if w == 1:
+            player_1_wins += 1
+        else:
+            player_2_wins += 1
 
         print("#############################################")
         print("#")
         print(f"#   Match Game (vs. TS1): {k+1}")
+        print(f"#   Elapsed Time = {time.time()-st}")
         print("#")
         print("#############################################")
-        single_exhibition_game_verbose(model)
+        w = single_exhibition_game_verbose(model)
+        if w == 1:
+            Network_wins += 1
+        else:
+            TS1_wins += 1
 
         torch.save(model.state_dict(),path)
 
 
     et = time.time()
 
+    print("#############################################")
+    print("#")
+    print(f"#   Total elapsed time: {et-st}")
+    print(f"#   Player 1 Wins: {player_1_wins}")
+    print(f"#   Player 2 Wins: {player_2_wins}")
+    print(f"#   TS1 Wins: {TS1_wins}")
+    print(f"#   Network Wins: {Network_wins}")
+    print("#")
+    print("#############################################")
+
     print(f"Total elapsed time: {et-st}")
 
 if __name__ == "__main__":
     DEVICE = "cpu"
     # DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-    main("03-0000-0001",0.9,0.01)
+    main("03-0000-0002",0.8,0.005)

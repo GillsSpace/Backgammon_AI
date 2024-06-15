@@ -19,8 +19,8 @@ class MainWindow(arcade.Window):
         super().__init__(width, height, title)
         arcade.set_background_color(BACKGROUND_COLOR)
 
-        self.settings = {"Agent1": "Human", "Agent2": "Human", "Network1 ID": "V1.0-NV1-1.01",
-                         "Network2 ID": "V1.0-NV1-1.01", "1P Inputs Rolls": False}
+        self.settings = {"Agent1": "Human", "Agent2": "Human", "Network1 ID": "V2.0-03-0000-0002",
+                         "Network2 ID": "V2.0-03-0000-0002", "1P Inputs Rolls": False}
         self.lastPage = None
         self.MainBoard = Logic.Board()
         self.MainTurn = None

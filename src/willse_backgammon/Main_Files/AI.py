@@ -2,14 +2,14 @@ import random
 import time
 
 try:
-    # from AI_Agents.Network_Type2 import FullRun as Network_Type2_Full_Run
     from AI_Agents.Network_Type1 import Full_Run as Network_Type1_Full_Run
+    from AI_Agents.Network_Type2 import Full_Run as Network_Type2_Full_Run
     from AI_Agents.Pick_Best_Pip import Full_Run as PBP_Full_Run
     from AI_Agents.TreeSearchI import Full_Run as TreeSearchI_Full_Run
     from Main_Files.Logic import Board, Turn
 except ModuleNotFoundError:
-    # from willse_backgammon.AI_Agents.Network_Type2 import FullRun as Network_Type2_Full_Run
     from willse_backgammon.AI_Agents.Network_Type1 import Full_Run as Network_Type1_Full_Run
+    from willse_backgammon.AI_Agents.Network_Type2 import Full_Run as Network_Type2_Full_Run
     from willse_backgammon.AI_Agents.Pick_Best_Pip import Full_Run as PBP_Full_Run
     from willse_backgammon.AI_Agents.TreeSearchI import Full_Run as TreeSearchI_Full_Run
     from willse_backgammon.Main_Files.Logic import Board, Turn
@@ -65,8 +65,7 @@ def Main(Main_Board: Board, Main_Turn: Turn, aiType, networkIdent=None, multiSup
         if networkIdent[0:5] == "V1.0-":
             Moves = Network_Type1_Full_Run(Main_Board, Main_Turn, networkIdent)
         elif networkIdent[0:5] == "V2.0-":
-            # Moves = Network_Type2_Full_Run(Main_Board, Main_Turn, networkIdent)
-            Moves = []
+            Moves = Network_Type2_Full_Run(Main_Board, Main_Turn, networkIdent,False)
         else:
             print("Error: Network Ident Not Valid (Type)")
             Moves = []
@@ -90,7 +89,7 @@ def Silent_Main(Main_Board: Board, Main_Turn: Turn, aiType, networkIdent=None, m
         if networkIdent[0:5] == "V1.0-":
             Moves = Network_Type1_Full_Run(Main_Board, Main_Turn, networkIdent)
         elif networkIdent[0:5] == "V2.0-":
-            Moves = []
+            Moves = Network_Type2_Full_Run(Main_Board, Main_Turn, networkIdent)
         else:
             print("Error: Network Ident Not Valid (Type)")
             Moves = []

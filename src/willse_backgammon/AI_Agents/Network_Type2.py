@@ -45,13 +45,16 @@ class BackgammonNN(nn.Module):
     
     def chose_move(self,base_board:Board,possible_moves,player,verbose=False):
         moveValues = []
-
+        output = None
         # Evaluate all posable moves and identify predicted odd of winning:
         for moveSet in possible_moves:
             testBoard = copy.deepcopy(base_board)
             testBoard.makeMoves(moveSet,player)
             output = self.forward_on_board(testBoard,2 if player == 1 else 1)
-            moveValues.append(output if player == 1 else 1-output)
+            moveValues.append(output)
+            #moveValues.append(output if player == 1 else 1-output)
+
+
 
             if verbose:
                 print(f"Move Option: {moveSet} ----> {output[0]}")
@@ -61,11 +64,21 @@ class BackgammonNN(nn.Module):
             return [], self.forward_on_board(base_board,2 if player == 1 else 1)
 
         # Select move using greedy algorithm:
-        maxValue = max(moveValues)
-        indexOfMove = moveValues.index(maxValue)
+        # maxValue = max(moveValues)
+        # indexOfMove = moveValues.index(maxValue)
+        
+        if player == 2:
+            val = max(moveValues)
+            indexOfMove = moveValues.index(val)
+        elif player == 1:
+            val = min(moveValues)
+            indexOfMove = moveValues.index(val)
+        else:
+            raise AttributeError
+
         finalMoveSelection = possible_moves[indexOfMove]
 
-        return finalMoveSelection, output
+        return finalMoveSelection, val
 
     def update_eligibility_traces(self, lambda_):
     # Before calling this function, ensure that backward() has been called on the loss
@@ -130,14 +143,14 @@ class BackgammonNN_v3(nn.Module):
     
     def chose_move(self,base_board:Board,possible_moves,player,verbose=False):
         moveValues = []
-
+        output = None
         # Evaluate all posable moves and identify predicted odd of winning:
         for moveSet in possible_moves:
             testBoard = copy.deepcopy(base_board)
             testBoard.makeMoves(moveSet,player)
             output = self.forward_on_board(testBoard,2 if player == 1 else 1)
-            moveValues.append(output if player == 1 else 1-output)
-
+            moveValues.append(output)
+            #moveValues.append(output if player == 1 else 1-output)
             if verbose:
                 print(f"Move Option: {moveSet} ----> {output[0]}")
 
@@ -146,11 +159,21 @@ class BackgammonNN_v3(nn.Module):
             return [], self.forward_on_board(base_board,2 if player == 1 else 1)
 
         # Select move using greedy algorithm:
-        maxValue = max(moveValues)
-        indexOfMove = moveValues.index(maxValue)
+        # maxValue = max(moveValues)
+        # indexOfMove = moveValues.index(maxValue)
+        
+        if player == 1:
+            val = max(moveValues)
+            indexOfMove = moveValues.index(val)
+        elif player == 2:
+            val = min(moveValues)
+            indexOfMove = moveValues.index(val)
+        else:
+            raise AttributeError
+
         finalMoveSelection = possible_moves[indexOfMove]
 
-        return finalMoveSelection, output
+        return finalMoveSelection, val
 
     def update_eligibility_traces(self, lambda_):
     # Before calling this function, ensure that backward() has been called on the loss
@@ -160,3 +183,27 @@ class BackgammonNN_v3(nn.Module):
     def episode_reset(self):
         self.traces = {name: torch.zeros_like(param) for name, param in self.named_parameters()}
         self.last_prediction = None
+
+def Full_Run(inputBoard: Board, inputTurn, networkIdent, silent=True):
+    # Determine Table Name:
+    if networkIdent[5:8] == "01-":
+        model = BackgammonNN().to(DEVICE)
+    elif networkIdent[5:8] == "03-":
+        model = BackgammonNN_v3().to(DEVICE)
+    else:
+        print("Error: Network Ident Not Valid (ID)")
+        return []
+    
+    path = "willse_backgammon/AI_Agents/Saved_NNs/" + networkIdent[5:] + ".pt"
+    try: 
+        model.load_state_dict(torch.load(path))
+    except:
+        print("Error: Unable to load model states")
+        return []
+    
+    chosen_moves, current_prediction = model.chose_move(inputBoard,inputTurn.current_possible_moves,inputTurn.player)
+
+    if not silent:
+        print(f"Current Valuation = {current_prediction[0]*100}% Chance for player 1 to win.")
+
+    return chosen_moves
