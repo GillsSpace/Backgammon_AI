@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 try:
     from Main_Files import AI as AI
     from Main_Files.Logic import Board, Turn
-    from AI_Agents.Network_Type2 import BackgammonNN, BackgammonNN_v3
+    from AI_Agents.Network_Type2 import BackgammonNN, BackgammonNN_v3, BackgammonNN_v2
     from Manual import RunGames
 except ModuleNotFoundError:
     from willse_backgammon.Main_Files.Logic import Board, Turn
     from willse_backgammon.Main_Files import AI as AI
-    from willse_backgammon.AI_Agents.Network_Type2 import BackgammonNN, BackgammonNN_v3
+    from willse_backgammon.AI_Agents.Network_Type2 import BackgammonNN, BackgammonNN_v3, BackgammonNN_v2
     from willse_backgammon.Manual import RunGames
 
 # Code:
@@ -190,7 +190,7 @@ def print_backgammon_board(positions):
     print(f"|----|----+----+----+----+----+----|----|----+----+----+----+----+----|----|")
     print(f"|    | 24   23   22   21   20   19 |    | 18   17   16   15   14   13 |    |")
 
-def single_training_game(model, lambda_=0.8, alpha=0.01, verbose=False) -> int:
+def single_training_game(model=BackgammonNN_v2, lambda_=0.8, alpha=0.01, verbose=False) -> int:
 
     # Debug Info:
     if verbose:
@@ -253,8 +253,7 @@ def single_training_game(model, lambda_=0.8, alpha=0.01, verbose=False) -> int:
         chosen_moves, current_prediction = model.chose_move(board,turn.current_possible_moves,current_player)
 
         # Calculates error and eligibility traces:
-        td_error = (current_prediction.detach() - model.last_prediction)
-        td_error.backward()
+        td_error = model.calc_error(current_prediction.detach(), model.last_prediction)
         model.update_eligibility_traces(lambda_)
 
         # Update parameters:
@@ -287,10 +286,17 @@ def single_training_game(model, lambda_=0.8, alpha=0.01, verbose=False) -> int:
         print("Final Board:")
         print_backgammon_board(board.positions)
 
+    #Calculates reward
+    reward = 0
+    if current_player == 2: #player 1 wins
+        reward = torch.tensor([2]).to(DEVICE) if board.positions[27] == 0 else torch.tensor([1]).to(DEVICE)
+    if current_player == 1: #player 2 wins
+        reward = torch.tensor([-2]).to(DEVICE) if board.positions[26] == 0 else torch.tensor([-1]).to(DEVICE)
+
+    # reward = torch.zeros(1).to(DEVICE) if current_player == 1 else torch.ones(1).to(DEVICE) # current_player = loser
+
     # Performs final update using actual reward:
-    reward = torch.zeros(1).to(DEVICE) if current_player == 1 else torch.ones(1).to(DEVICE) # current_player = loser
-    td_error = reward.detach() - model.last_prediction
-    td_error.backward()
+    td_error = model.calc_error(reward.detach(), model.last_prediction)
     model.update_eligibility_traces(lambda_)
 
     for name, param in model.named_parameters():
@@ -456,7 +462,7 @@ def single_exhibition_game_verbose(model,opponent="TS1") -> int:
 def train_vs_ts1(model, lambda_=0.8, alpha=0.01):
     pass
 
-def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
+def main(model_id, trace_decay_rate=0.7, learning_rate=0.01, seed_num=143728):
 
     torch.manual_seed(seed_num)
     random.seed(seed_num)
@@ -468,28 +474,17 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
     sys.stdout = open(out_path,'wt')
 
     # Model Id: 00-0000-0000 (Network Version, Flags, Id)
-    model = BackgammonNN_v3().to(DEVICE)
+    model = BackgammonNN_v2().to(DEVICE)
     path = ""
-    net_id = model_id[0:2]
 
-    if net_id == "01":
-        path = "willse_backgammon/AI_Agents/Saved_NNs/" + model_id + ".pt"
-        try: 
-            model.load_state_dict(torch.load(path))
+    path = "willse_backgammon/AI_Agents/Saved_NNs/" + model_id + ".pt"
+    try: 
+        model.load_state_dict(torch.load(path))
+    except:
+        try:
+            open(path,"r")
         except:
-            try:
-                open(path,"r")
-            except:
-                open(path,"x")
-    if net_id == "03":
-        path = "willse_backgammon/AI_Agents/Saved_NNs/" + model_id + ".pt"
-        try: 
-            model.load_state_dict(torch.load(path))
-        except:
-            try:
-                open(path,"r")
-            except:
-                open(path,"x")
+            open(path,"x")
 
 
     st = time.time()
@@ -501,10 +496,10 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
 
     print("#############################################")
     print("#")
-    print(f"#   Simulation Run 002: Fixed Min-Max algorithm")
+    print(f"#   Simulation Run 001: First Run")
     print(f"#   Model: {model_id} (Seed = {seed_num})")
     print(f"#   Trace Decay Rate: {trace_decay_rate}, Learning Rate: {learning_rate}")
-    print(f"#   Notes: run 001 was playing worst moves it evaluated")
+    print(f"#   Notes: using network considering gammons")
     print("#")
     print("#############################################")
 
@@ -548,6 +543,17 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
         else:
             TS1_wins += 1
 
+        print("#############################################")
+        print("#")
+        print(f"#   Current Statistics at Checkpoint: {k+1}")
+        print(f"#   Elapsed Time = {time.time()-st}")
+        print(f"#   Player 1 Wins = {player_1_wins}")
+        print(f"#   Player 2 wins = {player_2_wins}")
+        print(f"#   Network Wins = {Network_wins}")
+        print(f"#   TS1 Wins = {TS1_wins}")
+        print("#")
+        print("#############################################")
+
         torch.save(model.state_dict(),path)
 
 
@@ -568,4 +574,4 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.001, seed_num=143728):
 if __name__ == "__main__":
     DEVICE = "cpu"
     # DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-    main("03-0000-0002",0.8,0.005)
+    main("02-0000-0001",0.7)
