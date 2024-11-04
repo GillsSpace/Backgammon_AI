@@ -196,11 +196,6 @@ def single_training_game(model=BackgammonNN_v2, lambda_=0.8, alpha=0.01, verbose
     if verbose:
         player_symbols = ["X","0"]
         print(f"Starting Training Run...")
-        print("Initial Parameters")
-        for name, param in model.named_parameters():
-            print(f"Name: {name}")
-            print(param)
-        initial_params = {name:torch.clone(param) for name,param in model.named_parameters()}
     
     model.episode_reset()
 
@@ -308,18 +303,6 @@ def single_training_game(model=BackgammonNN_v2, lambda_=0.8, alpha=0.01, verbose
         print(f"Reward:             {reward}")
         print(f"Previous Valuation: {model.last_prediction}")
         print(f"TD_error:           {td_error}")
-
-        print("Final Parameters")
-        for name, param in model.named_parameters():
-            print(f"Name: {name}")
-            print(param)
-
-        delta_params = {name:initial_params.get(name) - param_i for name,param_i in model.named_parameters()}
-
-        print("Change in Parameters")
-        for name, param in delta_params.items():
-            print(f"Name: {name}")
-            print(param)
 
         print("------------------------------------------------------------------------------------------")
     
@@ -496,10 +479,10 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.01, seed_num=143728):
 
     print("#############################################")
     print("#")
-    print(f"#   Simulation Run 001: First Run")
+    print(f"#   Simulation Run 002: Second Run")
     print(f"#   Model: {model_id} (Seed = {seed_num})")
     print(f"#   Trace Decay Rate: {trace_decay_rate}, Learning Rate: {learning_rate}")
-    print(f"#   Notes: using network considering gammons")
+    print(f"#   Notes: Re-trying network")
     print("#")
     print("#############################################")
 
@@ -509,7 +492,7 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.01, seed_num=143728):
     else:
         player_2_wins += 1
 
-    for k in range(500):
+    for k in range(300):
 
         for i in range(100):
             print(f"Starting Game {(k*100)+(i+1)}, Elapsed Time = {time.time()-st}")
@@ -574,4 +557,4 @@ def main(model_id, trace_decay_rate=0.7, learning_rate=0.01, seed_num=143728):
 if __name__ == "__main__":
     DEVICE = "cpu"
     # DEVICE = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-    main("02-0000-0001",0.7)
+    main("02-0000-0002",0.7)

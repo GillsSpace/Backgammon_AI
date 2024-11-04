@@ -6,10 +6,12 @@ try:
     from Main_Files import AI as AI
     from Main_Files import Logic as Logic
     from Main_Files import Graphics as Graphics
+    from Main_Files import Analyze as Analyze
 except ModuleNotFoundError:
     from willse_backgammon.Main_Files import AI as AI
     from willse_backgammon.Main_Files import Logic as Logic
     from willse_backgammon.Main_Files import Graphics as Graphics
+    from willse_backgammon.Main_Files import Analyze as Analyze
 
 # Main Views:
 class MainMenuView(arcade.View):
@@ -237,6 +239,7 @@ class MainSimView(arcade.View):
         Quit_button = arcade.gui.UIFlatButton(15, 695, 75, 40, "Quit")
         New_button = arcade.gui.UIFlatButton(15, 15, 75, 60, "New Game")
         Setting_button = arcade.gui.UIFlatButton(1010, 15, 175, 40, "Settings")
+        Analyze_button = arcade.gui.UIFlatButton(1010, 65, 175, 40, "Analyze")
 
         RunGame_button = arcade.gui.UIFlatButton(1010, 745, 175, 40, "Run Game")
         RunRandomTurn_button = arcade.gui.UIFlatButton(1010, 695, 175, 40, "Run Turn")
@@ -256,6 +259,7 @@ class MainSimView(arcade.View):
         self.manager.add(Quit_button)
         self.manager.add(New_button)
         self.manager.add(Setting_button)
+        self.manager.add(Analyze_button)
 
         self.manager.add(RunGame_button)
         self.manager.add(RunRandomTurn_button)
@@ -288,6 +292,10 @@ class MainSimView(arcade.View):
             self.window.lastPage = self
             settingsView = SettingsView(self.backgroundColor)
             self.window.show_view(settingsView)
+
+        @Analyze_button.event("on_click")
+        def on_click_Analyze(event):
+            Analyze.analyze(self.window.MainBoard,self.window.MainTurn,self.window.settings, self.window.nextPlayer)
 
         @RunGame_button.event("on_click")
         def on_click_run(event):

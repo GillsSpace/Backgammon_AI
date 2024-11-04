@@ -106,8 +106,7 @@ class BackgammonNN_v2(nn.Module):
             nn.Linear(64,64),
             nn.ReLU(),
             nn.Linear(64,4),
-            nn.Sigmoid(),
-            nn.Softmax()
+            nn.Softmax(dim=0)
         )
 
         # Define Traces and Last Prediction:
@@ -148,9 +147,13 @@ class BackgammonNN_v2(nn.Module):
         y = self.forward_pass(X)
         return y
     
-    def chose_move(self,base_board:Board,possible_moves,player,verbose=False):
+    def chose_move(self,base_board:Board,possible_moves,player,verbose=False,analyze=False):
         moveValues = []
         output = None
+
+        if analyze:
+            possible_actions = []
+
         # Evaluate all posable moves and identify predicted value (2 = player 1 gammon, 1 = player 1 win, -1 = player 2 win, -2 = player 2 win):
         for moveSet in possible_moves:
             testBoard = copy.deepcopy(base_board)
@@ -160,13 +163,17 @@ class BackgammonNN_v2(nn.Module):
             moveValues.append((2*p1) + p2 - p3 - (2*p4)) #Expected Return for player 1
             if verbose:
                 print(f"Move Option: {moveSet} ----> {(output[0].item(),output[1].item(),output[2].item(),output[3].item())}")
+            if analyze:
+                possible_actions.append((moveSet,(output[0].item(),output[1].item(),output[2].item(),output[3].item())))
 
         # If no possible moves return empty move and valuation for current board (same as next board):
-        if len(moveValues) == 0:
+        if len(moveValues) == 0 :
             output = self.forward_on_board(base_board,2 if player == 1 else 1)
             (p1, p2, p3, p4) = (output[0],output[1],output[2],output[3])
-
-            return [], (2*p1) + p2 - p3 - (2*p4)
+            if not analyze:
+                return [], (2*p1) + p2 - p3 - (2*p4)
+            else:
+                return [], (2*p1) + p2 - p3 - (2*p4), []
 
         # Select move using greedy algorithm:
         # maxValue = max(moveValues)
@@ -183,7 +190,10 @@ class BackgammonNN_v2(nn.Module):
 
         finalMoveSelection = possible_moves[indexOfMove]
 
-        return finalMoveSelection, val
+        if not analyze:
+            return finalMoveSelection, val
+        else:
+            return finalMoveSelection, val, possible_actions
 
     def calc_error(self,current_prediction,previous_prediction):
         # print(current_prediction)
@@ -257,9 +267,13 @@ class BackgammonNN_v3(nn.Module):
         y = self.forward_pass(X)
         return y
     
-    def chose_move(self,base_board:Board,possible_moves,player,verbose=False):
+    def chose_move(self,base_board:Board,possible_moves,player,verbose=False,analyze=False):
         moveValues = []
         output = None
+
+        if analyze:
+            possible_actions = []
+
         # Evaluate all posable moves and identify predicted odd of winning:
         for moveSet in possible_moves:
             testBoard = copy.deepcopy(base_board)
@@ -269,10 +283,16 @@ class BackgammonNN_v3(nn.Module):
             #moveValues.append(output if player == 1 else 1-output)
             if verbose:
                 print(f"Move Option: {moveSet} ----> {output[0]}")
+            if analyze:
+                possible_actions.append((moveSet,output[0]))
+            
 
         # If no possible moves return empty move and valuation for current board (same as next board):
-        if len(moveValues) == 0:
-            return [], self.forward_on_board(base_board,2 if player == 1 else 1)
+        if len(moveValues) == 0 :
+            if not analyze:
+                return [], self.forward_on_board(base_board,2 if player == 1 else 1)
+            else:
+                return [], self.forward_on_board(base_board,2 if player == 1 else 1), []
 
         # Select move using greedy algorithm:
         # maxValue = max(moveValues)
@@ -289,7 +309,10 @@ class BackgammonNN_v3(nn.Module):
 
         finalMoveSelection = possible_moves[indexOfMove]
 
-        return finalMoveSelection, val
+        if not analyze:
+            return finalMoveSelection, val
+        else:
+            return finalMoveSelection, val, possible_actions
 
     def calc_error(self,current_prediction,previous_prediction):
         td_error = (current_prediction - previous_prediction)
@@ -305,12 +328,14 @@ class BackgammonNN_v3(nn.Module):
         self.traces = {name: torch.zeros_like(param) for name, param in self.named_parameters()}
         self.last_prediction = None
 
-def Full_Run(inputBoard: Board, inputTurn, networkIdent, silent=True):
+def Full_Run(inputBoard: Board, inputTurn, networkIdent, silent=True, analyse=False, noRoll=False):
     # Determine Table Name:
     if networkIdent[5:8] == "01-":
         model = BackgammonNN().to(DEVICE)
+    elif networkIdent[5:8] == "02-":
+        model = BackgammonNN_v2().to(DEVICE)
     elif networkIdent[5:8] == "03-":
-        model = BackgammonNN_v3().to(DEVICE)
+        model = BackgammonNN_v3().to(DEVICE) 
     else:
         print("Error: Network Ident Not Valid (ID)")
         return []
@@ -322,9 +347,14 @@ def Full_Run(inputBoard: Board, inputTurn, networkIdent, silent=True):
         print("Error: Unable to load model states")
         return []
     
-    chosen_moves, current_prediction = model.chose_move(inputBoard,inputTurn.current_possible_moves,inputTurn.player)
-
-    if not silent:
-        print(f"Current Valuation = {current_prediction[0]*100}% Chance for player 1 to win.")
-
-    return chosen_moves
+    if not analyse:
+        chosen_moves, current_prediction = model.chose_move(inputBoard,inputTurn.current_possible_moves,inputTurn.player)
+        return chosen_moves
+    
+    elif not noRoll:
+        chosen_moves, current_prediction, possible_moves = model.chose_move(inputBoard,inputTurn.current_possible_moves,inputTurn.player,analyze=True)
+        return chosen_moves, current_prediction, possible_moves
+    
+    else:
+        current_prediction = model.forward_on_board(inputBoard,1 if inputTurn.player == 2 else 2)
+        return current_prediction
